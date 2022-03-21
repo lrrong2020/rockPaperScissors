@@ -16,7 +16,7 @@ public class MultiThreadServer extends JFrame
 	private static final int PORT = 8000;
 	// Text area for displaying contents
 	private JTextArea jta = new JTextArea();
-	private static final Map<java.util.UUID, Socket> ONLINE_USER_MAP = new ConcurrentHashMap<java.util.UUID, Socket>();
+	private static final Map<UUID, Socket> ONLINE_USER_MAP = new ConcurrentHashMap<UUID, Socket>();
 
 	public static void main(String args[]) 
 	{

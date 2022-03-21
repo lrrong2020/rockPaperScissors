@@ -10,7 +10,7 @@ public class DataBean implements Serializable
 	private String message = null;
 	private Date createdDate = null;
 	private UUID uuid = null;//to store UUID for each client to uniquely identify the DataBean is to be sent to which client
-	private Map<java.util.UUID, Socket> ONLINE_USER_MAP = null;//for storing users
+	private Map<UUID, Socket> ONLINE_USER_MAP = null;//for storing users
 
 	public DataBean() 
 	{
