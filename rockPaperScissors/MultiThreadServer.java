@@ -72,13 +72,13 @@ public class MultiThreadServer extends JFrame
 	class HandleAClient implements Runnable 
 	{
 		private Socket socket; // A connected socket
-		private static UUID uuid = null;
+		private UUID uuid = null;
 		/** Construct a thread */
 		public HandleAClient(Socket socket) 
 		{
 			this.socket = socket;
-			UUID rdUuid = java.util.UUID.randomUUID();//initialize a random UUID for each client
-			HandleAClient.setUuid(rdUuid);
+			UUID rdUuid = UUID.randomUUID();//initialize a random UUID for each client
+			this.setUuid(rdUuid);
 			MultiThreadServer.ONLINE_USER_MAP.put(rdUuid , socket);//store users in userMap
 		}
 
@@ -96,7 +96,7 @@ public class MultiThreadServer extends JFrame
 				while (true) 
 				{
 					//initial DataBean
-					outputToClient.writeObject(new DataBean("INI_SERVER", HandleAClient.getUUID()));
+					outputToClient.writeObject(new DataBean("INI_SERVER", this.getUUID()));
 
 					String sendMessage = "This is server";
 					DataBean receiveBean = (DataBean) inputFromClient.readObject();
@@ -112,13 +112,13 @@ public class MultiThreadServer extends JFrame
 			} 
 		}
 
-		public static void setUuid(UUID uuid)
+		public void setUuid(UUID uuid)
 		{
-			HandleAClient.uuid = uuid;
+			this.uuid = uuid;
 		}
-		public static UUID getUUID()
+		public UUID getUUID()
 		{
-			return uuid;
+			return this.uuid;
 		}
 	}
 
