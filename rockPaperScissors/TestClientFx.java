@@ -51,6 +51,38 @@ public class TestClientFx extends Application
 	//handle received data bean
 	private static boolean handleReceiveDataBean(DataBean receiveBean) 
 	{	
+		if(receiveBean == null) 
+		{
+			
+		}
+		
+		if(receiveBean.getStatus() == DataBean.STATUS.INIT) 
+		{
+			DataBean initBean;
+			try
+			{
+				initBean = (DataBean)fromServer.readObject();
+				TestClientFx.setUuid(initBean.getUUID());
+				TestClientFx.setUserMap(initBean.getUserMap());
+				TestClientFx.hasInit = TestClientFx.handleReceiveDataBean(initBean);
+			} 
+			catch (ClassNotFoundException | IOException e) 
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		if(receiveBean.getStatus() == DataBean.STATUS.GAME_START) 
+		{
+			
+		}
+		
+		if(receiveBean.getStatus() == DataBean.STATUS.GAME_END) 
+		{
+			
+		}
+	
 		if(!TestClientFx.hasInit)
 		{	
 			//handling initial connection
@@ -103,15 +135,15 @@ public class TestClientFx extends Application
 			// Create an output stream to send object to the server
 			toServer = new ObjectOutputStream(socket.getOutputStream());
 
-			while(!TestClientFx.hasInit) 
-			{	
-				DataBean initBean = (DataBean)fromServer.readObject();
-				TestClientFx.setUuid(initBean.getUUID());
-				TestClientFx.setUserMap(initBean.getUserMap());
-				TestClientFx.hasInit = TestClientFx.handleReceiveDataBean(initBean);
-			}
+//			while(!TestClientFx.hasInit) 
+//			{	
+//				DataBean initBean = (DataBean)fromServer.readObject();
+//				TestClientFx.setUuid(initBean.getUUID());
+//				TestClientFx.setUserMap(initBean.getUserMap());
+//				TestClientFx.hasInit = TestClientFx.handleReceiveDataBean(initBean);
+//			}
 		}
-		catch (IOException | ClassNotFoundException ex) 
+		catch (IOException ex) 
 		{
 			appendTextArea(ta, ex.toString() + "\n");
 		}
@@ -121,7 +153,22 @@ public class TestClientFx extends Application
 	public void start(Stage stage) throws Exception
 	{
 		appendTextArea(ta, "\nDisplaying Client");
+		
+		//Creating a Scene 
+		Scene scene = new Scene(getRoot(), 600, 300); 
 
+		//Setting title to the scene 
+		stage.setTitle("Client"); 
+
+		//Adding the scene to the stage 
+		stage.setScene(scene); 
+
+		//Displaying the contents of a scene 
+		stage.show(); 
+	}
+	
+	public static Group getRoot() 
+	{
 		Button btSend = new Button("Test");
 		btSend.setLayoutX(200);
 		btSend.setLayoutY(200);
@@ -149,19 +196,9 @@ public class TestClientFx extends Application
 			}
 		};
 		btSend.addEventHandler(MouseEvent.MOUSE_CLICKED, eventHandlerSend);
-		//Creating a Scene 
-		Scene scene = new Scene(root, 600, 300); 
-
-		//Setting title to the scene 
-		stage.setTitle("Sample application"); 
-
-		//Adding the scene to the stage 
-		stage.setScene(scene); 
-
-		//Displaying the contents of a scene 
-		stage.show(); 
+		return root;
 	}
-
+	
 	public static void main(String[] args) 
 	{
 		launch(args);
