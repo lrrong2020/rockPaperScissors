@@ -16,12 +16,11 @@ public class DataBean implements Serializable
 	private boolean isHost = false;
 	private String status = null;
 	//status code
-	class STATUS
-	{
+
 		public static final String INIT = "INIT";
 		public static final String GAME_START = "GAME_START";
 		public static final String GAME_END = "GAME_END";
-	};
+
 
 	//constructors
 	public DataBean() 

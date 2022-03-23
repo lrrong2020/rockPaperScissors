@@ -84,20 +84,22 @@ public class ConsoleServer
 				// Continuously serve the client
 				while (true) 
 				{
+					
 					//initial DataBean
-					this.getOutputToClient().writeObject(new DataBean //complete 
+					DataBean idb = new DataBean //complete 
 							(
-							 "First message", 
-							 this.getUUID(),
-							 DataBean.STATUS.INIT,
-							 ConsoleServer.ONLINE_USER_MAP,
-							 ConsoleServer.ONLINE_USER_MAP.size()==0?true:false
-							));
+									 "First message", 
+									 this.getUUID(),
+									 DataBean.INIT,
+									 ConsoleServer.ONLINE_USER_MAP,
+									 true
+									);
+					this.getOutputToClient().writeObject(idb);
 
 					//receive data from client
-					DataBean receiveBean = (DataBean) this.getInputFromClient().readObject();
-					System.out.println("\n" + receiveBean.getCreatedDate() + " " + socket.getInetAddress() + ": " + receiveBean.getMessage());
-					
+//					DataBean receiveBean = (DataBean) this.getInputFromClient().readObject();
+//					System.out.println("\n" + receiveBean.getCreatedDate() + " " + socket.getInetAddress() + ": " + receiveBean.getMessage());
+//					
 					//reply the client
 //					String sendMessage = "This is server";
 //					DataBean sendBean = new DataBean();
@@ -105,7 +107,7 @@ public class ConsoleServer
 //					this.getOutputToClient().writeObject(sendBean);
 				}
 			}
-			catch(IOException | ClassNotFoundException e) 
+			catch(IOException e) 
 			{
 				System.err.println(e);
 			} 

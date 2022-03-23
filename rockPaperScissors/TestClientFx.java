@@ -2,7 +2,7 @@ package rockPaperScissors.rockPaperScissors;
 
 import java.io.*;
 import java.net.*;
-import java.util.UUID;
+
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
@@ -12,6 +12,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import java.util.*;
+import java.util.Map.Entry;
 
 public class TestClientFx extends Application
 {
@@ -67,6 +68,16 @@ public class TestClientFx extends Application
 				TestClientFx.setUserMap(initBean.getUserMap());
 				TestClientFx.isHost = initBean.getIsHost();
 				TestClientFx.hasInit = TestClientFx.handleReceiveDataBean(initBean);
+				appendTextArea(ta, 
+				"\nStatus: " + receiveBean.getStatus()
+				 + "\n Your UUID:" + TestClientFx.getUUID()
+				 + "\n You are" + (TestClientFx.isHost?" the ":" not the ") + "host."
+				);
+				appendTextArea(ta, "\n UUIDs:");
+				 for (Entry<UUID, Socket> entry : TestClientFx.getUserMap().entrySet()) 
+			        {
+					 appendTextArea(ta, " <"+entry.getKey() + "> ");
+			        }
 			} 
 			catch (ClassNotFoundException | IOException e) 
 			{
