@@ -9,6 +9,7 @@ public class Player implements Serializable
 
 	private static Player instance = new Player();
 	private UUID uuid = null;
+	private boolean isHost = false;
 
 
 	private Player() 
@@ -28,5 +29,12 @@ public class Player implements Serializable
 	{
 		this.uuid = uuid;
 	}
-
+	public void setIsHost(boolean isHost)
+	{
+		this.isHost = isHost;
+	}
+	public boolean getIsHost()
+	{
+		return this.isHost;
+	}
 }
