@@ -12,7 +12,7 @@ public class DataBean implements Serializable
 	private Date createdDate = null;
 	private UUID uuid = null;//to store UUID for each client to uniquely identify the DataBean is to be sent to which client
 	private Map<UUID, Socket> ONLINE_USER_MAP = null;//for storing users
-	private String status = null;
+	private boolean isHost = false;
 	//status code
 	class STATUS
 	{
@@ -75,12 +75,12 @@ public class DataBean implements Serializable
 	{
 		return this.uuid;
 	}
-	public void setStatus(String status)
+	public void setHost(boolean isHost)
 	{
-		this.status = status;
+		this.isHost = isHost;
 	}
-	public String getStatus()
+	public boolean isHost()
 	{
-		return status;
+		return isHost;
 	}
 }
