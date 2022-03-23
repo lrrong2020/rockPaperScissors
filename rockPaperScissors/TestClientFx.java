@@ -27,9 +27,9 @@ public class TestClientFx extends Application
 	private static final int PORT = 8000;
 	private static boolean isHost = false;
 
-	
+
 	private static Player player = Player.getInstance();
-	
+
 
 	public TestClientFx() 
 	{	
@@ -43,7 +43,7 @@ public class TestClientFx extends Application
 	{
 		return isHost;
 	}
-	
+
 	//handle DataBean to be sent
 	private static void sendDataBean(DataBean sdBean) 
 	{
@@ -78,7 +78,7 @@ public class TestClientFx extends Application
 				appendTextArea(ta, "Status: " + receiveBean.getStatus());
 				appendTextArea(ta, "Your UUID:" + receiveBean.getUUID().toString());
 				appendTextArea(ta, "You are" + (receiveBean.getIsHost()?" the ":" not the ") + "host.");
-				
+
 
 				player.setUUID(receiveBean.getUUID());
 				TestClientFx.setIsHost(receiveBean.getIsHost());
@@ -120,7 +120,7 @@ public class TestClientFx extends Application
 		System.out.println(textArea.getText());
 		textArea.setText(textArea.getText() + "\n" +str);
 	}
-	
+
 
 	private static void initializeClient() 
 	{
@@ -182,20 +182,20 @@ public class TestClientFx extends Application
 			public void handle (MouseEvent e)
 			{	
 				System.out.println(e);
-					//	TestClientFx.handleReceiveDataBean((DataBean)fromServer.readObject());
-					//	String sendMessage = "This is client";
-					//	DataBean sendBean = new DataBean();
-					//	sendBean.setMessage(sendMessage);
-					//	sendBean.setUUID(TestClientFx.getUUID());
-					//	Send the data to the server
-					//	sendDataBean(sendBean);
-					//	handleReceiveDataBean((DataBean)fromServer.readObject());		
+				//	TestClientFx.handleReceiveDataBean((DataBean)fromServer.readObject());
+				//	String sendMessage = "This is client";
+				//	DataBean sendBean = new DataBean();
+				//	sendBean.setMessage(sendMessage);
+				//	sendBean.setUUID(TestClientFx.getUUID());
+				//	Send the data to the server
+				//	sendDataBean(sendBean);
+				//	handleReceiveDataBean((DataBean)fromServer.readObject());		
 			}
 		};
 		btSend.addEventHandler(MouseEvent.MOUSE_CLICKED, eventHandlerSend);
 		return root;
 	}
-	
+
 	public static void main(String[] args) 
 	{
 		launch(args);

@@ -92,9 +92,10 @@ public class ConsoleServer
 							(
 									"First message", 
 									this.getUUID(),
-									"INIT",
+									DataBean.STATUS.INIT,
 									ConsoleServer.ONLINE_USER_MAP.size() == 1 ? true:false
 									);
+
 					this.getOutputToClient().writeObject(idb);
 				}
 				//receive data from client
