@@ -88,15 +88,33 @@ public class ConsoleServer
 				// Continuously serve the client
 				while(true) 
 				{
-					DataBean idb = new DataBean //complete 
+					//send init databean
+					DataBean idb = new InitBean //complete 
 							(
 									"First message", 
 									this.getUUID(),
 									DataBean.STATUS.INIT,
 									ConsoleServer.ONLINE_USER_MAP.size() == 1 ? true:false
 									);
-
 					this.getOutputToClient().writeObject(idb);
+					
+					DataBean receiveBean = (DataBean)this.getInputFromClient().readObject();
+//					if(receiveBean instanceof StartBean) 
+//					{	
+//						StartBean receiveSBean = (StartBean)receiveBean;
+//						if(receiveSBean.getPlayer().getUUID() == ConsoleServer.ONLINE_USER_MAP.entrySet().) 
+//
+//						{
+//							
+//						}
+//						
+//						this.getOutputToClient().writeObject(new StartBean //complete 
+//								(
+//										"First message", 
+//										DataBean.STATUS.START,
+//										
+//										));
+//					}
 				}
 				//receive data from client
 				//					DataBean receiveBean = (DataBean) this.getInputFromClient().readObject();

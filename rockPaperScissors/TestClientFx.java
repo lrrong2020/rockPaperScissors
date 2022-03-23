@@ -27,9 +27,7 @@ public class TestClientFx extends Application
 	private static final int PORT = 8000;
 	private static boolean isHost = false;
 
-
 	private static Player player = Player.getInstance();
-
 
 	public TestClientFx() 
 	{	
@@ -69,24 +67,18 @@ public class TestClientFx extends Application
 		}
 		else 
 		{
-
 			if(receiveBean.getStatus().equals(DataBean.STATUS.INIT)) 
 			{
-				//					TestClientFx.setUuid(initBean.getUUID());
-				//					TestClientFx.setUserMap(initBean.getUserMap());
-				//					TestClientFx.isHost = initBean.getIsHost();
-				appendTextArea(ta, "Status: " + receiveBean.getStatus());
-				appendTextArea(ta, "Your UUID:" + receiveBean.getUUID().toString());
-				appendTextArea(ta, "You are" + (receiveBean.getIsHost()?" the ":" not the ") + "host.");
+				//	TestClientFx.setUuid(initBean.getUUID());
+				//	TestClientFx.setUserMap(initBean.getUserMap());
+				//	TestClientFx.isHost = initBean.getIsHost();
+				InitBean receiveIBean = (InitBean)receiveBean;
+				appendTextArea(ta, "Status: " + receiveIBean.getStatus());
+				appendTextArea(ta, "Your UUID:" + receiveIBean.getUUID().toString());
+				appendTextArea(ta, "You are" + (receiveIBean.getIsHost()?" the ":" not the ") + "host.");
 
-
-				player.setUUID(receiveBean.getUUID());
-				TestClientFx.setIsHost(receiveBean.getIsHost());
-				//				System.out.println( "\n UUIDs:");
-				//				for (Entry<UUID, Socket> entry : TestClientFx.getUserMap().entrySet()) 
-				//				{
-				//					System.out.println( " <"+entry.getKey() + "> ");
-				//				}
+				player.setUUID(receiveIBean.getUUID());
+				TestClientFx.setIsHost(receiveIBean.getIsHost());
 			}
 			//
 			//			if(receiveBean.getStatus() == DataBean.STATUS.GAME_START) 
@@ -108,7 +100,7 @@ public class TestClientFx extends Application
 			//		else 
 			//		{
 			//			appendTextArea(ta, "\n" + receiveBean.getCreatedDate() + " Server: " + receiveBean.getMessage());
-			//		}			
+			//		}
 			return true;
 		}
 
@@ -171,7 +163,7 @@ public class TestClientFx extends Application
 
 	public static Group getRoot() 
 	{
-		Button btSend = new Button("Test");
+		Button btSend = new Button("Start");
 		btSend.setLayoutX(200);
 		btSend.setLayoutY(200);
 		Group root = new Group(btSend, ta);
@@ -182,6 +174,7 @@ public class TestClientFx extends Application
 			public void handle (MouseEvent e)
 			{	
 				System.out.println(e);
+				TestClientFx.sendDataBean(new StartBean("Game start", DataBean.STATUS.GAME_START, player));
 				//	TestClientFx.handleReceiveDataBean((DataBean)fromServer.readObject());
 				//	String sendMessage = "This is client";
 				//	DataBean sendBean = new DataBean();
