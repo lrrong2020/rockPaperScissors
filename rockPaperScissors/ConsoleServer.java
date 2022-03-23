@@ -3,6 +3,7 @@ package rockPaperScissors.rockPaperScissors;
 import java.io.*;
 import java.net.*;
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ConsoleServer
@@ -68,7 +69,10 @@ public class ConsoleServer
 			System.out.println("Client [" + ConsoleServer.ONLINE_USER_MAP.size() + "] 's host name is " + inetAddress.getHostName() + "\n");
 			System.out.println("Client [" + ConsoleServer.ONLINE_USER_MAP.size() + "] 's IP Address is " + inetAddress.getHostAddress() + "\n");
 
-
+			for (Entry<UUID, Socket> entry : ConsoleServer.ONLINE_USER_MAP.entrySet()) 
+			{
+				System.out.println( " <"+entry.getKey() + "> ");
+			}
 		}
 
 		/** Run a thread */
@@ -89,13 +93,10 @@ public class ConsoleServer
 									"First message", 
 									this.getUUID(),
 									"INIT",
-									true
+									ConsoleServer.ONLINE_USER_MAP.size() == 1 ? true:false
 									);
 					this.getOutputToClient().writeObject(idb);
 				}
-				//initial DataBean
-
-
 				//receive data from client
 				//					DataBean receiveBean = (DataBean) this.getInputFromClient().readObject();
 				//					System.out.println("\n" + receiveBean.getCreatedDate() + " " + socket.getInetAddress() + ": " + receiveBean.getMessage());

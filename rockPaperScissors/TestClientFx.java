@@ -25,15 +25,25 @@ public class TestClientFx extends Application
 	private static ObjectInputStream fromServer;
 	private static final String HOST = "localhost";
 	private static final int PORT = 8000;
-	private static UUID uuid = null;
-	private static Map<UUID, Socket> userMap = null;
 	private static boolean isHost = false;
+
+	
+	private static Player player = Player.getInstance();
+	
 
 	public TestClientFx() 
 	{	
 		TestClientFx.initializeClient();
 	}	
-
+	public static void setIsHost(boolean isHost)
+	{
+		TestClientFx.isHost = isHost;
+	}
+	public static boolean getIsHost()
+	{
+		return isHost;
+	}
+	
 	//handle DataBean to be sent
 	private static void sendDataBean(DataBean sdBean) 
 	{
@@ -62,14 +72,16 @@ public class TestClientFx extends Application
 
 			if(receiveBean.getStatus().equals(DataBean.STATUS.INIT)) 
 			{
-
-				appendTextArea(ta, receiveBean.getStatus());
 				//					TestClientFx.setUuid(initBean.getUUID());
 				//					TestClientFx.setUserMap(initBean.getUserMap());
 				//					TestClientFx.isHost = initBean.getIsHost();
 				appendTextArea(ta, "Status: " + receiveBean.getStatus());
 				appendTextArea(ta, "Your UUID:" + receiveBean.getUUID().toString());
 				appendTextArea(ta, "You are" + (receiveBean.getIsHost()?" the ":" not the ") + "host.");
+				
+
+				player.setUUID(receiveBean.getUUID());
+				TestClientFx.setIsHost(receiveBean.getIsHost());
 				//				System.out.println( "\n UUIDs:");
 				//				for (Entry<UUID, Socket> entry : TestClientFx.getUserMap().entrySet()) 
 				//				{
@@ -108,22 +120,8 @@ public class TestClientFx extends Application
 		System.out.println(textArea.getText());
 		textArea.setText(textArea.getText() + "\n" +str);
 	}
-	public static UUID getUUID()
-	{
-		return uuid;
-	}
-	public static void setUuid(UUID uuid)
-	{
-		TestClientFx.uuid = uuid;
-	}
-	public static Map<UUID, Socket> getUserMap()
-	{
-		return TestClientFx.userMap;
-	}
-	public static void setUserMap(Map<UUID, Socket> userMp)
-	{
-		TestClientFx.userMap = userMp;
-	}
+	
+
 	private static void initializeClient() 
 	{
 		appendTextArea(ta, "Initailizing");
