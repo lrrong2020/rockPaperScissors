@@ -27,7 +27,6 @@ public class TestClientFx extends Application
 	private static final int PORT = 8000;
 	private static UUID uuid = null;
 	private static Map<UUID, Socket> userMap = null;
-	private static boolean hasInit = false;
 	private static boolean isHost = false;
 
 	public TestClientFx() 
@@ -45,75 +44,69 @@ public class TestClientFx extends Application
 		} 
 		catch (IOException e) 
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 
 	//handle received data bean
-	private static boolean handleReceiveDataBean(DataBean receiveBean) 
+	private static boolean handleReceiveDataBean(DataBean receiveBean) throws IOException 
 	{	
+
 		if(receiveBean == null) 
 		{
-			
+			System.out.println("Empty DataBean");
+			return false;
 		}
-		
-		if(receiveBean.getStatus() == DataBean.STATUS.INIT) 
+		else 
 		{
-			DataBean initBean;
-			try
+
+			if(receiveBean.getStatus().equals(DataBean.STATUS.INIT)) 
 			{
-				initBean = (DataBean)fromServer.readObject();
-				TestClientFx.setUuid(initBean.getUUID());
-				TestClientFx.setUserMap(initBean.getUserMap());
-				TestClientFx.isHost = initBean.getIsHost();
-				TestClientFx.hasInit = TestClientFx.handleReceiveDataBean(initBean);
-				appendTextArea(ta, 
-				"\nStatus: " + receiveBean.getStatus()
-				 + "\n Your UUID:" + TestClientFx.getUUID()
-				 + "\n You are" + (TestClientFx.isHost?" the ":" not the ") + "host."
-				);
-				appendTextArea(ta, "\n UUIDs:");
-				 for (Entry<UUID, Socket> entry : TestClientFx.getUserMap().entrySet()) 
-			        {
-					 appendTextArea(ta, " <"+entry.getKey() + "> ");
-			        }
-			} 
-			catch (ClassNotFoundException | IOException e) 
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+
+				appendTextArea(ta, receiveBean.getStatus());
+				//					TestClientFx.setUuid(initBean.getUUID());
+				//					TestClientFx.setUserMap(initBean.getUserMap());
+				//					TestClientFx.isHost = initBean.getIsHost();
+				appendTextArea(ta, "Status: " + receiveBean.getStatus());
+				appendTextArea(ta, "Your UUID:" + receiveBean.getUUID().toString());
+				appendTextArea(ta, "You are" + (receiveBean.getIsHost()?" the ":" not the ") + "host.");
+				//				System.out.println( "\n UUIDs:");
+				//				for (Entry<UUID, Socket> entry : TestClientFx.getUserMap().entrySet()) 
+				//				{
+				//					System.out.println( " <"+entry.getKey() + "> ");
+				//				}
 			}
+			//
+			//			if(receiveBean.getStatus() == DataBean.STATUS.GAME_START) 
+			//			{
+			//
+			//			}
+			//
+			//			if(receiveBean.getStatus() == DataBean.STATUS.GAME_END) 
+			//			{
+			//
+			//			}
+
+			//		if(!TestClientFx.hasInit)
+			//		{	
+			//			//handling initial connection
+			//			appendTextArea(ta, "\n" + receiveBean.getCreatedDate() + " Server: " + receiveBean.getMessage());
+			//			appendTextArea(ta, "\nYour UUID: " + receiveBean.getUUID().toString());
+			//		}
+			//		else 
+			//		{
+			//			appendTextArea(ta, "\n" + receiveBean.getCreatedDate() + " Server: " + receiveBean.getMessage());
+			//		}			
+			return true;
 		}
-		
-		if(receiveBean.getStatus() == DataBean.STATUS.GAME_START) 
-		{
-			
-		}
-		
-		if(receiveBean.getStatus() == DataBean.STATUS.GAME_END) 
-		{
-			
-		}
-	
-//		if(!TestClientFx.hasInit)
-//		{	
-//			//handling initial connection
-//			appendTextArea(ta, "\n" + receiveBean.getCreatedDate() + " Server: " + receiveBean.getMessage());
-//			appendTextArea(ta, "\nYour UUID: " + receiveBean.getUUID().toString());
-//		}
-//		else 
-//		{
-//			appendTextArea(ta, "\n" + receiveBean.getCreatedDate() + " Server: " + receiveBean.getMessage());
-//		}			
-		return receiveBean != null;
+
 	}
 
 	//similar syntax for rewriting append method of jTextArea of java.swing
 	public static void appendTextArea(TextArea textArea, String str) 
 	{
 		System.out.println(textArea.getText());
-		textArea.setText(textArea.getText() + str);
+		textArea.setText(textArea.getText() + "\n" +str);
 	}
 	public static UUID getUUID()
 	{
@@ -147,16 +140,14 @@ public class TestClientFx extends Application
 
 			// Create an output stream to send object to the server
 			toServer = new ObjectOutputStream(socket.getOutputStream());
+			TestClientFx.handleReceiveDataBean((DataBean)fromServer.readObject());
 
-//			while(!TestClientFx.hasInit) 
-//			{	
-//				DataBean initBean = (DataBean)fromServer.readObject();
-//				TestClientFx.setUuid(initBean.getUUID());
-//				TestClientFx.setUserMap(initBean.getUserMap());
-//				TestClientFx.hasInit = TestClientFx.handleReceiveDataBean(initBean);
-//			}
+			//	DataBean initBean = (DataBean)fromServer.readObject();
+			//	TestClientFx.setUuid(initBean.getUUID());
+			//	TestClientFx.setUserMap(initBean.getUserMap());
+
 		}
-		catch (IOException ex) 
+		catch (IOException | ClassNotFoundException ex) 
 		{
 			appendTextArea(ta, ex.toString() + "\n");
 		}
@@ -166,7 +157,7 @@ public class TestClientFx extends Application
 	public void start(Stage stage) throws Exception
 	{
 		appendTextArea(ta, "\nDisplaying Client");
-		
+
 		//Creating a Scene 
 		Scene scene = new Scene(getRoot(), 600, 300); 
 
@@ -179,7 +170,7 @@ public class TestClientFx extends Application
 		//Displaying the contents of a scene 
 		stage.show(); 
 	}
-	
+
 	public static Group getRoot() 
 	{
 		Button btSend = new Button("Test");
@@ -191,22 +182,16 @@ public class TestClientFx extends Application
 		{ 
 			@Override 
 			public void handle (MouseEvent e)
-			{
-				// TODO Auto-generated method stub
-				try 
-				{
-					String sendMessage = "This is client";
-					DataBean sendBean = new DataBean();
-					sendBean.setMessage(sendMessage);
-					sendBean.setUUID(TestClientFx.getUUID());
-					// Send the data to the server
-					sendDataBean(sendBean);
-					handleReceiveDataBean((DataBean)fromServer.readObject());				
-				}
-				catch (IOException | ClassNotFoundException e1) 
-				{
-					e1.printStackTrace();
-				}
+			{	
+				System.out.println(e);
+					//	TestClientFx.handleReceiveDataBean((DataBean)fromServer.readObject());
+					//	String sendMessage = "This is client";
+					//	DataBean sendBean = new DataBean();
+					//	sendBean.setMessage(sendMessage);
+					//	sendBean.setUUID(TestClientFx.getUUID());
+					//	Send the data to the server
+					//	sendDataBean(sendBean);
+					//	handleReceiveDataBean((DataBean)fromServer.readObject());		
 			}
 		};
 		btSend.addEventHandler(MouseEvent.MOUSE_CLICKED, eventHandlerSend);

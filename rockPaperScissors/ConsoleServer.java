@@ -59,7 +59,7 @@ public class ConsoleServer
 			UUID rdUuid = UUID.randomUUID();//initialize a random UUID for each client
 			this.setUuid(rdUuid);
 			ConsoleServer.ONLINE_USER_MAP.put(rdUuid , socket);//store users in userMap
-			
+
 			// Display the client number
 			System.out.println("Starting thread for client " + ConsoleServer.ONLINE_USER_MAP.size() + " at " + new Date() + '\n');
 
@@ -68,7 +68,7 @@ public class ConsoleServer
 			System.out.println("Client [" + ConsoleServer.ONLINE_USER_MAP.size() + "] 's host name is " + inetAddress.getHostName() + "\n");
 			System.out.println("Client [" + ConsoleServer.ONLINE_USER_MAP.size() + "] 's IP Address is " + inetAddress.getHostAddress() + "\n");
 
-			
+
 		}
 
 		/** Run a thread */
@@ -82,37 +82,37 @@ public class ConsoleServer
 				this.setInputFromClient(new ObjectInputStream(socket.getInputStream()));
 
 				// Continuously serve the client
-				while (true) 
+				while(true) 
 				{
-					
-					//initial DataBean
 					DataBean idb = new DataBean //complete 
 							(
-									 "First message", 
-									 this.getUUID(),
-									 DataBean.INIT,
-									 ConsoleServer.ONLINE_USER_MAP,
-									 true
+									"First message", 
+									this.getUUID(),
+									"INIT",
+									true
 									);
 					this.getOutputToClient().writeObject(idb);
-
-					//receive data from client
-//					DataBean receiveBean = (DataBean) this.getInputFromClient().readObject();
-//					System.out.println("\n" + receiveBean.getCreatedDate() + " " + socket.getInetAddress() + ": " + receiveBean.getMessage());
-//					
-					//reply the client
-//					String sendMessage = "This is server";
-//					DataBean sendBean = new DataBean();
-//					sendBean.setMessage(sendMessage);
-//					this.getOutputToClient().writeObject(sendBean);
 				}
+				//initial DataBean
+
+
+				//receive data from client
+				//					DataBean receiveBean = (DataBean) this.getInputFromClient().readObject();
+				//					System.out.println("\n" + receiveBean.getCreatedDate() + " " + socket.getInetAddress() + ": " + receiveBean.getMessage());
+				//					
+				//reply the client
+				//					String sendMessage = "This is server";
+				//					DataBean sendBean = new DataBean();
+				//					sendBean.setMessage(sendMessage);
+				//					this.getOutputToClient().writeObject(sendBean);
+
 			}
-			catch(IOException e) 
+			catch(Exception e) 
 			{
-				System.err.println(e);
+				e.printStackTrace();
 			} 
 		}
-		
+
 		public boolean sendInit() 
 		{
 			return true;
