@@ -25,7 +25,7 @@ public class TestClientFx extends Application
 	private static ObjectInputStream fromServer;
 	private static final String HOST = "localhost";
 	private static final int PORT = 8000;
-	private static boolean isHost = false;
+
 
 	private static Player player = Player.getInstance();
 
@@ -33,14 +33,6 @@ public class TestClientFx extends Application
 	{	
 		TestClientFx.initializeClient();
 	}	
-	public static void setIsHost(boolean isHost)
-	{
-		TestClientFx.isHost = isHost;
-	}
-	public static boolean getIsHost()
-	{
-		return isHost;
-	}
 
 	//handle DataBean to be sent
 	private static void sendDataBean(DataBean sdBean) 
@@ -78,7 +70,7 @@ public class TestClientFx extends Application
 				appendTextArea(ta, "You are" + (receiveIBean.getIsHost()?" the ":" not the ") + "host.");
 
 				player.setUUID(receiveIBean.getUUID());
-				TestClientFx.setIsHost(receiveIBean.getIsHost());
+				player.setIsHost(receiveIBean.getIsHost());
 			}
 			//
 			//			if(receiveBean.getStatus() == DataBean.STATUS.GAME_START) 
