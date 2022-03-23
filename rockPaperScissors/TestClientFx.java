@@ -51,7 +51,7 @@ public class TestClientFx extends Application
 	//handle received data bean
 	private static boolean handleReceiveDataBean(DataBean receiveBean) throws IOException 
 	{	
-
+		System.out.println(11113);
 		if(receiveBean == null) 
 		{
 			System.out.println("Empty DataBean");
@@ -61,9 +61,6 @@ public class TestClientFx extends Application
 		{
 			if(receiveBean instanceof InitBean) 
 			{
-				//	TestClientFx.setUuid(initBean.getUUID());
-				//	TestClientFx.setUserMap(initBean.getUserMap());
-				//	TestClientFx.isHost = initBean.getIsHost();
 				InitBean receiveIBean = (InitBean)receiveBean;
 				appendTextArea(ta, "Status: " + receiveIBean.getClass());
 				appendTextArea(ta, "Your UUID:" + receiveIBean.getUUID().toString());
@@ -72,39 +69,17 @@ public class TestClientFx extends Application
 				player.setUUID(receiveIBean.getUUID());
 				player.setIsHost(receiveIBean.getIsHost());
 			}
-			//
-			//			if(receiveBean.getStatus() == DataBean.STATUS.GAME_START) 
-			//			{
-			//
-			//			}
-			//
-			//			if(receiveBean.getStatus() == DataBean.STATUS.GAME_END) 
-			//			{
-			//
-			//			}
 
-			//		if(!TestClientFx.hasInit)
-			//		{	
-			//			//handling initial connection
-			//			appendTextArea(ta, "\n" + receiveBean.getCreatedDate() + " Server: " + receiveBean.getMessage());
-			//			appendTextArea(ta, "\nYour UUID: " + receiveBean.getUUID().toString());
-			//		}
-			//		else 
-			//		{
-			//			appendTextArea(ta, "\n" + receiveBean.getCreatedDate() + " Server: " + receiveBean.getMessage());
-			//		}
 			return true;
 		}
-
 	}
 
 	//similar syntax for rewriting append method of jTextArea of java.swing
 	public static void appendTextArea(TextArea textArea, String str) 
 	{
-//		System.out.println(textArea.getText());
-		textArea.setText(textArea.getText() + "\n" +str);
+//		textArea.setText(textArea.getText() + "\n" +str);
+		System.out.println("\n" + str);
 	}
-
 
 	private static void initializeClient() 
 	{
@@ -122,7 +97,8 @@ public class TestClientFx extends Application
 
 			// Create an output stream to send object to the server
 			toServer = new ObjectOutputStream(socket.getOutputStream());
-			TestClientFx.handleReceiveDataBean((DataBean)fromServer.readObject());
+
+			TestClientFx.handleReceiveDataBean((InitBean)fromServer.readObject());
 
 			//	DataBean initBean = (DataBean)fromServer.readObject();
 			//	TestClientFx.setUuid(initBean.getUUID());
@@ -166,7 +142,7 @@ public class TestClientFx extends Application
 			public void handle (MouseEvent e)
 			{	
 				System.out.println(e);
-				TestClientFx.sendDataBean(new StartBean(DataBean.STATUS.GAME_START, player));
+				TestClientFx.sendDataBean(new StartBean(player));
 				//	TestClientFx.handleReceiveDataBean((DataBean)fromServer.readObject());
 				//	String sendMessage = "This is client";
 				//	DataBean sendBean = new DataBean();

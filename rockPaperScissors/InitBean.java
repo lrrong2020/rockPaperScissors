@@ -15,7 +15,6 @@ public class InitBean extends DataBean
 	}
 	public InitBean(UUID u, boolean isHost) 
 	{
-
 		this.setCreatedDate(new Date());
 		this.setUUID(u);
 		this.setHost(isHost);
@@ -37,11 +36,5 @@ public class InitBean extends DataBean
 	public UUID getUUID() 
 	{
 		return this.uuid;
-	}
-	@Override
-	DataBean createBean()
-	{
-		// TODO Auto-generated method stub
-		return null;
 	}
 }

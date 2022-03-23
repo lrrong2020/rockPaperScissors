@@ -10,14 +10,19 @@ public class ConsoleServer
 {
 	private static final int PORT = 8000;
 	private static final Map<UUID, Socket> ONLINE_USER_MAP = new ConcurrentHashMap<UUID, Socket>();
-
+	private static ConsoleServer consoleServer = new ConsoleServer();
+	
+	public static ConsoleServer getInstance() 
+	{
+		return ConsoleServer.consoleServer;
+	}
+	
 	public static void main(String args[]) 
 	{
-		System.out.println("Launching Server");
-		new ConsoleServer();
+		ConsoleServer.getInstance();
 	}
 
-	public ConsoleServer() 
+	private ConsoleServer() 
 	{
 		System.out.println("Initializing server");
 		try 
@@ -95,22 +100,21 @@ public class ConsoleServer
 									ConsoleServer.ONLINE_USER_MAP.size() == 1 ? true:false
 									);
 					this.getOutputToClient().writeObject(idb);
-					
-					DataBean receiveBean = (DataBean)this.getInputFromClient().readObject();
-					if(receiveBean instanceof StartBean) 
-					{	
-						StartBean receiveSBean = (StartBean)receiveBean;
-						if(receiveSBean.getPlayer().getIsHost()) 
-						{
-							
-						}
-						
-						this.getOutputToClient().writeObject(new StartBean //complete 
-								(
-										DataBean.STATUS.GAME_START,
-										receiveSBean.getPlayer()
-										));
-					}
+//					
+//					DataBean receiveBean = (DataBean)this.getInputFromClient().readObject();
+//					if(receiveBean instanceof StartBean) 
+//					{	
+//						StartBean receiveSBean = (StartBean)receiveBean;
+//						if(receiveSBean.getPlayer().getIsHost()) 
+//						{
+//							
+//						}
+//						
+//						this.getOutputToClient().writeObject(new StartBean //complete 
+//								(
+//										receiveSBean.getPlayer()
+//										));
+//					}
 				}
 				//receive data from client
 				//					DataBean receiveBean = (DataBean) this.getInputFromClient().readObject();

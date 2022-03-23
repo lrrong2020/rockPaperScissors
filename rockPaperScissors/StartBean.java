@@ -11,9 +11,8 @@ public class StartBean extends DataBean
 	{
 		super();
 	}
-	public StartBean(String status, Player player)
+	public StartBean(Player player)
 	{
-
 		this.setCreatedDate(new Date());
 		this.setPlayer(player);
 	}
@@ -25,11 +24,5 @@ public class StartBean extends DataBean
 	public Player getPlayer()
 	{
 		return player;
-	}
-	@Override
-	DataBean createBean()
-	{
-		// TODO Auto-generated method stub
-		return null;
 	}
 }
