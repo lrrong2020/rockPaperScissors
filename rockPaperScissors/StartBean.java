@@ -11,11 +11,10 @@ public class StartBean extends DataBean
 	{
 		super();
 	}
-	public StartBean(String message, String status, Player player)
+	public StartBean(String status, Player player)
 	{
-		this.message = message;
+
 		this.setCreatedDate(new Date());
-		this.setStatus(status);
 		this.setPlayer(player);
 	}
 	
@@ -26,5 +25,11 @@ public class StartBean extends DataBean
 	public Player getPlayer()
 	{
 		return player;
+	}
+	@Override
+	DataBean createBean()
+	{
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

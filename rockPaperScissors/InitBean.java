@@ -13,12 +13,11 @@ public class InitBean extends DataBean
 	{
 		super();
 	}
-	public InitBean(String message, UUID u, String status, boolean isHost) 
+	public InitBean(UUID u, boolean isHost) 
 	{
-		this.message = message;
+
 		this.setCreatedDate(new Date());
 		this.setUUID(u);
-		this.setStatus(status);
 		this.setHost(isHost);
 	}
 
@@ -38,5 +37,11 @@ public class InitBean extends DataBean
 	public UUID getUUID() 
 	{
 		return this.uuid;
+	}
+	@Override
+	DataBean createBean()
+	{
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

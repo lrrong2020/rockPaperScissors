@@ -59,13 +59,13 @@ public class TestClientFx extends Application
 		}
 		else 
 		{
-			if(receiveBean.getStatus().equals(DataBean.STATUS.INIT)) 
+			if(receiveBean instanceof InitBean) 
 			{
 				//	TestClientFx.setUuid(initBean.getUUID());
 				//	TestClientFx.setUserMap(initBean.getUserMap());
 				//	TestClientFx.isHost = initBean.getIsHost();
 				InitBean receiveIBean = (InitBean)receiveBean;
-				appendTextArea(ta, "Status: " + receiveIBean.getStatus());
+				appendTextArea(ta, "Status: " + receiveIBean.getClass());
 				appendTextArea(ta, "Your UUID:" + receiveIBean.getUUID().toString());
 				appendTextArea(ta, "You are" + (receiveIBean.getIsHost()?" the ":" not the ") + "host.");
 
@@ -101,7 +101,7 @@ public class TestClientFx extends Application
 	//similar syntax for rewriting append method of jTextArea of java.swing
 	public static void appendTextArea(TextArea textArea, String str) 
 	{
-		System.out.println(textArea.getText());
+//		System.out.println(textArea.getText());
 		textArea.setText(textArea.getText() + "\n" +str);
 	}
 
@@ -166,7 +166,7 @@ public class TestClientFx extends Application
 			public void handle (MouseEvent e)
 			{	
 				System.out.println(e);
-				TestClientFx.sendDataBean(new StartBean("Game start", DataBean.STATUS.GAME_START, player));
+				TestClientFx.sendDataBean(new StartBean(DataBean.STATUS.GAME_START, player));
 				//	TestClientFx.handleReceiveDataBean((DataBean)fromServer.readObject());
 				//	String sendMessage = "This is client";
 				//	DataBean sendBean = new DataBean();

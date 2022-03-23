@@ -88,33 +88,29 @@ public class ConsoleServer
 				// Continuously serve the client
 				while(true) 
 				{
-					//send init databean
+					//send initial DataBean
 					DataBean idb = new InitBean //complete 
 							(
-									"First message", 
 									this.getUUID(),
-									DataBean.STATUS.INIT,
 									ConsoleServer.ONLINE_USER_MAP.size() == 1 ? true:false
 									);
 					this.getOutputToClient().writeObject(idb);
 					
 					DataBean receiveBean = (DataBean)this.getInputFromClient().readObject();
-//					if(receiveBean instanceof StartBean) 
-//					{	
-//						StartBean receiveSBean = (StartBean)receiveBean;
-//						if(receiveSBean.getPlayer().getUUID() == ConsoleServer.ONLINE_USER_MAP.entrySet().) 
-//
-//						{
-//							
-//						}
-//						
-//						this.getOutputToClient().writeObject(new StartBean //complete 
-//								(
-//										"First message", 
-//										DataBean.STATUS.START,
-//										
-//										));
-//					}
+					if(receiveBean instanceof StartBean) 
+					{	
+						StartBean receiveSBean = (StartBean)receiveBean;
+						if(receiveSBean.getPlayer().getIsHost()) 
+						{
+							
+						}
+						
+						this.getOutputToClient().writeObject(new StartBean //complete 
+								(
+										DataBean.STATUS.GAME_START,
+										receiveSBean.getPlayer()
+										));
+					}
 				}
 				//receive data from client
 				//					DataBean receiveBean = (DataBean) this.getInputFromClient().readObject();

@@ -4,21 +4,19 @@ import java.io.Serializable;
 import java.net.*;
 import java.util.Date;
 import java.util.*;
-public class DataBean implements Serializable
+public abstract class DataBean implements Serializable
 {	
 	private static final long serialVersionUID = 1L;
 
-	protected String message = null;
+
 	protected Date createdDate = null;
 	
-
-	private String status = null;
 	//status code
 	interface STATUS
 	{
 		public static final String INIT = "INIT";
 		public static final String GAME_START = "GAME_START";
-		public static final String GAME_ONMARCH = "GAME_ONMARCH";
+		public static final String GAME_ONMATCH = "GAME_ONMATCH";
 		public static final String GAME_END = "GAME_END";
 	};
 
@@ -28,33 +26,33 @@ public class DataBean implements Serializable
 		super();
 		this.setCreatedDate(new Date());
 	}
-	public DataBean(String str) 
-	{
-		this.message = str;
-		this.setCreatedDate(new Date());
-	}
-	public DataBean(String str, UUID u) 
-	{
-		this.message = str;
-		this.setCreatedDate(new Date());
-	}
 
-	public DataBean(String message, String status) 
+	public DataBean(UUID u) 
 	{
-		this.message = message;
-		this.setCreatedDate(new Date());
 
-		this.setStatus(status);
+		this.setCreatedDate(new Date());
 	}
 
 	//setters and getters
-	public void setMessage(String str) 
+	
+	public DataBean createBean(String status) 
 	{
-		this.message = str;
-	}
-	public String getMessage() 
-	{
-		return this.message;
+		if(status.equals(STATUS.INIT)) 
+		{
+			return new InitBean().createBean();
+		}
+		else if(status.equals(STATUS.GAME_START)) 
+		{
+			return new StartBean().createBean();
+		}
+		else if(status.equals(STATUS.GAME_ONMATCH)) 
+		{
+			return new MatchBean().createBean();
+		}
+		else
+		{
+			return new EndBean().createBean();
+		}
 	}
 
 	public void setCreatedDate(Date d) 
@@ -66,12 +64,6 @@ public class DataBean implements Serializable
 		return this.createdDate;
 	}
 	
-	public String getStatus()
-	{
-		return status;
-	}
-	public void setStatus(String status)
-	{
-		this.status = status;
-	}
+	
+	abstract DataBean createBean();
 }
