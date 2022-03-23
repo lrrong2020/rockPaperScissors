@@ -7,6 +7,7 @@ import java.util.*;
 public class DataBean implements Serializable
 {	
 	private static final long serialVersionUID = 1L;
+	
 	private String message = null;
 	private Date createdDate = null;
 	private UUID uuid = null;//to store UUID for each client to uniquely identify the DataBean is to be sent to which client
@@ -38,6 +39,16 @@ public class DataBean implements Serializable
 		this.message = str;
 		this.setCreatedDate(new Date());
 		this.setUUID(u);
+	}
+	
+	public DataBean(String message, UUID u, String status, Map<UUID, Socket> m, boolean isHost) 
+	{
+		this.message = message;
+		this.setCreatedDate(new Date());
+		this.setUUID(u);
+		this.setStatus(status);
+		this.setUserMap(m);
+		this.setHost(isHost);
 	}
 	
 	//setters and getters
@@ -80,7 +91,7 @@ public class DataBean implements Serializable
 	{
 		this.isHost = isHost;
 	}
-	public boolean isHost()
+	public boolean getIsHost()
 	{
 		return isHost;
 	}

@@ -26,7 +26,8 @@ public class TestClientFx extends Application
 	private static final int PORT = 8000;
 	private static UUID uuid = null;
 	private static Map<UUID, Socket> userMap = null;
-	private static boolean hasInit = false;	
+	private static boolean hasInit = false;
+	private static boolean isHost = false;
 
 	public TestClientFx() 
 	{	
@@ -64,6 +65,7 @@ public class TestClientFx extends Application
 				initBean = (DataBean)fromServer.readObject();
 				TestClientFx.setUuid(initBean.getUUID());
 				TestClientFx.setUserMap(initBean.getUserMap());
+				TestClientFx.isHost = initBean.getIsHost();
 				TestClientFx.hasInit = TestClientFx.handleReceiveDataBean(initBean);
 			} 
 			catch (ClassNotFoundException | IOException e) 
@@ -83,16 +85,16 @@ public class TestClientFx extends Application
 			
 		}
 	
-		if(!TestClientFx.hasInit)
-		{	
-			//handling initial connection
-			appendTextArea(ta, "\n" + receiveBean.getCreatedDate() + " Server: " + receiveBean.getMessage());
-			appendTextArea(ta, "\nYour UUID: " + receiveBean.getUUID().toString());
-		}
-		else 
-		{
-			appendTextArea(ta, "\n" + receiveBean.getCreatedDate() + " Server: " + receiveBean.getMessage());
-		}			
+//		if(!TestClientFx.hasInit)
+//		{	
+//			//handling initial connection
+//			appendTextArea(ta, "\n" + receiveBean.getCreatedDate() + " Server: " + receiveBean.getMessage());
+//			appendTextArea(ta, "\nYour UUID: " + receiveBean.getUUID().toString());
+//		}
+//		else 
+//		{
+//			appendTextArea(ta, "\n" + receiveBean.getCreatedDate() + " Server: " + receiveBean.getMessage());
+//		}			
 		return receiveBean != null;
 	}
 
@@ -102,7 +104,7 @@ public class TestClientFx extends Application
 		System.out.println(textArea.getText());
 		textArea.setText(textArea.getText() + str);
 	}
-	public static UUID getUuid()
+	public static UUID getUUID()
 	{
 		return uuid;
 	}
@@ -185,6 +187,7 @@ public class TestClientFx extends Application
 					String sendMessage = "This is client";
 					DataBean sendBean = new DataBean();
 					sendBean.setMessage(sendMessage);
+					sendBean.setUUID(TestClientFx.getUUID());
 					// Send the data to the server
 					sendDataBean(sendBean);
 					handleReceiveDataBean((DataBean)fromServer.readObject());				
