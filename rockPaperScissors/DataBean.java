@@ -3,7 +3,6 @@ package rockPaperScissors.rockPaperScissors;
 import java.io.Serializable;
 import java.net.*;
 import java.util.Date;
-import java.util.stream.Stream;
 import java.util.*;
 public class DataBean implements Serializable
 {	
@@ -12,7 +11,9 @@ public class DataBean implements Serializable
 	private Date createdDate = null;
 	private UUID uuid = null;//to store UUID for each client to uniquely identify the DataBean is to be sent to which client
 	private Map<UUID, Socket> ONLINE_USER_MAP = null;//for storing users
+
 	private boolean isHost = false;
+	private String status = null;
 	//status code
 	class STATUS
 	{
@@ -82,5 +83,13 @@ public class DataBean implements Serializable
 	public boolean isHost()
 	{
 		return isHost;
+	}
+	public String getStatus()
+	{
+		return status;
+	}
+	public void setStatus(String status)
+	{
+		this.status = status;
 	}
 }
