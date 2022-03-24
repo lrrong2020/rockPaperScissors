@@ -8,12 +8,12 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ConsoleServer
 {
-	private static final int PORT = 8000;//for socket connection
+	protected static final int PORT = 8000;//for socket connection
 
 	//to store users and identify them with randomly generated universally unique identifier (UUID)
-	private static final Map<UUID, Socket> ONLINE_USER_MAP = new ConcurrentHashMap<UUID, Socket>();	
-	private static final int MAX_NO_OF_USERS = 2; //assume there are only 2 users
-
+	protected static final Map<UUID, Socket> ONLINE_USER_MAP = new ConcurrentHashMap<UUID, Socket>();	
+	protected static final int MAX_NO_OF_USERS = 2; //assume there are only 2 users
+	private Thread socketThread = null;
 	//constructor	
 	public ConsoleServer() 
 	{
@@ -21,29 +21,56 @@ public class ConsoleServer
 		System.out.println("Initializing server");
 		try 
 		{
-			// Create a server socket
-			@SuppressWarnings("resource")
-			ServerSocket serverSocket = new ServerSocket(PORT);//should close socket for performance
-			System.out.println("MultiThreadServer started at " + new Date() + '\n');
-
-			//continuously accept the connections
-			while (ONLINE_USER_MAP.size() < MAX_NO_OF_USERS)
-			{
-				// Listen for a new connection request
-				Socket socket = serverSocket.accept();
-
-				// Create a new thread for the connection
-				HandleAClient task = new HandleAClient(socket);
-
-				// Start a new thread for each client
-				new Thread(task).start();
-			}
+			HandleTheSocket socketHandler = new HandleTheSocket();
+			socketThread = new Thread(socketHandler);
+			socketThread.start();
 		}
 		catch(IOException ex) 
 		{
 			System.err.println(ex);
 		}
 	}
+
+	//Inner Class
+	//handle serversocket
+	class HandleTheSocket implements Runnable
+	{
+		ServerSocket serverSocket = null;
+		
+		public HandleTheSocket() throws IOException 
+		{			
+			super();
+			// Create a server socket
+			this.serverSocket = new ServerSocket(ConsoleServer.PORT);//should close socket for performance
+			System.out.println("MultiThreadServer started at " + new Date() + '\n');
+		}
+		
+		@Override
+		public void run()
+		{
+			//continuously accept the connections
+			while (ConsoleServer.ONLINE_USER_MAP.size() < ConsoleServer.MAX_NO_OF_USERS)
+			{
+				// Listen for a new connection request
+				Socket socket;
+				Thread clientThread = null;
+				try 
+				{
+					socket = serverSocket.accept();
+					// Create a new thread for the connection
+					HandleAClient task = new HandleAClient(socket);
+
+					// Start a new thread for each client
+					clientThread = new Thread(task);
+					clientThread.start();
+				} 
+				catch (IOException e) 
+				{
+					e.printStackTrace();
+				}
+		}
+	}
+}
 
 	/** Inner Class **/
 	// Define the thread class for handling new connection
@@ -67,11 +94,11 @@ public class ConsoleServer
 			check if the socket has already been put in the user map **/
 
 			//if it's a new client (i.e. has never registered or put in the user map)
-			UUID rdUuid = UUID.randomUUID();//generate a random UUID for each client
-			this.setUUID(rdUuid);
+			UUID rdUUID = UUID.randomUUID();//generate a random UUID for each client
+			this.setUUID(rdUUID);
 
 			//registration
-			ConsoleServer.ONLINE_USER_MAP.put(rdUuid , socket);//register a user
+			ConsoleServer.ONLINE_USER_MAP.put(rdUUID , socket);//register a user
 
 			/* Display connection results */
 			// Display the time
@@ -83,11 +110,7 @@ public class ConsoleServer
 					+ "IP Address is " + inetAddress.getHostAddress() + "\n");
 
 			//display all UUIDs of users who has registered in the user map
-			System.out.println("All users:");
-			for (Entry<UUID, Socket> entry : ConsoleServer.ONLINE_USER_MAP.entrySet()) 
-			{
-				System.out.println( "<"+entry.getKey() + ">");//display UUIDs
-			}
+			this.printAllUsers();
 		}
 
 		//setter and getters
@@ -147,6 +170,17 @@ public class ConsoleServer
 			this.inputFromClient = new ObjectInputStream(socket.getInputStream());
 		}
 
+		private void printAllUsers() 
+		{
+			System.out.println("All users:");
+			for (Entry<UUID, Socket> entry : ConsoleServer.ONLINE_USER_MAP.entrySet()) 
+			{
+				System.out.println( "<"+entry.getKey() + ">");//display UUIDs
+			}
+			if(ConsoleServer.ONLINE_USER_MAP.entrySet().size() == 0) {
+				System.out.println("No User");
+			}
+		}
 
 		/** Run a thread for each client **/
 		@Override
@@ -163,7 +197,19 @@ public class ConsoleServer
 				}
 				catch(IOException | ClassNotFoundException ex) 
 				{
-					ex.printStackTrace();
+//					ex.printStackTrace();//debug
+					return;
+				}
+				finally 
+				{
+					System.out.println("======\nWARNING!\n======");
+					System.out.println("======\nA client exited\n======");
+					
+					//remove a client from user map
+					ConsoleServer.ONLINE_USER_MAP.remove(this.getUUID());
+					this.printAllUsers();
+				
+					//send ExitBean to clients
 				}
 			}
 		}
