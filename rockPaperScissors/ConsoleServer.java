@@ -51,7 +51,7 @@ public class ConsoleServer
 	{
 		private Socket socket; // A connected socket
 
-		//connections using iostreams
+		//connections using IOStreams
 		private ObjectOutputStream outputToClient = null;
 		private ObjectInputStream inputFromClient = null;
 
@@ -134,7 +134,7 @@ public class ConsoleServer
 				}
 
 				//send MatchBean to all users indicates that the game is on
-				this.outputToClient.writeObject(new MatchBean());//incomplete constructor
+				this.outputToClient.writeObject(new GameOnBean());//incomplete constructor
 			}
 		}
 

@@ -54,7 +54,7 @@ public class TestClientFx extends Application
 	}
 
 	//handle received data bean
-	private static void handleReceiveObject(Object objFromServer) throws IOException 
+	private static void handleReceiveObject(Object objFromServer) throws IOException, ClassNotFoundException
 	{
 
 		if(objFromServer == null) 
@@ -64,7 +64,9 @@ public class TestClientFx extends Application
 		else
 		{
 			DataBean receiveBean = (DataBean)objFromServer;
-			if(receiveBean instanceof InitBean) //Polymorphism style of handling handling different events or status
+			
+			//polymorphism style of handling handling different events or status
+			if(receiveBean instanceof InitBean) 
 			{
 				InitBean receiveIBean = (InitBean)receiveBean;//cast to subclass
 
@@ -76,6 +78,23 @@ public class TestClientFx extends Application
 				//set UUID and isHost to the Player instance
 				player.setUUID(receiveIBean.getUUID());
 				player.setIsHost(receiveIBean.getIsHost());
+			}
+			else if (receiveBean instanceof StartBean) 
+			{
+				//when the game starts
+			}
+			else if (receiveBean instanceof GameOnBean) 
+			{
+				//when the 
+			}
+			else if (receiveBean instanceof EndBean) 
+			{
+				
+			}
+			else
+			{
+				//when the Bean is non of defined DataBean
+				throw new ClassNotFoundException("Undefined Bean");
 			}
 		}
 	}

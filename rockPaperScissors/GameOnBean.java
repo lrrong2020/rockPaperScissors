@@ -1,12 +1,12 @@
 package rockPaperScissors.rockPaperScissors;
 
-//when the game ends
-public class EndBean extends DataBean
+//when game has been on
+public class GameOnBean extends DataBean
 {
 	private static final long serialVersionUID = 1L;
-
+	
 	//constructors
-	public EndBean() 
+	public GameOnBean() 
 	{
 		super();
 	}
