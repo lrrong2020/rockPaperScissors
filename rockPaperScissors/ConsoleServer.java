@@ -10,19 +10,22 @@ public class ConsoleServer
 {
 	private static final int PORT = 8000;
 	private static final Map<UUID, Socket> ONLINE_USER_MAP = new ConcurrentHashMap<UUID, Socket>();
-	private static ConsoleServer consoleServer = new ConsoleServer();
 	
-	public static ConsoleServer getInstance() 
-	{
-		return ConsoleServer.consoleServer;
-	}
+	//singleton
+//	private static ConsoleServer consoleServer = new ConsoleServer();
+	
+//	public static ConsoleServer getInstance() 
+//	{
+//		return ConsoleServer.consoleServer;
+//	}
 	
 	public static void main(String args[]) 
 	{
-		ConsoleServer holder = ConsoleServer.getInstance();
+//		ConsoleServer holder = ConsoleServer.getInstance();
+		new ConsoleServer();
 	}
 
-	private ConsoleServer() 
+	public ConsoleServer() 
 	{
 		System.out.println("Initializing server");
 		try 
