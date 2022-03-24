@@ -1,7 +1,5 @@
 package rockPaperScissors.rockPaperScissors;
 
-import java.io.*;
-import java.net.*;
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
@@ -15,91 +13,25 @@ public class TestClientFx extends Application
 {
 	// Text area to display contents
 	private static TextArea ta = new TextArea();
-
-	//socket parameters to build connection
-	private static final String HOST = "localhost";//may use IPv4 address
-	private static final int PORT = 8000;//port number
-
-	// IOStreams
-	//Note that outputStream should always be defined first!
-	private static ObjectOutputStream toServer;//defined first
-	private static ObjectInputStream fromServer;
-	private static Player player = new Player();//holds player singleton
+	private static Client client = null;
 
 	//constructors
 	public TestClientFx() 
 	{	
-		super();
+		super();	
+		//create a new client class
+		TestClientFx.client = new Client();
+		appendTextArea("Client generated");
 		try 
 		{
-			TestClientFx.initializeClient();
-		}
-		catch(NullPointerException e)
-		{
-			e.printStackTrace();//debug
-			appendTextArea("\n" + e.toString() + "\n");
-		}
-	}	
-
-	//handle DataBean to be sent
-	private static void sendDataBean(DataBean sdBean) 
-	{
-		try 
-		{
-			toServer.writeObject(sdBean);
-			toServer.flush();
+			client.initialize();
+			appendTextArea("Client initialized");
 		} 
-		catch (IOException e) 
+		catch (ClassNotFoundException | NullPointerException e) 
 		{
 			e.printStackTrace();
 		}
-	}
-
-	//handle received data bean
-	private static void handleReceivedObject(Object objFromServer) throws IOException, ClassNotFoundException
-	{
-
-		if(objFromServer == null) 
-		{
-			throw new NullPointerException("Read null from the server");
-		}
-		else
-		{
-			DataBean receivedBean = (DataBean)objFromServer;
-			
-			//polymorphism style of handling handling different events or status
-			if(receivedBean instanceof InitBean) 
-			{
-				InitBean receivedIBean = (InitBean)receivedBean;//cast to subclass
-
-				//display initial information
-				appendTextArea("Status: " + receivedIBean.getClass());
-				appendTextArea("Your UUID: " + receivedIBean.getUUID().toString());
-				appendTextArea("You are" + (receivedIBean.getIsHost()?" the ":" not the ") + "host.");
-
-				//set UUID and isHost to the Player instance
-				player.setUUID(receivedIBean.getUUID());
-				player.setIsHost(receivedIBean.getIsHost());
-			}
-			else if (receivedBean instanceof StartBean) 
-			{
-				//when the game starts
-			}
-			else if (receivedBean instanceof GameOnBean) 
-			{
-				//when the 
-			}
-			else if (receivedBean instanceof EndBean) 
-			{
-				
-			}
-			else
-			{
-				//when the Bean is non of defined DataBean
-				throw new ClassNotFoundException("Undefined Bean");
-			}
-		}
-	}
+	}	
 
 	//similar syntax for rewriting append method of jTextArea of java.swing
 	//use it the same way as System.out.println(String string) !
@@ -107,42 +39,6 @@ public class TestClientFx extends Application
 	{
 		ta.setText(ta.getText() + "\n" +string);
 		System.out.println("\n" + string);//debug
-	}
-
-	//initialize socket connection with the server
-	private static void initializeConnection() throws UnknownHostException, IOException 
-	{
-		// Create a socket to connect to the server
-		@SuppressWarnings("resource")//need to close socket in consideration of performance 
-		Socket socket = new Socket(HOST, PORT);
-
-		// Create an output stream to send object to the server
-		toServer = new ObjectOutputStream(socket.getOutputStream());
-
-		// Create an input stream to receive object from the server
-		fromServer = new ObjectInputStream(socket.getInputStream());
-	}
-
-	//initialize the client
-	private static void initializeClient() throws NullPointerException
-	{
-		appendTextArea("Initailizing");
-		try 
-		{
-			//initialize IOStreams
-			TestClientFx.initializeConnection();
-
-			//read object from the server through ObjectInputStream
-			Object objFromServer = fromServer.readObject();
-
-			//handle object read from the server
-			handleReceivedObject(objFromServer);
-		}
-		catch (IOException | ClassNotFoundException ex) 
-		{
-			ex.printStackTrace();//debug
-			appendTextArea("\n" + ex.toString() + "\n");
-		}
 	}
 
 	//get JavaFX Group
@@ -164,8 +60,8 @@ public class TestClientFx extends Application
 			{	
 				System.out.println(e);//display full event for debug
 
-				//send the player instance to the server indicates that the game starts
-				TestClientFx.sendDataBean(new StartBean(player));
+				//starts the game
+				client.gameStart();
 			}
 		};
 
