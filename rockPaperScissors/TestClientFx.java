@@ -77,7 +77,7 @@ public class TestClientFx extends Application
 	//similar syntax for rewriting append method of jTextArea of java.swing
 	public static void appendTextArea(TextArea textArea, String str) 
 	{
-//		textArea.setText(textArea.getText() + "\n" +str);
+		textArea.setText(textArea.getText() + "\n" +str);
 		System.out.println("\n" + str);
 	}
 
@@ -91,14 +91,20 @@ public class TestClientFx extends Application
 			Socket socket = new Socket(HOST, PORT);
 			// Socket socket = new Socket("130.254.204.36", 8000);
 			// Socket socket = new Socket("drake.Armstrong.edu", 8000);
+			// Create an output stream to send object to the server
+			toServer = new ObjectOutputStream(socket.getOutputStream());
 
 			// Create an input stream to receive object from the server
 			fromServer = new ObjectInputStream(socket.getInputStream());
 
-			// Create an output stream to send object to the server
-			toServer = new ObjectOutputStream(socket.getOutputStream());
 
-			TestClientFx.handleReceiveDataBean((InitBean)fromServer.readObject());
+			
+			Object objFromServer = fromServer.readObject();
+			if(objFromServer != null)
+			{
+				TestClientFx.handleReceiveDataBean((DataBean)objFromServer);
+			}
+			
 
 			//	DataBean initBean = (DataBean)fromServer.readObject();
 			//	TestClientFx.setUuid(initBean.getUUID());

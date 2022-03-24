@@ -19,7 +19,7 @@ public class ConsoleServer
 	
 	public static void main(String args[]) 
 	{
-		ConsoleServer.getInstance();
+		ConsoleServer holder = ConsoleServer.getInstance();
 	}
 
 	private ConsoleServer() 
@@ -94,27 +94,23 @@ public class ConsoleServer
 				while(true) 
 				{
 					//send initial DataBean
-					DataBean idb = new InitBean //complete 
-							(
-									this.getUUID(),
-									ConsoleServer.ONLINE_USER_MAP.size() == 1 ? true:false
-									);
+					DataBean idb = new InitBean(this.getUUID(),ConsoleServer.ONLINE_USER_MAP.size() == 1 ? true:false);
 					this.getOutputToClient().writeObject(idb);
-//					
-//					DataBean receiveBean = (DataBean)this.getInputFromClient().readObject();
-//					if(receiveBean instanceof StartBean) 
-//					{	
-//						StartBean receiveSBean = (StartBean)receiveBean;
-//						if(receiveSBean.getPlayer().getIsHost()) 
-//						{
-//							
-//						}
-//						
-//						this.getOutputToClient().writeObject(new StartBean //complete 
-//								(
-//										receiveSBean.getPlayer()
-//										));
-//					}
+					this.getOutputToClient().flush();
+					DataBean receiveBean = (DataBean)this.getInputFromClient().readObject();
+					if(receiveBean instanceof StartBean) 
+					{	
+						StartBean receiveSBean = (StartBean)receiveBean;
+						if(receiveSBean.getPlayer().getIsHost()) 
+						{
+							
+						}
+						
+						this.getOutputToClient().writeObject(new StartBean //complete 
+								(
+										receiveSBean.getPlayer()
+										));
+					}
 				}
 				//receive data from client
 				//					DataBean receiveBean = (DataBean) this.getInputFromClient().readObject();
