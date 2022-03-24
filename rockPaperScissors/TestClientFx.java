@@ -24,7 +24,7 @@ public class TestClientFx extends Application
 	//Note that outputStream should always be defined first!
 	private static ObjectOutputStream toServer;
 	private static ObjectInputStream fromServer;
-	private static Player player = Player.getInstance();//holds player singleton
+	private static Player player = new Player();//holds player singleton
 
 	public TestClientFx() 
 	{	

@@ -9,4 +9,6 @@ public class Room
 	{
 		super();
 	}
+	
+	//setters and getters
 }

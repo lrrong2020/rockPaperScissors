@@ -10,4 +10,7 @@ public class EndBean extends DataBean
 	{
 		super();
 	}
+	
+	//setters and getters
+	
 }

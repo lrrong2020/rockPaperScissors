@@ -124,7 +124,8 @@ public class ConsoleServer
 				/** only host can start the game
 				StartGame operation should not open to non-host player
 				which is to be implemented in the front end or View part **/
-				if(receiveSBean.getPlayer().getIsHost()) //not sure whether should use getInstance or not
+				
+				if(receiveSBean.getPlayer().getIsHost()) 
 				{
 					//starts the game
 				}

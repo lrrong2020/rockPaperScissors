@@ -10,4 +10,7 @@ public class GameOnBean extends DataBean
 	{
 		super();
 	}
+	
+	//setters and getters
+	
 }

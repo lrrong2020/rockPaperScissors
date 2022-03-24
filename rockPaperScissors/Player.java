@@ -3,33 +3,27 @@ package rockPaperScissors.rockPaperScissors;
 import java.io.*;
 import java.util.UUID;
 
-/*Still confused about if I should use class-level varibale or singleton to hold the player instance*/
-
+/** should not use singleton for player because the server need to hold more than 1 player instances **/
 public class Player implements Serializable
 {
 	private static final long serialVersionUID = 1L;
+	private UUID uuid = null;//uniquely identify a player
+	private boolean isHost = false;//stored in player to identify if a client is a host conveniently
 
-	private static Player instance = new Player();
-	private UUID uuid = null;
-	private boolean isHost = false;
-
-
-	private Player() 
+	//constructors
+	public Player() 
 	{
 		super();
 	}
 
-	public static Player getInstance() 
+	//setters and getters
+	public void setUUID(UUID uuid)
 	{
-		return Player.instance;
+		this.uuid = uuid;
 	}
 	public UUID getUUID()
 	{
 		return this.uuid;
-	}
-	public void setUUID(UUID uuid)
-	{
-		this.uuid = uuid;
 	}
 	public void setIsHost(boolean isHost)
 	{
