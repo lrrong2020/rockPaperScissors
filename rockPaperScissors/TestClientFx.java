@@ -20,14 +20,16 @@ public class TestClientFx extends Application
 	private static final String HOST = "localhost";//may use IPv4 address
 	private static final int PORT = 8000;//port number
 
-	// IO streams
+	// IOStreams
 	//Note that outputStream should always be defined first!
-	private static ObjectOutputStream toServer;
+	private static ObjectOutputStream toServer;//defined first
 	private static ObjectInputStream fromServer;
 	private static Player player = new Player();//holds player singleton
 
+	//constructors
 	public TestClientFx() 
 	{	
+		super();
 		try 
 		{
 			TestClientFx.initializeClient();
@@ -54,7 +56,7 @@ public class TestClientFx extends Application
 	}
 
 	//handle received data bean
-	private static void handleReceiveObject(Object objFromServer) throws IOException, ClassNotFoundException
+	private static void handleReceivedObject(Object objFromServer) throws IOException, ClassNotFoundException
 	{
 
 		if(objFromServer == null) 
@@ -63,31 +65,31 @@ public class TestClientFx extends Application
 		}
 		else
 		{
-			DataBean receiveBean = (DataBean)objFromServer;
+			DataBean receivedBean = (DataBean)objFromServer;
 			
 			//polymorphism style of handling handling different events or status
-			if(receiveBean instanceof InitBean) 
+			if(receivedBean instanceof InitBean) 
 			{
-				InitBean receiveIBean = (InitBean)receiveBean;//cast to subclass
+				InitBean receivedIBean = (InitBean)receivedBean;//cast to subclass
 
 				//display initial information
-				appendTextArea("Status: " + receiveIBean.getClass());
-				appendTextArea("Your UUID: " + receiveIBean.getUUID().toString());
-				appendTextArea("You are" + (receiveIBean.getIsHost()?" the ":" not the ") + "host.");
+				appendTextArea("Status: " + receivedIBean.getClass());
+				appendTextArea("Your UUID: " + receivedIBean.getUUID().toString());
+				appendTextArea("You are" + (receivedIBean.getIsHost()?" the ":" not the ") + "host.");
 
 				//set UUID and isHost to the Player instance
-				player.setUUID(receiveIBean.getUUID());
-				player.setIsHost(receiveIBean.getIsHost());
+				player.setUUID(receivedIBean.getUUID());
+				player.setIsHost(receivedIBean.getIsHost());
 			}
-			else if (receiveBean instanceof StartBean) 
+			else if (receivedBean instanceof StartBean) 
 			{
 				//when the game starts
 			}
-			else if (receiveBean instanceof GameOnBean) 
+			else if (receivedBean instanceof GameOnBean) 
 			{
 				//when the 
 			}
-			else if (receiveBean instanceof EndBean) 
+			else if (receivedBean instanceof EndBean) 
 			{
 				
 			}
@@ -107,6 +109,7 @@ public class TestClientFx extends Application
 		System.out.println("\n" + string);//debug
 	}
 
+	//initialize socket connection with the server
 	private static void initializeConnection() throws UnknownHostException, IOException 
 	{
 		// Create a socket to connect to the server
@@ -120,6 +123,7 @@ public class TestClientFx extends Application
 		fromServer = new ObjectInputStream(socket.getInputStream());
 	}
 
+	//initialize the client
 	private static void initializeClient() throws NullPointerException
 	{
 		appendTextArea("Initailizing");
@@ -132,7 +136,7 @@ public class TestClientFx extends Application
 			Object objFromServer = fromServer.readObject();
 
 			//handle object read from the server
-			handleReceiveObject(objFromServer);
+			handleReceivedObject(objFromServer);
 		}
 		catch (IOException | ClassNotFoundException ex) 
 		{
@@ -141,7 +145,8 @@ public class TestClientFx extends Application
 		}
 	}
 
-	public static Group getRoot() //JavaFX Group
+	//get JavaFX Group
+	public static Group getRoot()
 	{
 		//create button and set its layout to display
 		Button btSend = new Button("Start");//create new button instance
@@ -170,7 +175,8 @@ public class TestClientFx extends Application
 		return root;
 	}
 
-	public static void showScene(Stage stage) //JavaFX scene
+	//display JavaFX scene
+	public static void showScene(Stage stage) 
 	{
 		//Creating a Scene 
 		Scene scene = new Scene(getRoot(), 600, 300); 
@@ -185,6 +191,7 @@ public class TestClientFx extends Application
 		stage.show(); 
 	}
 
+	//start JavaFX application
 	@Override
 	public void start(Stage stage) throws Exception
 	{
@@ -192,6 +199,7 @@ public class TestClientFx extends Application
 		showScene(stage);
 	}
 
+	//main method to launch JavaFX application
 	public static void main(String[] args) 
 	{
 		launch(args);

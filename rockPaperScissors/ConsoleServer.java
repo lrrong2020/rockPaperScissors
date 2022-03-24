@@ -75,7 +75,7 @@ public class ConsoleServer
 
 			/* Display connection results */
 			// Display the time
-			System.out.println("Starting a thread for client at " + new Date() + '\n');
+			System.out.println("\n======Starting a thread for client at " + new Date() + "======\n");
 
 			// Find the client's host name, and IP address
 			InetAddress inetAddress = socket.getInetAddress();
@@ -86,7 +86,7 @@ public class ConsoleServer
 			System.out.println("All users:");
 			for (Entry<UUID, Socket> entry : ConsoleServer.ONLINE_USER_MAP.entrySet()) 
 			{
-				System.out.println( " <"+entry.getKey() + "> ");//display UUIDs
+				System.out.println( "<"+entry.getKey() + ">");//display UUIDs
 			}
 		}
 
@@ -101,7 +101,7 @@ public class ConsoleServer
 		}
 
 		//send initial data to the client
-		public void sendInit() throws IOException 
+		public void sendInitBean() throws IOException 
 		{
 			DataBean idb = new InitBean(this.getUUID(),
 					ConsoleServer.ONLINE_USER_MAP.size() == 1 ? true:false);//indicates that if the user is the host (first registered user)
@@ -112,20 +112,20 @@ public class ConsoleServer
 		}
 
 		//handle received DataBean from client
-		public void handleReceiveBean() throws IOException, ClassNotFoundException
+		public void handleReceivedBean() throws IOException, ClassNotFoundException
 		{
 			//handle Data sent by the client
-			DataBean receiveBean = (DataBean)this.inputFromClient.readObject();//read object from input stream
+			DataBean receivedBean = (DataBean)this.inputFromClient.readObject();//read object from input stream
 
-			if(receiveBean instanceof StartBean) //polymorphism style handling different events or status
+			if(receivedBean instanceof StartBean) //polymorphism style handling different events or status
 			{	
-				StartBean receiveSBean = (StartBean)receiveBean;//cast to StartBean
+				StartBean receivedSBean = (StartBean)receivedBean;//cast to StartBean
 
 				/** only host can start the game
 				StartGame operation should not open to non-host player
 				which is to be implemented in the front end or View part **/
 				
-				if(receiveSBean.getPlayer().getIsHost()) 
+				if(receivedSBean.getPlayer().getIsHost()) 
 				{
 					//starts the game
 				}
@@ -143,7 +143,7 @@ public class ConsoleServer
 		public void initializeIOStreams() throws IOException 
 		{
 			//note that outputStream should always be defined first!
-			this.outputToClient = new ObjectOutputStream(socket.getOutputStream());
+			this.outputToClient = new ObjectOutputStream(socket.getOutputStream());//put it first
 			this.inputFromClient = new ObjectInputStream(socket.getInputStream());
 		}
 
@@ -158,8 +158,8 @@ public class ConsoleServer
 				try
 				{
 					initializeIOStreams();
-					sendInit();
-					handleReceiveBean();
+					sendInitBean();
+					handleReceivedBean();
 				}
 				catch(IOException | ClassNotFoundException ex) 
 				{
