@@ -3,6 +3,8 @@ package rockPaperScissors.rockPaperScissors;
 import java.io.*;
 import java.util.UUID;
 
+/*Still confused about if I should use class-level varibale or singleton to hold the player instance*/
+
 public class Player implements Serializable
 {
 	private static final long serialVersionUID = 1L;
