@@ -1,13 +1,29 @@
 package rockPaperScissors.rockPaperScissors;
 
-public class Choice
+import java.io.Serializable;
+
+public class Choice implements Serializable
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String choiceName = null;
 	public interface GESTURES
 	{
 		String ROCK = "ROCK";
 		String PAPER = "PAPER";
 		String SCISSORS = "SCISSORS";
+	}
+	
+	public Choice() 
+	{
+		super();
+	}
+	
+	public Choice(String s) throws ClassNotFoundException 
+	{
+		this.setChoiceName(s);
 	}
 	
 	public void setChoiceName(String choiceName) throws ClassNotFoundException

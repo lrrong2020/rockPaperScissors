@@ -213,15 +213,23 @@ public class ConsoleServer
 			{
 
 				//put the (ChoiceBean) in class-level Choice list
-				ChoiceBean[] gameOnBeanArr = CLIENT_CHOICE_BEAN_LIST.get(roundNo);
-				if(gameOnBeanArr.length < MAX_NO_OF_USERS) 
+				
+				if(CLIENT_CHOICE_BEAN_LIST.size() == 0) 
 				{
+					CLIENT_CHOICE_BEAN_LIST.add(new ChoiceBean[2]);
+				}
+				
+				else if(CLIENT_CHOICE_BEAN_LIST.get(0)== null)
+				{	
+					ChoiceBean[] gameOnBeanArr = CLIENT_CHOICE_BEAN_LIST.get(0);
 					gameOnBeanArr[0] = (ChoiceBean) receivedBean;
 				}
 				else 
 				{
+					ChoiceBean[] gameOnBeanArr = CLIENT_CHOICE_BEAN_LIST.get(0);
+					gameOnBeanArr[1] = (ChoiceBean) receivedBean;
 					//broadcast
-					sendResults(roundNo);
+					sendResults(0);
 				}
 			}
 		}
@@ -300,7 +308,7 @@ public class ConsoleServer
 	public static void sendResults(int rdNo) throws IOException 
 	{
 
-		ChoiceBean[] choiceBeanArr = ConsoleServer.CLIENT_CHOICE_BEAN_LIST.get(rdNo);//1
+		ChoiceBean[] choiceBeanArr = ConsoleServer.CLIENT_CHOICE_BEAN_LIST.get(rdNo);//0
 
 		ChoiceBean player0ChoiceBean = choiceBeanArr[0];
 		ChoiceBean player1ChoiceBean = choiceBeanArr[1];
