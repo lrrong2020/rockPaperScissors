@@ -118,7 +118,8 @@ public class Client
 	{
 		display("The game is on!");
 		//		this.sendDataBean(new StartBean(player));
-		countDown(10);
+		
+//		countDown(10);
 	}
 	private static void countDown(int i) 
 	{
@@ -140,11 +141,11 @@ public class Client
 		thread.start();
 	}
 
-	public void gameOn(String choiceName) throws ClassNotFoundException 
+	public void choose(String choiceName) throws ClassNotFoundException 
 	{
-		ChoiceBean gameOnBean = new ChoiceBean(choiceName, player);
-		display("Your choice:" + gameOnBean.getChoice().getChoiseName());
-		this.sendDataBean(gameOnBean);
+		ChoiceBean choiceBean = new ChoiceBean(choiceName, player);
+		display("Your choice:" + choiceBean.getChoice().getChoiseName());
+		this.sendDataBean(choiceBean);
 	}
 
 
@@ -185,12 +186,8 @@ public class Client
 				}while(!(objFromServer instanceof EndBean));
 			}
 		};
+		
 		objectListener.start();
 	}
-	
-	public void stop() 
-	{
-		//terminate the client
-		objectListener = null;
-	}
+
 }
