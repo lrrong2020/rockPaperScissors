@@ -14,12 +14,12 @@ public class ConsoleServer
 	//to store users and identify them with randomly generated universally unique identifier (UUID)
 	protected static final Map<UUID, Socket> ONLINE_USER_MAP = new ConcurrentHashMap<UUID, Socket>();
 	protected static final int MAX_NO_OF_USERS = 2; //assume there are only 2 users
-	
+
 	//class-level client list to synchronize
 	protected static final List<HandleAClient> CLIENT_HANDLER_LIST = new ArrayList<HandleAClient>();
 	protected static List<GameOnBean[]> CLIENT_GAME_ON_BEAN_LIST = new ArrayList<GameOnBean[]>();
 	protected static int roundNo = 1;
-	
+
 	private Thread socketThread = null;
 	//constructor	
 	public ConsoleServer() 
@@ -73,7 +73,7 @@ public class ConsoleServer
 						// Start a new thread for each client
 						clientThread = new Thread(task);
 						clientThread.start();
-						
+
 						//2 players have registered
 						if(ConsoleServer.CLIENT_HANDLER_LIST.size() == 2) 
 						{
@@ -95,7 +95,7 @@ public class ConsoleServer
 		}
 	}
 	//end of inner class
-	
+
 
 	/** Inner Class **/
 	// Define the thread class for handling new connection
@@ -124,7 +124,7 @@ public class ConsoleServer
 
 			//registration
 			ConsoleServer.ONLINE_USER_MAP.put(rdUUID , socket);//register a user
-			
+
 			/* Display connection results */
 			// Display the time
 			System.out.println("\n============Starting a thread for client at " + new Date() + "============\n");
@@ -148,39 +148,35 @@ public class ConsoleServer
 			return this.uuid;
 		}
 
-		private void sendDataBean(DataBean dataBean) throws IOException
-		{
-			this.outputToClient.writeObject(dataBean);
-			this.outputToClient.flush();	
-		}
-		
 		//send initial data to the client
 		public void sendInitBean() throws IOException 
 		{
-			DataBean db = new InitBean(this.getUUID(),
+			DataBean idb = new InitBean(this.getUUID(),
 					ConsoleServer.ONLINE_USER_MAP.size() == 1 ? true:false);//indicates that if the user is the host (first registered user)
-			
+
 			//send the initial DataBean to the client
-			sendDataBean(db);
-				
+			this.outputToClient.writeObject(idb);
+			this.outputToClient.flush();		
 		}
-		
+
 		public void sendStartBean() throws IOException 
 		{
 			System.out.println("Sending start Bean");
-			DataBean db = new StartBean();//default constructor to indicates server-sent startBean
+			DataBean idb = new StartBean();//default constructor to indicates server-sent startBean
 
 			//send the start DataBean to the client
-			sendDataBean(db);	
+			this.outputToClient.writeObject(idb);
+			this.outputToClient.flush();		
 		}
-		
+
 		public void sendGameOnBean() throws IOException 
 		{
 			System.out.println("Sending start Bean");
-			DataBean db = new GameOnBean();//default constructor to indicates server-sent startBean
+			DataBean idb = new GameOnBean();//default constructor to indicates server-sent startBean
 
-			//send the game on DataBean to the client
-			sendDataBean(db);	
+			//send the start DataBean to the client
+			this.outputToClient.writeObject(idb);
+			this.outputToClient.flush();	
 		}
 
 		//handle received DataBean from client
@@ -209,7 +205,7 @@ public class ConsoleServer
 				//send MatchBean to all users indicates that the game is on
 				this.outputToClient.writeObject(new GameOnBean());//incomplete constructor
 			}
-			
+
 			if(receivedBean instanceof GameOnBean) 
 			{
 
@@ -296,7 +292,7 @@ public class ConsoleServer
 			}
 		}
 	}
-	
+
 	public static void startRound() 
 	{
 		for(HandleAClient h : CLIENT_HANDLER_LIST) 
@@ -311,7 +307,7 @@ public class ConsoleServer
 			}
 		}
 	}
-	
+
 	public static void main(String args[]) 
 	{
 		new ConsoleServer();
