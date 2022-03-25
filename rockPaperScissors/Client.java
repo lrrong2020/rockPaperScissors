@@ -50,6 +50,7 @@ public class Client
 			e.printStackTrace();
 		}
 	}
+	
 
 	//handle received data bean
 	private void handleReceivedObject(Object objFromServer) throws IOException, ClassNotFoundException, NullPointerException
@@ -122,6 +123,13 @@ public class Client
 			}
 		};
 		thread.start();
+	}
+	
+	public void gameOn(String choiceName) throws ClassNotFoundException 
+	{
+		GameOnBean gameOnBean = new GameOnBean(choiceName, player);
+		display("Your choice:" + gameOnBean.getChoice().getChoiseName());
+		this.sendDataBean(gameOnBean);
 	}
 
 

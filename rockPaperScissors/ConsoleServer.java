@@ -6,6 +6,7 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
+
 public class ConsoleServer
 {
 	protected static final int PORT = 8000;//for socket connection
@@ -16,7 +17,9 @@ public class ConsoleServer
 	
 	//class-level client list to synchronize
 	protected static final List<HandleAClient> CLIENT_HANDLER_LIST = new ArrayList<HandleAClient>();
-
+	protected static List<GameOnBean[]> CLIENT_GAME_ON_BEAN_LIST = new ArrayList<GameOnBean[]>();
+	protected static int roundNo = 1;
+	
 	private Thread socketThread = null;
 	//constructor	
 	public ConsoleServer() 
@@ -165,6 +168,16 @@ public class ConsoleServer
 			this.outputToClient.writeObject(idb);
 			this.outputToClient.flush();		
 		}
+		
+		public void sendGameOnBean() throws IOException 
+		{
+			System.out.println("Sending start Bean");
+			DataBean idb = new GameOnBean();//default constructor to indicates server-sent startBean
+
+			//send the start DataBean to the client
+			this.outputToClient.writeObject(idb);
+			this.outputToClient.flush();	
+		}
 
 		//handle received DataBean from client
 		public void handleReceivedBean() throws IOException, ClassNotFoundException
@@ -191,6 +204,21 @@ public class ConsoleServer
 
 				//send MatchBean to all users indicates that the game is on
 				this.outputToClient.writeObject(new GameOnBean());//incomplete constructor
+			}
+			
+			if(receivedBean instanceof GameOnBean) 
+			{
+
+				//put the (GameOnBean) in class-level Choice list
+				GameOnBean[] gameOnBeanArr = CLIENT_GAME_ON_BEAN_LIST.get(roundNo);
+				if(gameOnBeanArr.length < MAX_NO_OF_USERS) 
+				{
+					gameOnBeanArr[0] = (GameOnBean) receivedBean;
+				}
+				else 
+				{
+					//broadcast
+				}
 			}
 		}
 
@@ -257,7 +285,22 @@ public class ConsoleServer
 			try 
 			{
 				h.sendStartBean();
-			} 
+			}
+			catch (IOException e) 
+			{
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	public static void startRound() 
+	{
+		for(HandleAClient h : CLIENT_HANDLER_LIST) 
+		{
+			try 
+			{
+				h.sendGameOnBean();
+			}
 			catch (IOException e) 
 			{
 				e.printStackTrace();

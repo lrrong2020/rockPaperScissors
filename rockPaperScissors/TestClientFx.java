@@ -1,8 +1,5 @@
 package rockPaperScissors.rockPaperScissors;
 
-import java.util.Timer;
-import java.util.TimerTask;
-
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
@@ -51,31 +48,78 @@ public class TestClientFx extends Application
 	public static Group getRoot()
 	{
 		//create button and set its layout to display
-		Button btSend = new Button("Start");//create new button instance
-		btSend.setLayoutX(200);
-		btSend.setLayoutY(200);
+		Button rock = new Button("Rock");//create new button instance
+		Button paper= new Button("Paper");//create new button instance
+		Button scissors = new Button("Scissors");//create new button instance
+		rock.setLayoutX(200);
+		rock.setLayoutY(200);
+		
+		paper.setLayoutX(260);
+		paper.setLayoutY(200);
+		
+		scissors.setLayoutX(320);
+		scissors.setLayoutY(200);
 
 		//set root Group & bind button and TextArea to it
-		Group root = new Group(btSend, ta);
+		Group root = new Group(rock,paper,scissors, ta);
 
 		//listen the mouse event and handle the event
-		EventHandler<MouseEvent> eventHandlerSend = new EventHandler<MouseEvent>() 
+		EventHandler<MouseEvent> rockListener = new EventHandler<MouseEvent>() 
 		{ 
 			@Override 
 			public void handle (MouseEvent e)
 			{	
-				//				System.out.println(e);//display full event for debug
-				//
-				//				//starts the game
-				//				client.gameStart();
-
-				//				btSend.setVisible(false);
+				try 
+				{
+					client.gameOn(Choice.GESTURES.ROCK);
+				}
+				catch (ClassNotFoundException e1) 
+				{
+					e1.printStackTrace();
+				}
 			}
 		};
 
+		//listen the mouse event and handle the event
+		EventHandler<MouseEvent> paperListener = new EventHandler<MouseEvent>() 
+		{ 
+			@Override 
+			public void handle (MouseEvent e)
+			{	
+				try 
+				{
+					client.gameOn(Choice.GESTURES.PAPER);
+				} 
+				catch (ClassNotFoundException e1) 
+				{
+					e1.printStackTrace();
+				}
+			}
+		};
+		
+		//listen the mouse event and handle the event
+		EventHandler<MouseEvent> scissorsListener = new EventHandler<MouseEvent>() 
+		{ 
+			@Override 
+			public void handle (MouseEvent e)
+			{	
+				try 
+				{
+					client.gameOn(Choice.GESTURES.SCISSORS);
+				} 
+				catch (ClassNotFoundException e1) 
+				{
+					e1.printStackTrace();
+				}
+			}
+		};
+		
+		
 		// bind the event listener to the button
-		btSend.addEventHandler(MouseEvent.MOUSE_CLICKED, eventHandlerSend);
-
+		rock.addEventHandler(MouseEvent.MOUSE_CLICKED, rockListener);
+		paper.addEventHandler(MouseEvent.MOUSE_CLICKED, paperListener);
+		scissors.addEventHandler(MouseEvent.MOUSE_CLICKED, scissorsListener);
+		
 		return root;
 	}
 
