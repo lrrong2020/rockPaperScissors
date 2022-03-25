@@ -2,8 +2,6 @@ package rockPaperScissors.rockPaperScissors;
 
 import java.io.*;
 import java.net.*;
-import java.util.*;
-import java.util.concurrent.*;
 
 //logical client
 public class Client
@@ -17,8 +15,10 @@ public class Client
 	private static ObjectOutputStream toServer;//defined first
 	private static ObjectInputStream fromServer;
 	private static Player player = new Player();//holds player singleton
-
-	public Client() throws NullPointerException
+	private static Thread objectListener = null;//class-level thread to continuously listen to the server
+	
+	
+	public Client()
 	{
 		super();
 	}
@@ -140,23 +140,24 @@ public class Client
 			this.initializeConnection();
 
 			//start a new thread to continuously listen to the server
-			Thread objectListener = new Thread() {
+			objectListener = new Thread() {
 				public void run() 
 				{
-					while(true) 
+					Object objFromServer = null;
+					do
 					{
 						try 
 						{
 							//read object from the server through ObjectInputStream
-							Object objFromServerInit = fromServer.readObject();
-							handleReceivedObject(objFromServerInit);
+							objFromServer = fromServer.readObject();
+							handleReceivedObject(objFromServer);
 						} 
 						catch (ClassNotFoundException | NullPointerException | IOException e) 
 						{
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
-					}
+					}while(!(objFromServer instanceof EndBean));
 				}
 			};
 			objectListener.start();

@@ -55,7 +55,7 @@ public class ConsoleServer
 			//continuously accept the connections
 			while (true)
 			{
-				if(ConsoleServer.ONLINE_USER_MAP.size() < ConsoleServer.MAX_NO_OF_USERS) 
+				if(ConsoleServer.ONLINE_USER_MAP.size() <= ConsoleServer.MAX_NO_OF_USERS) 
 				{
 					// Listen for a new connection request
 					Socket socket;
@@ -70,6 +70,14 @@ public class ConsoleServer
 						// Start a new thread for each client
 						clientThread = new Thread(task);
 						clientThread.start();
+						
+						//2 players have registered
+						if(ConsoleServer.CLIENT_HANDLER_LIST.size() == 2) 
+						{
+							//send startBean to all clients
+							System.out.println("\nHandleAClient: 2 users have registered\n");
+							ConsoleServer.startGame();
+						}
 					} 
 					catch (IOException e) 
 					{
@@ -114,14 +122,6 @@ public class ConsoleServer
 			//registration
 			ConsoleServer.ONLINE_USER_MAP.put(rdUUID , socket);//register a user
 			
-			//2 players have registered
-			if(ConsoleServer.ONLINE_USER_MAP.size() == 2) 
-			{
-				//send startBean to all clients
-				System.out.println("\nHandleAClient: 2 users have registered\n");
-				ConsoleServer.startGame();
-			}
-
 			/* Display connection results */
 			// Display the time
 			System.out.println("\n============Starting a thread for client at " + new Date() + "============\n");
