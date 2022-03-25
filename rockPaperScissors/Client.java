@@ -80,17 +80,30 @@ public class Client
 			else if (receivedBean instanceof StartBean) 
 			{
 				//when the game starts
-
 				display("Received Bean is instanceof StartBean");
 				gameStart();
 			}
-			else if (receivedBean instanceof ChoiceBean) 
+			else if (receivedBean instanceof ResultBean) 
 			{
-				//server sends 10s count down 
+				ResultBean resultBean = (ResultBean)receivedBean;
+				display("Your choice: " + resultBean.getYourChoice());
+				display("Your opponent's choice: " + resultBean.getOpponentChoice());
+				switch(resultBean.getResult()) 
+				{
+					case 0:
+						display("You Lose");
+						break;
+					case 1:
+						display("Tie");
+						break;
+					case 2:
+						display("You Win!");
+						break;
+				}
 			}
 			else if (receivedBean instanceof EndBean) 
 			{
-
+				//terminates the client
 			}
 			else
 			{

@@ -221,7 +221,7 @@ public class ConsoleServer
 				else 
 				{
 					//broadcast
-					sendResults();
+					sendResults(roundNo);
 				}
 			}
 		}
@@ -297,41 +297,37 @@ public class ConsoleServer
 		}
 	}
 
-	public static void sendResults() throws IOException 
+	public static void sendResults(int rdNo) throws IOException 
 	{
-		for(int i = 0; i < ConsoleServer.CLIENT_CHOICE_BEAN_LIST.size();i++) 
-		{
-			ChoiceBean[] choiceBeanArr = ConsoleServer.CLIENT_CHOICE_BEAN_LIST.get(i);
-			
-			ChoiceBean player0choiceBean = choiceBeanArr[0];
-			ChoiceBean player1choiceBean = choiceBeanArr[1];
-			
-			Socket player0Socket = ONLINE_USER_MAP.get(player0choiceBean.getPlayer().getUUID());
 
-			HandleAClient player0handler = null;
-			HandleAClient player1handler = null;
-			
-			for(int j = 0;j < ConsoleServer.CLIENT_HANDLER_LIST.size();i++) 
+		ChoiceBean[] choiceBeanArr = ConsoleServer.CLIENT_CHOICE_BEAN_LIST.get(rdNo);//1
+
+		ChoiceBean player0ChoiceBean = choiceBeanArr[0];
+		ChoiceBean player1ChoiceBean = choiceBeanArr[1];
+
+		Socket player0Socket = ONLINE_USER_MAP.get(player0ChoiceBean.getPlayer().getUUID());
+
+		HandleAClient player0Handler = null;
+		HandleAClient player1Handler = null;
+
+		//find the HandleAClient instance that matches
+		for(int j = 0;j < ConsoleServer.CLIENT_HANDLER_LIST.size();j++) 
+		{
+			if(player0Socket.equals(CLIENT_HANDLER_LIST.get(j).getSocket())) 
 			{
-				if(player0Socket.equals(CLIENT_HANDLER_LIST.get(j).getSocket())) 
-				{
-					player0handler = CLIENT_HANDLER_LIST.get(j);
-					player1handler = CLIENT_HANDLER_LIST.get(j==0?1:0);//get another
-					break;
-				}
-			}
-			switch(player0choiceBean.getChoice().wins(player1choiceBean.getChoice())) 
-			{
-				case 0:
-					player0handler.sendResultBean(null, null, i);
-					
-					break;
-				case 1:
-					break;
-				case 2:
-					break;		
+				player0Handler = CLIENT_HANDLER_LIST.get(j);
+				player1Handler = CLIENT_HANDLER_LIST.get(j==0?1:0);//get another
+				break;
 			}
 		}
+
+		int result = player0ChoiceBean.getChoice().wins(player1ChoiceBean.getChoice());
+
+		//symmetric
+		player0Handler.sendResultBean(player0ChoiceBean.getChoice(), player1ChoiceBean.getChoice(), result);
+		player1Handler.sendResultBean(player1ChoiceBean.getChoice(), player0ChoiceBean.getChoice(), (2 - result));
+
+
 	}
 
 	public static void main(String args[]) 
