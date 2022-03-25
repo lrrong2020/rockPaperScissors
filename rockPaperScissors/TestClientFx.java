@@ -32,7 +32,7 @@ public class TestClientFx extends Application
 		catch(IOException ioe) 
 		{
 			appendTextArea("Client initialize failed");
-			
+
 		}
 		catch (ClassNotFoundException | NullPointerException e) 
 		{
@@ -60,10 +60,10 @@ public class TestClientFx extends Application
 		Button scissors = new Button("Scissors");//create new button instance
 		rock.setLayoutX(200);
 		rock.setLayoutY(200);
-		
+
 		paper.setLayoutX(260);
 		paper.setLayoutY(200);
-		
+
 		scissors.setLayoutX(320);
 		scissors.setLayoutY(200);
 
@@ -103,7 +103,7 @@ public class TestClientFx extends Application
 				}
 			}
 		};
-		
+
 		//listen the mouse event and handle the event
 		EventHandler<MouseEvent> scissorsListener = new EventHandler<MouseEvent>() 
 		{ 
@@ -120,13 +120,13 @@ public class TestClientFx extends Application
 				}
 			}
 		};
-		
-		
+
+
 		// bind the event listener to the button
 		rock.addEventHandler(MouseEvent.MOUSE_CLICKED, rockListener);
 		paper.addEventHandler(MouseEvent.MOUSE_CLICKED, paperListener);
 		scissors.addEventHandler(MouseEvent.MOUSE_CLICKED, scissorsListener);
-		
+
 		return root;
 	}
 

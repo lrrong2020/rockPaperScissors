@@ -2,7 +2,7 @@ package rockPaperScissors.rockPaperScissors;
 
 public class Choice
 {
-	private String choiseName = null;
+	private String choiceName = null;
 	public interface GESTURES
 	{
 		String ROCK = "ROCK";
@@ -10,12 +10,42 @@ public class Choice
 		String SCISSORS = "SCISSORS";
 	}
 	
-	public void setChoiseName(String choiseName)
+	public void setChoiceName(String choiceName) throws ClassNotFoundException
 	{
-		this.choiseName = choiseName;
+		if(choiceName.equals(GESTURES.ROCK) || choiceName.equals(GESTURES.PAPER) || choiceName.equals(GESTURES.SCISSORS))
+		{
+			this.choiceName = choiceName;
+		}
+		else 
+		{
+			throw new ClassNotFoundException();
+		}
+
 	}
 	public String getChoiseName()
 	{
-		return choiseName;
+		return choiceName;
+	}
+	public int wins(Choice opp) {
+		if(opp.getChoiseName() == GESTURES.ROCK) 
+		{
+			if(this.choiceName == GESTURES.PAPER) return 2;
+			else if(this.choiceName == GESTURES.SCISSORS) return 0;
+			else return 1;
+		}
+		
+		else if(opp.getChoiseName() == GESTURES.PAPER) 
+		{
+			if(this.choiceName == GESTURES.SCISSORS) return 2;
+			else if(this.choiceName == GESTURES.ROCK) return 0;
+			else return 1;
+		}
+		
+		else//opp.getChoiseName() == GESTURES.SCISSORS
+		{
+			if(this.choiceName == GESTURES.ROCK) return 2;
+			else if(this.choiceName == GESTURES.PAPER) return 0;
+			else return 1;
+		}
 	}
 }

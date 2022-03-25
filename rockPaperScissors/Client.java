@@ -84,7 +84,7 @@ public class Client
 				display("Received Bean is instanceof StartBean");
 				gameStart();
 			}
-			else if (receivedBean instanceof GameOnBean) 
+			else if (receivedBean instanceof ChoiceBean) 
 			{
 				//server sends 10s count down 
 			}
@@ -129,7 +129,7 @@ public class Client
 
 	public void gameOn(String choiceName) throws ClassNotFoundException 
 	{
-		GameOnBean gameOnBean = new GameOnBean(choiceName, player);
+		ChoiceBean gameOnBean = new ChoiceBean(choiceName, player);
 		display("Your choice:" + gameOnBean.getChoice().getChoiseName());
 		this.sendDataBean(gameOnBean);
 	}

@@ -1,23 +1,23 @@
 package rockPaperScissors.rockPaperScissors;
 
 //when game has been on
-public class GameOnBean extends DataBean
+public class ChoiceBean extends DataBean
 {
 	private static final long serialVersionUID = 1L;
 	private Choice choice = null;
 	private Player player = null;
 	//constructors
-	public GameOnBean() 
+	public ChoiceBean() 
 	{
 		super();
 	}
 	
-	public GameOnBean(String choiseName, Player player) throws ClassNotFoundException
+	public ChoiceBean(String choiceName, Player player) throws ClassNotFoundException
 	{
 		this.setPlayer(player);
-		if(choiseName.equals(Choice.GESTURES.ROCK) || choiseName.equals(Choice.GESTURES.PAPER)) 
+		if(choiceName.equals(Choice.GESTURES.ROCK) || choiceName.equals(Choice.GESTURES.PAPER)) 
 		{
-			choice.setChoiseName(choiseName);
+			choice.setChoiceName(choiceName);
 		}
 		else 
 		{

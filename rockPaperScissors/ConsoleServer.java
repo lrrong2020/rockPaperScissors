@@ -17,7 +17,7 @@ public class ConsoleServer
 
 	//class-level client list to synchronize
 	protected static final List<HandleAClient> CLIENT_HANDLER_LIST = new ArrayList<HandleAClient>();
-	protected static List<GameOnBean[]> CLIENT_GAME_ON_BEAN_LIST = new ArrayList<GameOnBean[]>();
+	protected static List<ChoiceBean[]> CLIENT_CHOICE_BEAN_LIST = new ArrayList<ChoiceBean[]>();
 	protected static int roundNo = 1;
 
 	private Thread socketThread = null;
@@ -39,7 +39,7 @@ public class ConsoleServer
 	}
 
 	//Inner Class
-	//handle serversocket
+	//handle ServerSocket
 	class HandleTheSocket implements Runnable
 	{
 		ServerSocket serverSocket = null;
@@ -147,6 +147,9 @@ public class ConsoleServer
 		{
 			return this.uuid;
 		}
+		public Socket getSocket() {
+			return this.socket;
+		}
 
 		//send initial data to the client
 		public void sendInitBean() throws IOException 
@@ -169,10 +172,10 @@ public class ConsoleServer
 			this.outputToClient.flush();		
 		}
 
-		public void sendGameOnBean() throws IOException 
+		public void sendResultBean(Choice c1, Choice c2, int res) throws IOException 
 		{
 			System.out.println("Sending start Bean");
-			DataBean idb = new GameOnBean();//default constructor to indicates server-sent startBean
+			DataBean idb = new ResultBean(c1, c2, res);//default constructor to indicates server-sent startBean
 
 			//send the start DataBean to the client
 			this.outputToClient.writeObject(idb);
@@ -203,21 +206,22 @@ public class ConsoleServer
 				}
 
 				//send MatchBean to all users indicates that the game is on
-				this.outputToClient.writeObject(new GameOnBean());//incomplete constructor
+				this.outputToClient.writeObject(new ChoiceBean());//incomplete constructor
 			}
 
-			if(receivedBean instanceof GameOnBean) 
+			if(receivedBean instanceof ChoiceBean) 
 			{
 
-				//put the (GameOnBean) in class-level Choice list
-				GameOnBean[] gameOnBeanArr = CLIENT_GAME_ON_BEAN_LIST.get(roundNo);
+				//put the (ChoiceBean) in class-level Choice list
+				ChoiceBean[] gameOnBeanArr = CLIENT_CHOICE_BEAN_LIST.get(roundNo);
 				if(gameOnBeanArr.length < MAX_NO_OF_USERS) 
 				{
-					gameOnBeanArr[0] = (GameOnBean) receivedBean;
+					gameOnBeanArr[0] = (ChoiceBean) receivedBean;
 				}
 				else 
 				{
 					//broadcast
+					sendResults();
 				}
 			}
 		}
@@ -293,17 +297,39 @@ public class ConsoleServer
 		}
 	}
 
-	public static void startRound() 
+	public static void sendResults() throws IOException 
 	{
-		for(HandleAClient h : CLIENT_HANDLER_LIST) 
+		for(int i = 0; i < ConsoleServer.CLIENT_CHOICE_BEAN_LIST.size();i++) 
 		{
-			try 
+			ChoiceBean[] choiceBeanArr = ConsoleServer.CLIENT_CHOICE_BEAN_LIST.get(i);
+			
+			ChoiceBean player0choiceBean = choiceBeanArr[0];
+			ChoiceBean player1choiceBean = choiceBeanArr[1];
+			
+			Socket player0Socket = ONLINE_USER_MAP.get(player0choiceBean.getPlayer().getUUID());
+
+			HandleAClient player0handler = null;
+			HandleAClient player1handler = null;
+			
+			for(int j = 0;j < ConsoleServer.CLIENT_HANDLER_LIST.size();i++) 
 			{
-				h.sendGameOnBean();
+				if(player0Socket.equals(CLIENT_HANDLER_LIST.get(j).getSocket())) 
+				{
+					player0handler = CLIENT_HANDLER_LIST.get(j);
+					player1handler = CLIENT_HANDLER_LIST.get(j==0?1:0);//get another
+					break;
+				}
 			}
-			catch (IOException e) 
+			switch(player0choiceBean.getChoice().wins(player1choiceBean.getChoice())) 
 			{
-				e.printStackTrace();
+				case 0:
+					player0handler.sendResultBean(null, null, i);
+					
+					break;
+				case 1:
+					break;
+				case 2:
+					break;		
 			}
 		}
 	}
