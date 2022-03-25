@@ -12,12 +12,12 @@ public class Client
 
 	// IOStreams
 	//Note that outputStream should always be defined first!
-	private static ObjectOutputStream toServer;//defined first
-	private static ObjectInputStream fromServer;
-	private static Player player = new Player();//holds player singleton
-	private static Thread objectListener = null;//class-level thread to continuously listen to the server
-	
-	
+	private ObjectOutputStream toServer;//defined first
+	private ObjectInputStream fromServer;
+	private Player player = new Player();//holds player singleton
+	private Thread objectListener = null;//class-level thread to continuously listen to the server
+
+
 	public Client()
 	{
 		super();
@@ -50,7 +50,7 @@ public class Client
 			e.printStackTrace();
 		}
 	}
-	
+
 
 	//handle received data bean
 	private void handleReceivedObject(Object objFromServer) throws IOException, ClassNotFoundException, NullPointerException
@@ -80,6 +80,8 @@ public class Client
 			else if (receivedBean instanceof StartBean) 
 			{
 				//when the game starts
+
+				display("Received Bean is instanceof StartBean");
 				gameStart();
 			}
 			else if (receivedBean instanceof GameOnBean) 
@@ -124,7 +126,7 @@ public class Client
 		};
 		thread.start();
 	}
-	
+
 	public void gameOn(String choiceName) throws ClassNotFoundException 
 	{
 		GameOnBean gameOnBean = new GameOnBean(choiceName, player);
@@ -139,48 +141,43 @@ public class Client
 	}
 
 	//initialize the client
-	public void initialize() throws ClassNotFoundException, NullPointerException
+	public void initialize() throws ClassNotFoundException, NullPointerException, IOException
 	{
 		//handle object read from the server
-		try 
-		{
-			//initialize IOStreams
-			this.initializeConnection();
+		//initialize IOStreams
+		this.initializeConnection();
 
-			//start a new thread to continuously listen to the server
-			objectListener = new Thread() {
-				public void run() 
+		//start a new thread to continuously listen to the server
+		objectListener = new Thread() {
+			public void run() 
+			{
+				Object objFromServer = null;
+				do
 				{
-					Object objFromServer = null;
-					do
+					try 
 					{
-						try 
-						{
-							//read object from the server through ObjectInputStream
-							objFromServer = fromServer.readObject();
-							handleReceivedObject(objFromServer);
-						} 
-						catch (ClassNotFoundException | NullPointerException | IOException e) 
-						{
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					}while(!(objFromServer instanceof EndBean));
-				}
-			};
-			objectListener.start();
-		}
-		catch(IOException e)
-		{
-			//handle
-			e.printStackTrace();
-			//may reconnect or do something?
-		}
-		catch(NullPointerException e) 
-		{
-			//Invalid DataBean
-			//server passed a null
-			throw e;
-		}
+						//read object from the server through ObjectInputStream
+						objFromServer = fromServer.readObject();
+						display("Successfully get an object!");
+						handleReceivedObject(objFromServer);
+					} 
+					catch (ClassNotFoundException | NullPointerException | IOException e) 
+					{
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+						display("Error. Please restart.");
+						return;
+					}
+
+				}while(!(objFromServer instanceof EndBean));
+			}
+		};
+		objectListener.start();
+	}
+	
+	public void stop() 
+	{
+		//terminate the client
+		objectListener = null;
 	}
 }

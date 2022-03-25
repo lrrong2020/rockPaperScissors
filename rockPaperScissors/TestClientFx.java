@@ -1,5 +1,7 @@
 package rockPaperScissors.rockPaperScissors;
 
+import java.io.IOException;
+
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
@@ -26,7 +28,12 @@ public class TestClientFx extends Application
 		{
 			client.initialize();
 			appendTextArea("Client initialized");
-		} 
+		}
+		catch(IOException ioe) 
+		{
+			appendTextArea("Client initialize failed");
+			
+		}
 		catch (ClassNotFoundException | NullPointerException e) 
 		{
 			//Invalid DataBean
