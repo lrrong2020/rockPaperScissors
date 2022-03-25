@@ -1,7 +1,7 @@
 package rockPaperScissors.rockPaperScissors;
 
-import java.io.*;
-import java.net.*;
+import java.io.IOException;
+
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
@@ -15,70 +15,33 @@ public class TestClientFx extends Application
 {
 	// Text area to display contents
 	private static TextArea ta = new TextArea();
+	private static Client client = null;
 
-	//socket parameters to build connection
-	private static final String HOST = "localhost";//may use IPv4 address
-	private static final int PORT = 8000;//port number
-
-	// IO streams
-	//Note that outputStream should always be defined first!
-	private static ObjectOutputStream toServer;
-	private static ObjectInputStream fromServer;
-	private static Player player = Player.getInstance();//holds player singleton
-
+	//constructors
 	public TestClientFx() 
 	{	
+		super();	
+		//create a new client class
+		TestClientFx.client = new Client();
+		appendTextArea("Client generated");
 		try 
 		{
-			TestClientFx.initializeClient();
+			client.initialize();
+			appendTextArea("Client initialized");
 		}
-		catch(NullPointerException e)
+		catch(IOException ioe) 
 		{
-			e.printStackTrace();//debug
-			appendTextArea("\n" + e.toString() + "\n");
+			appendTextArea("Client initialize failed");
+
+		}
+		catch (ClassNotFoundException | NullPointerException e) 
+		{
+			//Invalid DataBean
+			//server passed a null
+			e.printStackTrace();
+			appendTextArea("Invalid Data from server!");
 		}
 	}	
-
-	//handle DataBean to be sent
-	private static void sendDataBean(DataBean sdBean) 
-	{
-		try 
-		{
-			toServer.writeObject(sdBean);
-			toServer.flush();
-		} 
-		catch (IOException e) 
-		{
-			e.printStackTrace();
-		}
-	}
-
-	//handle received data bean
-	private static void handleReceiveObject(Object objFromServer) throws IOException 
-	{
-
-		if(objFromServer == null) 
-		{
-			throw new NullPointerException("Read null from the server");
-		}
-		else
-		{
-			DataBean receiveBean = (DataBean)objFromServer;
-			if(receiveBean instanceof InitBean) //Polymorphism style of handling handling different events or status
-			{
-				InitBean receiveIBean = (InitBean)receiveBean;//cast to subclass
-
-				//display initial information
-				appendTextArea("Status: " + receiveIBean.getClass());
-				appendTextArea("Your UUID: " + receiveIBean.getUUID().toString());
-				appendTextArea("You are" + (receiveIBean.getIsHost()?" the ":" not the ") + "host.");
-
-				//set UUID and isHost to the Player instance
-				player.setUUID(receiveIBean.getUUID());
-				player.setIsHost(receiveIBean.getIsHost());
-			}
-		}
-	}
 
 	//similar syntax for rewriting append method of jTextArea of java.swing
 	//use it the same way as System.out.println(String string) !
@@ -88,70 +51,87 @@ public class TestClientFx extends Application
 		System.out.println("\n" + string);//debug
 	}
 
-	private static void initializeConnection() throws UnknownHostException, IOException 
-	{
-		// Create a socket to connect to the server
-		@SuppressWarnings("resource")//need to close socket in consideration of performance 
-		Socket socket = new Socket(HOST, PORT);
-
-		// Create an output stream to send object to the server
-		toServer = new ObjectOutputStream(socket.getOutputStream());
-
-		// Create an input stream to receive object from the server
-		fromServer = new ObjectInputStream(socket.getInputStream());
-	}
-
-	private static void initializeClient() throws NullPointerException
-	{
-		appendTextArea("Initailizing");
-		try 
-		{
-			//initialize IOStreams
-			TestClientFx.initializeConnection();
-
-			//read object from the server through ObjectInputStream
-			Object objFromServer = fromServer.readObject();
-
-			//handle object read from the server
-			handleReceiveObject(objFromServer);
-		}
-		catch (IOException | ClassNotFoundException ex) 
-		{
-			ex.printStackTrace();//debug
-			appendTextArea("\n" + ex.toString() + "\n");
-		}
-	}
-
-	public static Group getRoot() //JavaFX Group
+	//get JavaFX Group
+	public static Group getRoot()
 	{
 		//create button and set its layout to display
-		Button btSend = new Button("Start");//create new button instance
-		btSend.setLayoutX(200);
-		btSend.setLayoutY(200);
+		Button rock = new Button("Rock");//create new button instance
+		Button paper= new Button("Paper");//create new button instance
+		Button scissors = new Button("Scissors");//create new button instance
+		rock.setLayoutX(200);
+		rock.setLayoutY(200);
+
+		paper.setLayoutX(260);
+		paper.setLayoutY(200);
+
+		scissors.setLayoutX(320);
+		scissors.setLayoutY(200);
 
 		//set root Group & bind button and TextArea to it
-		Group root = new Group(btSend, ta);
+		Group root = new Group(rock,paper,scissors, ta);
 
 		//listen the mouse event and handle the event
-		EventHandler<MouseEvent> eventHandlerSend = new EventHandler<MouseEvent>() 
+		EventHandler<MouseEvent> rockListener = new EventHandler<MouseEvent>() 
 		{ 
 			@Override 
 			public void handle (MouseEvent e)
 			{	
-				System.out.println(e);//display full event for debug
-
-				//send the player instance to the server indicates that the game starts
-				TestClientFx.sendDataBean(new StartBean(player));
+				try 
+				{
+					client.gameOn(Choice.GESTURES.ROCK);
+				}
+				catch (ClassNotFoundException e1) 
+				{
+					e1.printStackTrace();
+				}
 			}
 		};
 
+		//listen the mouse event and handle the event
+		EventHandler<MouseEvent> paperListener = new EventHandler<MouseEvent>() 
+		{ 
+			@Override 
+			public void handle (MouseEvent e)
+			{	
+				try 
+				{
+					client.gameOn(Choice.GESTURES.PAPER);
+				} 
+				catch (ClassNotFoundException e1) 
+				{
+					e1.printStackTrace();
+				}
+			}
+		};
+
+		//listen the mouse event and handle the event
+		EventHandler<MouseEvent> scissorsListener = new EventHandler<MouseEvent>() 
+		{ 
+			@Override 
+			public void handle (MouseEvent e)
+			{	
+				try 
+				{
+					client.gameOn(Choice.GESTURES.SCISSORS);
+				} 
+				catch (ClassNotFoundException e1) 
+				{
+					e1.printStackTrace();
+				}
+			}
+		};
+
+
 		// bind the event listener to the button
-		btSend.addEventHandler(MouseEvent.MOUSE_CLICKED, eventHandlerSend);
+		rock.addEventHandler(MouseEvent.MOUSE_CLICKED, rockListener);
+		paper.addEventHandler(MouseEvent.MOUSE_CLICKED, paperListener);
+		scissors.addEventHandler(MouseEvent.MOUSE_CLICKED, scissorsListener);
 
 		return root;
 	}
 
-	public static void showScene(Stage stage) //JavaFX scene
+	//display JavaFX scene
+	public static void showScene(Stage stage) 
 	{
 		//Creating a Scene 
 		Scene scene = new Scene(getRoot(), 600, 300); 
@@ -166,6 +146,7 @@ public class TestClientFx extends Application
 		stage.show(); 
 	}
 
+	//start JavaFX application
 	@Override
 	public void start(Stage stage) throws Exception
 	{
@@ -173,6 +154,7 @@ public class TestClientFx extends Application
 		showScene(stage);
 	}
 
+	//main method to launch JavaFX application
 	public static void main(String[] args) 
 	{
 		launch(args);

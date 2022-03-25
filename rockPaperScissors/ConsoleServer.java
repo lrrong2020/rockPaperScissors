@@ -6,14 +6,21 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
+
 public class ConsoleServer
 {
-	private static final int PORT = 8000;//for socket connection
+	protected static final int PORT = 8000;//for socket connection
 
 	//to store users and identify them with randomly generated universally unique identifier (UUID)
-	private static final Map<UUID, Socket> ONLINE_USER_MAP = new ConcurrentHashMap<UUID, Socket>();	
-	private static final int MAX_NO_OF_USERS = 2; //assume there are only 2 users
+	protected static final Map<UUID, Socket> ONLINE_USER_MAP = new ConcurrentHashMap<UUID, Socket>();
+	protected static final int MAX_NO_OF_USERS = 2; //assume there are only 2 users
 
+	//class-level client list to synchronize
+	protected static final List<HandleAClient> CLIENT_HANDLER_LIST = new ArrayList<HandleAClient>();
+	protected static List<ChoiceBean[]> CLIENT_CHOICE_BEAN_LIST = new ArrayList<ChoiceBean[]>();
+	protected static int roundNo = 1;
+
+	private Thread socketThread = null;
 	//constructor	
 	public ConsoleServer() 
 	{
@@ -21,23 +28,9 @@ public class ConsoleServer
 		System.out.println("Initializing server");
 		try 
 		{
-			// Create a server socket
-			@SuppressWarnings("resource")
-			ServerSocket serverSocket = new ServerSocket(PORT);//should close socket for performance
-			System.out.println("MultiThreadServer started at " + new Date() + '\n');
-
-			//continuously accept the connections
-			while (ONLINE_USER_MAP.size() < MAX_NO_OF_USERS)
-			{
-				// Listen for a new connection request
-				Socket socket = serverSocket.accept();
-
-				// Create a new thread for the connection
-				HandleAClient task = new HandleAClient(socket);
-
-				// Start a new thread for each client
-				new Thread(task).start();
-			}
+			HandleTheSocket socketHandler = new HandleTheSocket();
+			socketThread = new Thread(socketHandler);
+			socketThread.start();
 		}
 		catch(IOException ex) 
 		{
@@ -45,13 +38,72 @@ public class ConsoleServer
 		}
 	}
 
+	//Inner Class
+	//handle ServerSocket
+	class HandleTheSocket implements Runnable
+	{
+		ServerSocket serverSocket = null;
+
+		public HandleTheSocket() throws IOException 
+		{			
+			super();
+			// Create a server socket
+			this.serverSocket = new ServerSocket(ConsoleServer.PORT);//should close socket for performance
+			System.out.println("MultiThreadServer started at " + new Date() + '\n');
+		}
+
+		@Override
+		public void run()
+		{
+			//continuously accept the connections
+			while (true)
+			{
+				if(ConsoleServer.ONLINE_USER_MAP.size() <= ConsoleServer.MAX_NO_OF_USERS) 
+				{
+					// Listen for a new connection request
+					Socket socket;
+					Thread clientThread = null;
+					try 
+					{
+						socket = serverSocket.accept();
+						// Create a new thread for the connection
+						HandleAClient task = new HandleAClient(socket);
+						CLIENT_HANDLER_LIST.add(task);
+
+						// Start a new thread for each client
+						clientThread = new Thread(task);
+						clientThread.start();
+
+						//2 players have registered
+						if(ConsoleServer.CLIENT_HANDLER_LIST.size() == 2) 
+						{
+							//send startBean to all clients
+							System.out.println("\nHandleAClient: 2 users have registered\n");
+							ConsoleServer.startGame();
+						}
+					} 
+					catch (IOException e) 
+					{
+						e.printStackTrace();
+					}
+				}
+				else 
+				{
+					//do nothing
+				}
+			}		
+		}
+	}
+	//end of inner class
+
+
 	/** Inner Class **/
 	// Define the thread class for handling new connection
 	class HandleAClient implements Runnable 
 	{
 		private Socket socket; // A connected socket
 
-		//connections using iostreams
+		//connections using IOStreams
 		private ObjectOutputStream outputToClient = null;
 		private ObjectInputStream inputFromClient = null;
 
@@ -67,15 +119,15 @@ public class ConsoleServer
 			check if the socket has already been put in the user map **/
 
 			//if it's a new client (i.e. has never registered or put in the user map)
-			UUID rdUuid = UUID.randomUUID();//generate a random UUID for each client
-			this.setUUID(rdUuid);
+			UUID rdUUID = UUID.randomUUID();//generate a random UUID for each client
+			this.setUUID(rdUUID);
 
 			//registration
-			ConsoleServer.ONLINE_USER_MAP.put(rdUuid , socket);//register a user
+			ConsoleServer.ONLINE_USER_MAP.put(rdUUID , socket);//register a user
 
 			/* Display connection results */
 			// Display the time
-			System.out.println("Starting a thread for client at " + new Date() + '\n');
+			System.out.println("\n============Starting a thread for client at " + new Date() + "============\n");
 
 			// Find the client's host name, and IP address
 			InetAddress inetAddress = socket.getInetAddress();
@@ -83,11 +135,7 @@ public class ConsoleServer
 					+ "IP Address is " + inetAddress.getHostAddress() + "\n");
 
 			//display all UUIDs of users who has registered in the user map
-			System.out.println("All users:");
-			for (Entry<UUID, Socket> entry : ConsoleServer.ONLINE_USER_MAP.entrySet()) 
-			{
-				System.out.println( " <"+entry.getKey() + "> ");//display UUIDs
-			}
+			this.printAllUsers();
 		}
 
 		//setter and getters
@@ -99,9 +147,12 @@ public class ConsoleServer
 		{
 			return this.uuid;
 		}
+		public Socket getSocket() {
+			return this.socket;
+		}
 
 		//send initial data to the client
-		public void sendInit() throws IOException 
+		public void sendInitBean() throws IOException 
 		{
 			DataBean idb = new InitBean(this.getUUID(),
 					ConsoleServer.ONLINE_USER_MAP.size() == 1 ? true:false);//indicates that if the user is the host (first registered user)
@@ -111,20 +162,41 @@ public class ConsoleServer
 			this.outputToClient.flush();		
 		}
 
+		public void sendStartBean() throws IOException 
+		{
+			System.out.println("Sending start Bean");
+			DataBean idb = new StartBean();//default constructor to indicates server-sent startBean
+
+			//send the start DataBean to the client
+			this.outputToClient.writeObject(idb);
+			this.outputToClient.flush();		
+		}
+
+		public void sendResultBean(Choice c1, Choice c2, int res) throws IOException 
+		{
+			System.out.println("Sending start Bean");
+			DataBean idb = new ResultBean(c1, c2, res);//default constructor to indicates server-sent startBean
+
+			//send the start DataBean to the client
+			this.outputToClient.writeObject(idb);
+			this.outputToClient.flush();	
+		}
+
 		//handle received DataBean from client
-		public void handleReceiveBean() throws IOException, ClassNotFoundException
+		public void handleReceivedBean() throws IOException, ClassNotFoundException
 		{
 			//handle Data sent by the client
-			DataBean receiveBean = (DataBean)this.inputFromClient.readObject();//read object from input stream
+			DataBean receivedBean = (DataBean)this.inputFromClient.readObject();//read object from input stream
 
-			if(receiveBean instanceof StartBean) //polymorphism style handling different events or status
+			if(receivedBean instanceof StartBean) //polymorphism style handling different events or status
 			{	
-				StartBean receiveSBean = (StartBean)receiveBean;//cast to StartBean
+				StartBean receivedSBean = (StartBean)receivedBean;//cast to StartBean
 
 				/** only host can start the game
 				StartGame operation should not open to non-host player
 				which is to be implemented in the front end or View part **/
-				if(receiveSBean.getPlayer().getIsHost()) //not sure whether should use getInstance or not
+
+				if(receivedSBean.getPlayer().getIsHost()) 
 				{
 					//starts the game
 				}
@@ -134,7 +206,23 @@ public class ConsoleServer
 				}
 
 				//send MatchBean to all users indicates that the game is on
-				this.outputToClient.writeObject(new MatchBean());//incomplete constructor
+				this.outputToClient.writeObject(new ChoiceBean());//incomplete constructor
+			}
+
+			if(receivedBean instanceof ChoiceBean) 
+			{
+
+				//put the (ChoiceBean) in class-level Choice list
+				ChoiceBean[] gameOnBeanArr = CLIENT_CHOICE_BEAN_LIST.get(roundNo);
+				if(gameOnBeanArr.length < MAX_NO_OF_USERS) 
+				{
+					gameOnBeanArr[0] = (ChoiceBean) receivedBean;
+				}
+				else 
+				{
+					//broadcast
+					sendResults(roundNo);
+				}
 			}
 		}
 
@@ -142,10 +230,21 @@ public class ConsoleServer
 		public void initializeIOStreams() throws IOException 
 		{
 			//note that outputStream should always be defined first!
-			this.outputToClient = new ObjectOutputStream(socket.getOutputStream());
+			this.outputToClient = new ObjectOutputStream(socket.getOutputStream());//put it first
 			this.inputFromClient = new ObjectInputStream(socket.getInputStream());
 		}
 
+		private void printAllUsers() 
+		{
+			System.out.println("All users:");
+			for (Entry<UUID, Socket> entry : ConsoleServer.ONLINE_USER_MAP.entrySet()) 
+			{
+				System.out.println( "<"+entry.getKey() + ">");//display UUIDs
+			}
+			if(ConsoleServer.ONLINE_USER_MAP.entrySet().size() == 0) {
+				System.out.println("No User");
+			}
+		}
 
 		/** Run a thread for each client **/
 		@Override
@@ -157,17 +256,79 @@ public class ConsoleServer
 				try
 				{
 					initializeIOStreams();
-					sendInit();
-					handleReceiveBean();
+					sendInitBean();
+					handleReceivedBean();
 				}
 				catch(IOException | ClassNotFoundException ex) 
 				{
-					ex.printStackTrace();
+					//ex.printStackTrace();//debug
+					return;
+				}
+				finally 
+				{
+					System.out.println("============\n============\nWARNING!");
+					System.out.println("A client quit\n============\n============");
+
+					//remove a client from user map
+					ConsoleServer.ONLINE_USER_MAP.remove(this.getUUID());
+					this.printAllUsers();
+
+					//send ExitBean to clients
 				}
 			}
 		}
 	}
 	//end of inner class
+
+	//class level start game
+	public static void startGame() 
+	{
+		System.out.println("Starting game for all clients");
+		for(HandleAClient h : CLIENT_HANDLER_LIST) 
+		{
+			try 
+			{
+				h.sendStartBean();
+			}
+			catch (IOException e) 
+			{
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public static void sendResults(int rdNo) throws IOException 
+	{
+
+		ChoiceBean[] choiceBeanArr = ConsoleServer.CLIENT_CHOICE_BEAN_LIST.get(rdNo);//1
+
+		ChoiceBean player0ChoiceBean = choiceBeanArr[0];
+		ChoiceBean player1ChoiceBean = choiceBeanArr[1];
+
+		Socket player0Socket = ONLINE_USER_MAP.get(player0ChoiceBean.getPlayer().getUUID());
+
+		HandleAClient player0Handler = null;
+		HandleAClient player1Handler = null;
+
+		//find the HandleAClient instance that matches
+		for(int j = 0;j < ConsoleServer.CLIENT_HANDLER_LIST.size();j++) 
+		{
+			if(player0Socket.equals(CLIENT_HANDLER_LIST.get(j).getSocket())) 
+			{
+				player0Handler = CLIENT_HANDLER_LIST.get(j);
+				player1Handler = CLIENT_HANDLER_LIST.get(j==0?1:0);//get another
+				break;
+			}
+		}
+
+		int result = player0ChoiceBean.getChoice().wins(player1ChoiceBean.getChoice());
+
+		//symmetric
+		player0Handler.sendResultBean(player0ChoiceBean.getChoice(), player1ChoiceBean.getChoice(), result);
+		player1Handler.sendResultBean(player1ChoiceBean.getChoice(), player0ChoiceBean.getChoice(), (2 - result));
+
+
+	}
 
 	public static void main(String args[]) 
 	{

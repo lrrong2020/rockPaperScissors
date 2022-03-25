@@ -1,11 +1,8 @@
 package rockPaperScissors.rockPaperScissors;
 
-public class MatchBean extends DataBean
+public class ExitBean extends DataBean
 {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
 }
