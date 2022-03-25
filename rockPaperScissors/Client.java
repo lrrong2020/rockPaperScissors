@@ -66,9 +66,9 @@ public class Client
 					InitBean receivedIBean = (InitBean)receivedBean;//cast to subclass
 
 					//display initial information
-					displayString("Status: " + receivedIBean.getClass());
-					displayString("Your UUID: " + receivedIBean.getUUID().toString());
-					displayString("You are" + (receivedIBean.getIsHost()?" the ":" not the ") + "host.");
+					display("Status: " + receivedIBean.getClass());
+					display("Your UUID: " + receivedIBean.getUUID().toString());
+					display("You are" + (receivedIBean.getIsHost()?" the ":" not the ") + "host.");
 
 					//set UUID and isHost to the Player instance
 					player.setUUID(receivedIBean.getUUID());
@@ -77,10 +77,11 @@ public class Client
 				else if (receivedBean instanceof StartBean) 
 				{
 					//when the game starts
+					this.gameStart();
 				}
 				else if (receivedBean instanceof GameOnBean) 
 				{
-					//when the 
+					//server sends 10s count down 
 				}
 				else if (receivedBean instanceof EndBean) 
 				{
@@ -100,7 +101,7 @@ public class Client
 			this.sendDataBean(new StartBean(player));
 		}
 		
-		private void displayString(String string) 
+		private void display(String string) 
 		{
 			TestClientFx.appendTextArea(string);
 		}
@@ -123,12 +124,12 @@ public class Client
 				{
 					//handle
 					e.printStackTrace();
-					
 					//may reconnect or do something?
 				}
 				catch(ClassNotFoundException | NullPointerException e) 
 				{
-					//¿ª°Ú£¡
+					//Invalid DataBean
+					//server passed a null
 					throw e;
 				}
 		}

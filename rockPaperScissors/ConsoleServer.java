@@ -36,7 +36,7 @@ public class ConsoleServer
 	class HandleTheSocket implements Runnable
 	{
 		ServerSocket serverSocket = null;
-		
+
 		public HandleTheSocket() throws IOException 
 		{			
 			super();
@@ -44,33 +44,40 @@ public class ConsoleServer
 			this.serverSocket = new ServerSocket(ConsoleServer.PORT);//should close socket for performance
 			System.out.println("MultiThreadServer started at " + new Date() + '\n');
 		}
-		
+
 		@Override
 		public void run()
 		{
 			//continuously accept the connections
-			while (ConsoleServer.ONLINE_USER_MAP.size() < ConsoleServer.MAX_NO_OF_USERS)
+			while (true)
 			{
-				// Listen for a new connection request
-				Socket socket;
-				Thread clientThread = null;
-				try 
+				if(ConsoleServer.ONLINE_USER_MAP.size() < ConsoleServer.MAX_NO_OF_USERS) 
 				{
-					socket = serverSocket.accept();
-					// Create a new thread for the connection
-					HandleAClient task = new HandleAClient(socket);
+					// Listen for a new connection request
+					Socket socket;
+					Thread clientThread = null;
+					try 
+					{
+						socket = serverSocket.accept();
+						// Create a new thread for the connection
+						HandleAClient task = new HandleAClient(socket);
 
-					// Start a new thread for each client
-					clientThread = new Thread(task);
-					clientThread.start();
-				} 
-				catch (IOException e) 
-				{
-					e.printStackTrace();
+						// Start a new thread for each client
+						clientThread = new Thread(task);
+						clientThread.start();
+					} 
+					catch (IOException e) 
+					{
+						e.printStackTrace();
+					}
 				}
+				else 
+				{
+					//do nothing
+				}
+			}		
 		}
 	}
-}
 
 	/** Inner Class **/
 	// Define the thread class for handling new connection
@@ -99,6 +106,12 @@ public class ConsoleServer
 
 			//registration
 			ConsoleServer.ONLINE_USER_MAP.put(rdUUID , socket);//register a user
+			
+			//2 players have registered
+			if(ConsoleServer.ONLINE_USER_MAP.size() == 2) 
+			{
+				//send startBean
+			}
 
 			/* Display connection results */
 			// Display the time
@@ -130,6 +143,15 @@ public class ConsoleServer
 					ConsoleServer.ONLINE_USER_MAP.size() == 1 ? true:false);//indicates that if the user is the host (first registered user)
 
 			//send the initial DataBean to the client
+			this.outputToClient.writeObject(idb);
+			this.outputToClient.flush();		
+		}
+		
+		public void sendStartBean() throws IOException 
+		{
+			DataBean idb = new StartBean();//default constructor to indicates server-sent startBean
+
+			//send the start DataBean to the client
 			this.outputToClient.writeObject(idb);
 			this.outputToClient.flush();		
 		}
@@ -197,18 +219,18 @@ public class ConsoleServer
 				}
 				catch(IOException | ClassNotFoundException ex) 
 				{
-//					ex.printStackTrace();//debug
+					//					ex.printStackTrace();//debug
 					return;
 				}
 				finally 
 				{
-					System.out.println("======\nWARNING!\n======");
-					System.out.println("======\nA client exited\n======");
-					
+					System.out.println("======\n======\nWARNING!");
+					System.out.println("A client quit\n======\n======");
+
 					//remove a client from user map
 					ConsoleServer.ONLINE_USER_MAP.remove(this.getUUID());
 					this.printAllUsers();
-				
+
 					//send ExitBean to clients
 				}
 			}

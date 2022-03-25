@@ -29,7 +29,10 @@ public class TestClientFx extends Application
 		} 
 		catch (ClassNotFoundException | NullPointerException e) 
 		{
+			//Invalid DataBean
+			//server passed a null
 			e.printStackTrace();
+			appendTextArea("Invalid Data from server!");
 		}
 	}	
 
