@@ -1,5 +1,8 @@
 package rockPaperScissors.rockPaperScissors;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
@@ -44,6 +47,8 @@ public class TestClientFx extends Application
 		System.out.println("\n" + string);//debug
 	}
 
+
+	
 	//get JavaFX Group
 	public static Group getRoot()
 	{
@@ -61,10 +66,12 @@ public class TestClientFx extends Application
 			@Override 
 			public void handle (MouseEvent e)
 			{	
-				System.out.println(e);//display full event for debug
+//				System.out.println(e);//display full event for debug
+//
+//				//starts the game
+//				client.gameStart();
 
-				//starts the game
-				client.gameStart();
+//				btSend.setVisible(false);
 			}
 		};
 

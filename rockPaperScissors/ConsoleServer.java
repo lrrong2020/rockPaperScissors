@@ -11,8 +11,12 @@ public class ConsoleServer
 	protected static final int PORT = 8000;//for socket connection
 
 	//to store users and identify them with randomly generated universally unique identifier (UUID)
-	protected static final Map<UUID, Socket> ONLINE_USER_MAP = new ConcurrentHashMap<UUID, Socket>();	
+	protected static final Map<UUID, Socket> ONLINE_USER_MAP = new ConcurrentHashMap<UUID, Socket>();
 	protected static final int MAX_NO_OF_USERS = 2; //assume there are only 2 users
+	
+	//class-level client list to synchronize
+	protected static final List<HandleAClient> CLIENT_HANDLER_LIST = new ArrayList<HandleAClient>();
+
 	private Thread socketThread = null;
 	//constructor	
 	public ConsoleServer() 
@@ -61,6 +65,7 @@ public class ConsoleServer
 						socket = serverSocket.accept();
 						// Create a new thread for the connection
 						HandleAClient task = new HandleAClient(socket);
+						CLIENT_HANDLER_LIST.add(task);
 
 						// Start a new thread for each client
 						clientThread = new Thread(task);
@@ -78,6 +83,8 @@ public class ConsoleServer
 			}		
 		}
 	}
+	//end of inner class
+	
 
 	/** Inner Class **/
 	// Define the thread class for handling new connection
@@ -110,12 +117,14 @@ public class ConsoleServer
 			//2 players have registered
 			if(ConsoleServer.ONLINE_USER_MAP.size() == 2) 
 			{
-				//send startBean
+				//send startBean to all clients
+				System.out.println("\nHandleAClient: 2 users have registered\n");
+				ConsoleServer.startGame();
 			}
 
 			/* Display connection results */
 			// Display the time
-			System.out.println("\n======Starting a thread for client at " + new Date() + "======\n");
+			System.out.println("\n============Starting a thread for client at " + new Date() + "============\n");
 
 			// Find the client's host name, and IP address
 			InetAddress inetAddress = socket.getInetAddress();
@@ -149,6 +158,7 @@ public class ConsoleServer
 		
 		public void sendStartBean() throws IOException 
 		{
+			System.out.println("Sending start Bean");
 			DataBean idb = new StartBean();//default constructor to indicates server-sent startBean
 
 			//send the start DataBean to the client
@@ -219,13 +229,13 @@ public class ConsoleServer
 				}
 				catch(IOException | ClassNotFoundException ex) 
 				{
-					//					ex.printStackTrace();//debug
+					//ex.printStackTrace();//debug
 					return;
 				}
 				finally 
 				{
-					System.out.println("======\n======\nWARNING!");
-					System.out.println("A client quit\n======\n======");
+					System.out.println("============\n============\nWARNING!");
+					System.out.println("A client quit\n============\n============");
 
 					//remove a client from user map
 					ConsoleServer.ONLINE_USER_MAP.remove(this.getUUID());
@@ -238,6 +248,23 @@ public class ConsoleServer
 	}
 	//end of inner class
 
+	//class level start game
+	public static void startGame() 
+	{
+		System.out.println("Starting game for all clients");
+		for(HandleAClient h : CLIENT_HANDLER_LIST) 
+		{
+			try 
+			{
+				h.sendStartBean();
+			} 
+			catch (IOException e) 
+			{
+				e.printStackTrace();
+			}
+		}
+	}
+	
 	public static void main(String args[]) 
 	{
 		new ConsoleServer();
