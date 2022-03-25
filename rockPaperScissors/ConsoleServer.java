@@ -148,35 +148,39 @@ public class ConsoleServer
 			return this.uuid;
 		}
 
+		private void sendDataBean(DataBean dataBean) throws IOException
+		{
+			this.outputToClient.writeObject(dataBean);
+			this.outputToClient.flush();	
+		}
+		
 		//send initial data to the client
 		public void sendInitBean() throws IOException 
 		{
-			DataBean idb = new InitBean(this.getUUID(),
+			DataBean db = new InitBean(this.getUUID(),
 					ConsoleServer.ONLINE_USER_MAP.size() == 1 ? true:false);//indicates that if the user is the host (first registered user)
-
+			
 			//send the initial DataBean to the client
-			this.outputToClient.writeObject(idb);
-			this.outputToClient.flush();		
+			sendDataBean(db);
+				
 		}
 		
 		public void sendStartBean() throws IOException 
 		{
 			System.out.println("Sending start Bean");
-			DataBean idb = new StartBean();//default constructor to indicates server-sent startBean
+			DataBean db = new StartBean();//default constructor to indicates server-sent startBean
 
 			//send the start DataBean to the client
-			this.outputToClient.writeObject(idb);
-			this.outputToClient.flush();		
+			sendDataBean(db);	
 		}
 		
 		public void sendGameOnBean() throws IOException 
 		{
 			System.out.println("Sending start Bean");
-			DataBean idb = new GameOnBean();//default constructor to indicates server-sent startBean
+			DataBean db = new GameOnBean();//default constructor to indicates server-sent startBean
 
-			//send the start DataBean to the client
-			this.outputToClient.writeObject(idb);
-			this.outputToClient.flush();	
+			//send the game on DataBean to the client
+			sendDataBean(db);	
 		}
 
 		//handle received DataBean from client
