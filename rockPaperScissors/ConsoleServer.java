@@ -56,10 +56,8 @@ public class ConsoleServer
 		public void run()
 		{
 			//continuously accept the connections
-			while (true)
+			while (ConsoleServer.ONLINE_USER_MAP.size() <= ConsoleServer.MAX_NO_OF_USERS)
 			{
-				if(ConsoleServer.ONLINE_USER_MAP.size() <= ConsoleServer.MAX_NO_OF_USERS) 
-				{
 					// Listen for a new connection request
 					Socket socket;
 					Thread clientThread = null;
@@ -86,11 +84,7 @@ public class ConsoleServer
 					{
 						e.printStackTrace();
 					}
-				}
-				else 
-				{
-					//do nothing
-				}
+
 			}		
 		}
 	}

@@ -182,7 +182,6 @@ public class Client
 						display("Error. Please restart.");
 						return;
 					}
-
 				}while(!(objFromServer instanceof EndBean));
 			}
 		};
