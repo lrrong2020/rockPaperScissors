@@ -44,13 +44,6 @@ public class Choice implements Serializable
 		return choiceName;
 	}
 	
-	public static void main(String[] args) throws ClassNotFoundException 
-	{
-		Choice choice1 = new Choice("PAPER");
-		Choice choice2 = new Choice(GESTURES.ROCK);
-		System.out.println(choice1.wins(choice2));
-		
-	}
 	
 	public int wins(Choice opponentChoice) {
 		if(opponentChoice.getChoiseName().equals(GESTURES.ROCK)) 
