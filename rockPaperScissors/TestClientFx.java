@@ -53,6 +53,7 @@ public class TestClientFx extends Application
 	}
 
 	//get JavaFX Group
+
 	public static Pane getRoot()
 	{
 		//create button and set its layout to display
@@ -68,7 +69,7 @@ public class TestClientFx extends Application
 		scissors.setLayoutX(320);
 		scissors.setLayoutY(200);
 
-		//set root Group & bind button and TextArea to it
+
 		Pane root = new Pane();
 		root.getChildren().addAll(rock,paper,scissors,ta);
 		
@@ -81,6 +82,7 @@ public class TestClientFx extends Application
 		scissors.layoutYProperty().bind(root.heightProperty().multiply(0.87));
 		ta.layoutXProperty().bind(root.widthProperty().divide(14));
 		ta.layoutYProperty().bind(root.heightProperty().multiply(0.1));
+
 		//listen the mouse event and handle the event
 		EventHandler<MouseEvent> rockListener = new EventHandler<MouseEvent>() 
 		{ 
