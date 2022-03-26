@@ -17,6 +17,7 @@ public class Choice implements Serializable
 		String SCISSORS = "SCISSORS";
 	}
 	
+	//constructors
 	public Choice() 
 	{
 		super();
@@ -27,6 +28,7 @@ public class Choice implements Serializable
 		this.setChoiceName(s);
 	}
 	
+	//setters and getters
 	public void setChoiceName(String choiceName) throws ClassNotFoundException
 	{
 		if(choiceName.equals(GESTURES.ROCK) || choiceName.equals(GESTURES.PAPER) || choiceName.equals(GESTURES.SCISSORS))
@@ -45,7 +47,9 @@ public class Choice implements Serializable
 	}
 	
 	
-	public int wins(Choice opponentChoice) {
+	//calculate result
+	public int wins(Choice opponentChoice)
+	{
 		if(opponentChoice.getChoiseName().equals(GESTURES.ROCK)) 
 		{
 			if(this.choiceName .equals(GESTURES.PAPER)) return 2;
