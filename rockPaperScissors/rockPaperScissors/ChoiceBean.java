@@ -15,8 +15,17 @@ public class ChoiceBean extends DataBean
 	public ChoiceBean(String choiceName, Player player) throws ClassNotFoundException
 	{
 		this.setPlayer(player);
-		choice.setChoiceName(choiceName);
-		
+
+		if(choiceName.equals(Choice.GESTURES.ROCK) || choiceName.equals(Choice.GESTURES.PAPER) || choiceName.equals(Choice.GESTURES.SCISSORS)) 
+		{
+			this.setChoice(new Choice(choiceName));
+			choice.setChoiceName(choiceName);
+		}
+		else 
+		{
+			throw new ClassNotFoundException("No such choice");
+		}
+
 	}
 	
 	//setters and getters

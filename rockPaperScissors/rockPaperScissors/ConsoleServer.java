@@ -174,7 +174,7 @@ public class ConsoleServer
 
 		public void sendResultBean(Choice c1, Choice c2, int res) throws IOException 
 		{
-			System.out.println("Sending start Bean");
+			System.out.println("Sending result Bean");
 			DataBean idb = new ResultBean(c1, c2, res);//default constructor to indicates server-sent startBean
 
 			//send the start DataBean to the client
@@ -205,23 +205,36 @@ public class ConsoleServer
 					//do nothing
 				}
 
-				//send MatchBean to all users indicates that the game is on
-				this.outputToClient.writeObject(new ChoiceBean());//incomplete constructor
+				//send StartBean to all users indicates that the game is on
+				this.outputToClient.writeObject(new StartBean());//incomplete constructor
 			}
 
 			if(receivedBean instanceof ChoiceBean) 
 			{
 
 				//put the (ChoiceBean) in class-level Choice list
-				ChoiceBean[] gameOnBeanArr = CLIENT_CHOICE_BEAN_LIST.get(roundNo);
-				if(gameOnBeanArr.length < MAX_NO_OF_USERS) 
+				
+				if(CLIENT_CHOICE_BEAN_LIST.size() == 0) 
 				{
-					gameOnBeanArr[0] = (ChoiceBean) receivedBean;
+					CLIENT_CHOICE_BEAN_LIST.add(new ChoiceBean[2]);
+				}
+				
+				else if(CLIENT_CHOICE_BEAN_LIST.get(0)== null)
+				{	
+					ChoiceBean[] choiceBeanArr = CLIENT_CHOICE_BEAN_LIST.get(0);
+					choiceBeanArr[0] = (ChoiceBean) receivedBean;
 				}
 				else 
 				{
+					ChoiceBean[] choiceBeanArr = CLIENT_CHOICE_BEAN_LIST.get(0);
+					choiceBeanArr[1] = (ChoiceBean) receivedBean;
 					//broadcast
-					sendResults(roundNo);
+					try {
+						sendResults();
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
 			}
 		}
@@ -268,9 +281,10 @@ public class ConsoleServer
 				{
 					System.out.println("============\n============\nWARNING!");
 					System.out.println("A client quit\n============\n============");
-
-					//remove a client from user map
-					ConsoleServer.ONLINE_USER_MAP.remove(this.getUUID());
+					System.out.println("THIS UUID:" + this.getUUID());
+					
+//					//remove a client from user map
+//					ConsoleServer.ONLINE_USER_MAP.remove(this.getUUID());
 					this.printAllUsers();
 
 					//send ExitBean to clients
@@ -297,10 +311,10 @@ public class ConsoleServer
 		}
 	}
 
-	public static void sendResults(int rdNo) throws IOException 
+	public static void sendResults() throws Exception 
 	{
 
-		ChoiceBean[] choiceBeanArr = ConsoleServer.CLIENT_CHOICE_BEAN_LIST.get(rdNo);//1
+		ChoiceBean[] choiceBeanArr = ConsoleServer.CLIENT_CHOICE_BEAN_LIST.get(0);//0
 
 		ChoiceBean player0ChoiceBean = choiceBeanArr[0];
 		ChoiceBean player1ChoiceBean = choiceBeanArr[1];
@@ -311,15 +325,19 @@ public class ConsoleServer
 		HandleAClient player1Handler = null;
 
 		//find the HandleAClient instance that matches
-		for(int j = 0;j < ConsoleServer.CLIENT_HANDLER_LIST.size();j++) 
-		{
-			if(player0Socket.equals(CLIENT_HANDLER_LIST.get(j).getSocket())) 
+
+			if(player0Socket.equals(CLIENT_HANDLER_LIST.get(0).getSocket())) 
 			{
-				player0Handler = CLIENT_HANDLER_LIST.get(j);
-				player1Handler = CLIENT_HANDLER_LIST.get(j==0?1:0);//get another
-				break;
+				player0Handler = CLIENT_HANDLER_LIST.get(0);
+				player1Handler = CLIENT_HANDLER_LIST.get(1);//get another
 			}
-		}
+			else if(player0Socket.equals(CLIENT_HANDLER_LIST.get(1).getSocket())) 
+			{
+				player0Handler = CLIENT_HANDLER_LIST.get(1);
+				player1Handler = CLIENT_HANDLER_LIST.get(0);//get another
+			}
+			else throw new Exception("Socket not found");
+
 
 		int result = player0ChoiceBean.getChoice().wins(player1ChoiceBean.getChoice());
 

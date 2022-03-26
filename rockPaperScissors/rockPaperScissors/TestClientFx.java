@@ -79,7 +79,7 @@ public class TestClientFx extends Application
 			{	
 				try 
 				{
-					client.gameOn(Choice.GESTURES.ROCK);
+					client.choose(Choice.GESTURES.ROCK);
 				}
 				catch (ClassNotFoundException e1) 
 				{
@@ -96,7 +96,7 @@ public class TestClientFx extends Application
 			{	
 				try 
 				{
-					client.gameOn(Choice.GESTURES.PAPER);
+					client.choose(Choice.GESTURES.PAPER);
 				} 
 				catch (ClassNotFoundException e1) 
 				{
@@ -113,7 +113,7 @@ public class TestClientFx extends Application
 			{	
 				try 
 				{
-					client.gameOn(Choice.GESTURES.SCISSORS);
+					client.choose(Choice.GESTURES.SCISSORS);
 				} 
 				catch (ClassNotFoundException e1) 
 				{
