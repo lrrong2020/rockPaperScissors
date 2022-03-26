@@ -88,7 +88,7 @@ public class Client
 				ResultBean resultBean = (ResultBean)receivedBean;
 				display("Your choice: " + resultBean.getYourChoice().getChoiseName());
 				display("Your opponent's choice: " + resultBean.getOpponentChoice().getChoiseName());
-				switch(resultBean.getResult()) 
+				switch(resultBean.getYourChoice().wins(resultBean.getOpponentChoice())) 
 				{
 					case 0:
 						display("You Lose");

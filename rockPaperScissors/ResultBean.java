@@ -6,17 +6,15 @@ public class ResultBean extends DataBean
 	private static final long serialVersionUID = 1L;
 	private Choice yourChoice = null;
 	private Choice opponentChoice = null;
-	private int result = -1;
 	public ResultBean() 
 	{
 		super();
 	}
 	
-	public ResultBean(Choice yourChoice, Choice opponentChoice, int result) 
+	public ResultBean(Choice yourChoice, Choice opponentChoice) 
 	{
 		this.setYourChoice(yourChoice);
 		this.setOpponentChoice(opponentChoice);
-		this.setResult(result);
 	}
 	public void setYourChoice(Choice yourChoice)
 	{
@@ -36,13 +34,4 @@ public class ResultBean extends DataBean
 		return opponentChoice;
 	}
 
-	public int getResult()
-	{
-		return result;
-	}
-
-	public void setResult(int result)
-	{
-		this.result = result;
-	}
 }

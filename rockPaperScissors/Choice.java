@@ -55,22 +55,22 @@ public class Choice implements Serializable
 	public int wins(Choice opponentChoice) {
 		if(opponentChoice.getChoiseName().equals(GESTURES.ROCK)) 
 		{
-			if(this.choiceName == GESTURES.PAPER) return 2;
-			else if(this.choiceName == GESTURES.SCISSORS) return 0;
+			if(this.choiceName .equals(GESTURES.PAPER)) return 2;
+			else if(this.choiceName .equals( GESTURES.SCISSORS)) return 0;
 			else return 1;
 		}
 		
 		else if(opponentChoice.getChoiseName().equals(GESTURES.PAPER)) 
 		{
-			if(this.choiceName == GESTURES.SCISSORS) return 2;
-			else if(this.choiceName == GESTURES.ROCK) return 0;
+			if(this.choiceName .equals (GESTURES.SCISSORS)) return 2;
+			else if(this.choiceName .equals (GESTURES.ROCK)) return 0;
 			else return 1;
 		}
 		
 		else if(opponentChoice.getChoiseName().equals(GESTURES.SCISSORS))
 		{
-			if(this.choiceName == GESTURES.ROCK) return 2;
-			else if(this.choiceName == GESTURES.PAPER) return 0;
+			if(this.choiceName .equals (GESTURES.ROCK)) return 2;
+			else if(this.choiceName .equals (GESTURES.PAPER)) return 0;
 			else return 1;
 		}
 		else 

@@ -164,10 +164,10 @@ public class ConsoleServer
 			this.outputToClient.flush();		
 		}
 
-		public void sendResultBean(Choice c1, Choice c2, int res) throws IOException 
+		public void sendResultBean(Choice c1, Choice c2) throws IOException 
 		{
 			System.out.println("Sending result Bean");
-			DataBean idb = new ResultBean(c1, c2, res);//default constructor to indicates server-sent startBean
+			DataBean idb = new ResultBean(c1, c2);//default constructor to indicates server-sent startBean
 
 			//send the start DataBean to the client
 			this.outputToClient.writeObject(idb);
@@ -340,11 +340,13 @@ public class ConsoleServer
 		
 		System.out.println(player0ChoiceBean.toString());
 		System.out.println(player1ChoiceBean.toString());
+		System.out.println(player0ChoiceBean.getChoice().getChoiseName());
+		System.out.println(player1ChoiceBean.getChoice().getChoiseName());
 		System.out.println(player0ChoiceBean.getChoice().wins(player1ChoiceBean.getChoice()));
 		
 		//symmetric
-		player0Handler.sendResultBean(player0ChoiceBean.getChoice(), player1ChoiceBean.getChoice(), result);
-		player1Handler.sendResultBean(player1ChoiceBean.getChoice(), player0ChoiceBean.getChoice(), (2 - result));
+		player0Handler.sendResultBean(player0ChoiceBean.getChoice(), player1ChoiceBean.getChoice());
+		player1Handler.sendResultBean(player1ChoiceBean.getChoice(), player0ChoiceBean.getChoice());
 
 
 	}
