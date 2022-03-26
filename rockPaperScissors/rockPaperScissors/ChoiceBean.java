@@ -4,7 +4,7 @@ package rockPaperScissors.rockPaperScissors;
 public class ChoiceBean extends DataBean
 {
 	private static final long serialVersionUID = 1L;
-	private Choice choice = null;
+	private Choice choice = new Choice();
 	private Player player = null;
 	//constructors
 	public ChoiceBean() 
@@ -15,14 +15,8 @@ public class ChoiceBean extends DataBean
 	public ChoiceBean(String choiceName, Player player) throws ClassNotFoundException
 	{
 		this.setPlayer(player);
-		if(choiceName.equals(Choice.GESTURES.ROCK) || choiceName.equals(Choice.GESTURES.PAPER)) 
-		{
-			choice.setChoiceName(choiceName);
-		}
-		else 
-		{
-			throw new ClassNotFoundException("No such choice");
-		}
+		choice.setChoiceName(choiceName);
+		
 	}
 	
 	//setters and getters

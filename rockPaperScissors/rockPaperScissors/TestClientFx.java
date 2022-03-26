@@ -68,7 +68,8 @@ public class TestClientFx extends Application
 		scissors.setLayoutY(200);
 
 		//set root Group & bind button and TextArea to it
-		Group root = new Group(rock,paper,scissors, ta);
+		Group root = new Group();
+		root.getChildren().addAll(rock,paper,scissors,ta);
 
 		//listen the mouse event and handle the event
 		EventHandler<MouseEvent> rockListener = new EventHandler<MouseEvent>() 
