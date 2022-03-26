@@ -336,12 +336,12 @@ public class ConsoleServer
 		}
 		else throw new Exception("Socket not found");
 
-
+		
 		int result = player0ChoiceBean.getChoice().wins(player1ChoiceBean.getChoice());
 
 		//symmetric
 		player0Handler.sendResultBean(player0ChoiceBean.getChoice(), player1ChoiceBean.getChoice(), result);
-		player1Handler.sendResultBean(player1ChoiceBean.getChoice(), player0ChoiceBean.getChoice(), (2 - result));
+		player1Handler.sendResultBean(player1ChoiceBean.getChoice(), player0ChoiceBean.getChoice(), (2-result));
 
 
 	}

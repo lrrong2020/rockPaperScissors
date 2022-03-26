@@ -43,14 +43,14 @@ public class Choice implements Serializable
 		return choiceName;
 	}
 	public int wins(Choice opp) {
-		if(opp.getChoiseName() == GESTURES.ROCK) 
+		if(opp.getChoiseName().equals(GESTURES.ROCK)) 
 		{
-			if(this.choiceName == GESTURES.PAPER) return 2;
-			else if(this.choiceName == GESTURES.SCISSORS) return 0;
+			if(this.choiceName==GESTURES.PAPER) return 2;
+			else if(this.choiceName==GESTURES.SCISSORS) return 0;
 			else return 1;
 		}
 		
-		else if(opp.getChoiseName() == GESTURES.PAPER) 
+		else if(opp.getChoiseName().equals(GESTURES.PAPER)) 
 		{
 			if(this.choiceName == GESTURES.SCISSORS) return 2;
 			else if(this.choiceName == GESTURES.ROCK) return 0;
