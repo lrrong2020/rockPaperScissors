@@ -46,5 +46,10 @@ public class ChoiceBean extends DataBean
 	{
 		return this.choice;
 	}
+	
+	public String toString() 
+	{
+		return "Player: "+this.player.getUUID() + "Choice:" + this.choice.getChoiseName();
+	}
 
 }

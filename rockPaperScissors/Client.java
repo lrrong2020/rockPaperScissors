@@ -86,8 +86,8 @@ public class Client
 			else if (receivedBean instanceof ResultBean) 
 			{
 				ResultBean resultBean = (ResultBean)receivedBean;
-				display("Your choice: " + resultBean.getYourChoice());
-				display("Your opponent's choice: " + resultBean.getOpponentChoice());
+				display("Your choice: " + resultBean.getYourChoice().getChoiseName());
+				display("Your opponent's choice: " + resultBean.getOpponentChoice().getChoiseName());
 				switch(resultBean.getResult()) 
 				{
 					case 0:

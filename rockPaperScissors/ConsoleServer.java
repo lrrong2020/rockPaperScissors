@@ -58,32 +58,32 @@ public class ConsoleServer
 			//continuously accept the connections
 			while (ConsoleServer.ONLINE_USER_MAP.size() <= ConsoleServer.MAX_NO_OF_USERS)
 			{
-					// Listen for a new connection request
-					Socket socket;
-					Thread clientThread = null;
-					try 
-					{
-						socket = serverSocket.accept();
-						// Create a new thread for the connection
-						HandleAClient task = new HandleAClient(socket);
-						CLIENT_HANDLER_LIST.add(task);
+				// Listen for a new connection request
+				Socket socket;
+				Thread clientThread = null;
+				try 
+				{
+					socket = serverSocket.accept();
+					// Create a new thread for the connection
+					HandleAClient task = new HandleAClient(socket);
+					CLIENT_HANDLER_LIST.add(task);
 
-						// Start a new thread for each client
-						clientThread = new Thread(task);
-						clientThread.start();
+					// Start a new thread for each client
+					clientThread = new Thread(task);
+					clientThread.start();
 
-						//2 players have registered
-						if(ConsoleServer.CLIENT_HANDLER_LIST.size() == 2) 
-						{
-							//send startBean to all clients
-							System.out.println("\nHandleAClient: 2 users have registered\n");
-							ConsoleServer.startGame();
-						}
-					} 
-					catch (IOException e) 
+					//2 players have registered
+					if(ConsoleServer.CLIENT_HANDLER_LIST.size() == 2) 
 					{
-						e.printStackTrace();
+						//send startBean to all clients
+						System.out.println("\nHandleAClient: 2 users have registered\n");
+						ConsoleServer.startGame();
 					}
+				} 
+				catch (IOException e) 
+				{
+					e.printStackTrace();
+				}
 
 			}		
 		}
@@ -205,15 +205,14 @@ public class ConsoleServer
 
 			if(receivedBean instanceof ChoiceBean) 
 			{
-
+				System.out.println("Received Bean: " + receivedBean.toString());
 				//put the (ChoiceBean) in class-level Choice list
-				
-				if(CLIENT_CHOICE_BEAN_LIST.size() == 0) 
-				{
-					CLIENT_CHOICE_BEAN_LIST.add(new ChoiceBean[2]);
-				}
-				
-				else if(CLIENT_CHOICE_BEAN_LIST.get(0)[0] == null)
+
+				System.out.println("Initialize choiceBeanArr for current round");
+				CLIENT_CHOICE_BEAN_LIST.add(new ChoiceBean[2]);
+
+
+				if(CLIENT_CHOICE_BEAN_LIST.get(0)[0] == null)
 				{	
 					ChoiceBean[] choiceBeanArr = CLIENT_CHOICE_BEAN_LIST.get(0);
 					choiceBeanArr[0] = (ChoiceBean) receivedBean;
@@ -257,7 +256,7 @@ public class ConsoleServer
 		@Override
 		public void run() 
 		{
-			
+
 			try {
 				initializeIOStreams();
 				sendInitBean();
@@ -279,9 +278,9 @@ public class ConsoleServer
 					System.out.println("============\n============\nWARNING!");
 					System.out.println("A client quit\n============\n============");
 					System.out.println("Quit client UUID:" + this.getUUID());
-					
-//					//remove a client from user map
-//					ConsoleServer.ONLINE_USER_MAP.remove(this.getUUID());
+
+					//					//remove a client from user map
+					//					ConsoleServer.ONLINE_USER_MAP.remove(this.getUUID());
 					this.printAllUsers();
 
 					//send ExitBean to clients
@@ -325,17 +324,17 @@ public class ConsoleServer
 
 		//find the HandleAClient instance that matches
 
-			if(player0Socket.equals(CLIENT_HANDLER_LIST.get(0).getSocket())) 
-			{
-				player0Handler = CLIENT_HANDLER_LIST.get(0);
-				player1Handler = CLIENT_HANDLER_LIST.get(1);//get another
-			}
-			else if(player0Socket.equals(CLIENT_HANDLER_LIST.get(1).getSocket())) 
-			{
-				player0Handler = CLIENT_HANDLER_LIST.get(1);
-				player1Handler = CLIENT_HANDLER_LIST.get(0);//get another
-			}
-			else throw new Exception("Socket not found");
+		if(player0Socket.equals(CLIENT_HANDLER_LIST.get(0).getSocket())) 
+		{
+			player0Handler = CLIENT_HANDLER_LIST.get(0);
+			player1Handler = CLIENT_HANDLER_LIST.get(1);//get another
+		}
+		else if(player0Socket.equals(CLIENT_HANDLER_LIST.get(1).getSocket())) 
+		{
+			player0Handler = CLIENT_HANDLER_LIST.get(1);
+			player1Handler = CLIENT_HANDLER_LIST.get(0);//get another
+		}
+		else throw new Exception("Socket not found");
 
 
 		int result = player0ChoiceBean.getChoice().wins(player1ChoiceBean.getChoice());
