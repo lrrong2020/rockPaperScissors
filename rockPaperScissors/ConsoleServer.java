@@ -84,12 +84,10 @@ public class ConsoleServer
 				{
 					e.printStackTrace();
 				}
-
 			}		
 		}
 	}
 	//end of inner class
-
 
 	/** Inner Class **/
 	// Define the thread class for handling new connection
@@ -336,8 +334,10 @@ public class ConsoleServer
 		}
 		else throw new Exception("Socket not found");
 
-		
+		System.out.print(player0ChoiceBean.getChoice().toString());
+		System.out.print(player1ChoiceBean.getChoice().toString());
 		int result = player0ChoiceBean.getChoice().wins(player1ChoiceBean.getChoice());
+		System.out.print(result);
 
 		//symmetric
 		player0Handler.sendResultBean(player0ChoiceBean.getChoice(), player1ChoiceBean.getChoice(), result);
