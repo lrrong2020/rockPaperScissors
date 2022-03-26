@@ -276,10 +276,6 @@ public class ConsoleServer
 				catch(Exception ex) 
 				{
 					ex.printStackTrace();//debug
-					return;
-				}
-				finally 
-				{
 					System.out.println("============\n============\nWARNING!");
 					System.out.println("A client quit\n============\n============");
 					System.out.println("Quit client UUID:" + this.getUUID());
@@ -289,7 +285,9 @@ public class ConsoleServer
 					this.printAllUsers();
 
 					//send ExitBean to clients
+					return;
 				}
+
 			}
 		}
 	}
