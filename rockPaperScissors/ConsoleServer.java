@@ -281,7 +281,7 @@ public class ConsoleServer
 				{
 					System.out.println("============\n============\nWARNING!");
 					System.out.println("A client quit\n============\n============");
-					System.out.println("THIS UUID:" + this.getUUID());
+					System.out.println("Quit client UUID:" + this.getUUID());
 					
 //					//remove a client from user map
 //					ConsoleServer.ONLINE_USER_MAP.remove(this.getUUID());
