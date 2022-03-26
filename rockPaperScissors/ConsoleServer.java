@@ -84,12 +84,10 @@ public class ConsoleServer
 				{
 					e.printStackTrace();
 				}
-
 			}		
 		}
 	}
 	//end of inner class
-
 
 	/** Inner Class **/
 	// Define the thread class for handling new connection
