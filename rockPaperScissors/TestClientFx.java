@@ -10,6 +10,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
+import javafx.scene.layout.*;
 
 public class TestClientFx extends Application
 {
@@ -52,7 +53,7 @@ public class TestClientFx extends Application
 	}
 
 	//get JavaFX Group
-	public static Group getRoot()
+	public static StackPane getRoot()
 	{
 		//create button and set its layout to display
 		Button rock = new Button("Rock");//create new button instance
@@ -68,9 +69,15 @@ public class TestClientFx extends Application
 		scissors.setLayoutY(200);
 
 		//set root Group & bind button and TextArea to it
-		Group root = new Group();
-		root.getChildren().addAll(rock,paper,scissors,ta);
-
+		StackPane root = new StackPane();
+		root.getChildren().addAll(rock,paper,scissors);
+		rock.layoutXProperty().bind(root.widthProperty().divide(3));
+		rock.layoutYProperty().bind(root.heightProperty().divide(3));
+		paper.layoutXProperty().bind(root.widthProperty().divide(2.5));
+		paper.layoutYProperty().bind(root.heightProperty().divide(2));
+		scissors.layoutXProperty().bind(root.widthProperty().divide(2));
+		scissors.layoutYProperty().bind(root.heightProperty().divide(1));
+		
 		//listen the mouse event and handle the event
 		EventHandler<MouseEvent> rockListener = new EventHandler<MouseEvent>() 
 		{ 

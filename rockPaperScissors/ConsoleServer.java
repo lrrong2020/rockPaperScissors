@@ -334,11 +334,9 @@ public class ConsoleServer
 		}
 		else throw new Exception("Socket not found");
 
-		System.out.print(player0ChoiceBean.getChoice().toString());
-		System.out.print(player1ChoiceBean.getChoice().toString());
 		int result = player0ChoiceBean.getChoice().wins(player1ChoiceBean.getChoice());
-		System.out.print(result);
-
+		
+		
 		//symmetric
 		player0Handler.sendResultBean(player0ChoiceBean.getChoice(), player1ChoiceBean.getChoice(), result);
 		player1Handler.sendResultBean(player1ChoiceBean.getChoice(), player0ChoiceBean.getChoice(), (2-result));
