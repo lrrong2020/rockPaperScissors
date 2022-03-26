@@ -180,6 +180,7 @@ public class Client
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 						display("Error. Please restart.");
+						display(e.toString());
 						return;
 					}
 				}while(!(objFromServer instanceof EndBean));

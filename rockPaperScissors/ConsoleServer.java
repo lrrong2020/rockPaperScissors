@@ -213,7 +213,7 @@ public class ConsoleServer
 					CLIENT_CHOICE_BEAN_LIST.add(new ChoiceBean[2]);
 				}
 				
-				else if(CLIENT_CHOICE_BEAN_LIST.get(0)== null)
+				else if(CLIENT_CHOICE_BEAN_LIST.get(0)[0] == null)
 				{	
 					ChoiceBean[] choiceBeanArr = CLIENT_CHOICE_BEAN_LIST.get(0);
 					choiceBeanArr[0] = (ChoiceBean) receivedBean;
@@ -257,18 +257,25 @@ public class ConsoleServer
 		@Override
 		public void run() 
 		{
+			
+			try {
+				initializeIOStreams();
+				sendInitBean();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
 			// Continuously serve the client
 			while(true) 
 			{	
 				try
 				{
-					initializeIOStreams();
-					sendInitBean();
 					handleReceivedBean();
 				}
-				catch(IOException | ClassNotFoundException ex) 
+				catch(Exception ex) 
 				{
-					//ex.printStackTrace();//debug
+					ex.printStackTrace();//debug
 					return;
 				}
 				finally 
