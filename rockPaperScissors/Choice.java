@@ -45,6 +45,7 @@ public class Choice implements Serializable
 	{
 		return choiceName;
 	}
+
 	
 	
 	//calculate result
@@ -57,6 +58,7 @@ public class Choice implements Serializable
 			else return 1;
 		}
 		
+
 		else if(opponentChoice.getChoiseName().equals(GESTURES.PAPER)) 
 		{
 			if(this.choiceName .equals (GESTURES.SCISSORS)) return 2;
