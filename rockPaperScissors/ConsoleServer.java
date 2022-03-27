@@ -15,9 +15,9 @@ public class ConsoleServer
 	protected static final Map<UUID, Socket> ONLINE_USER_MAP = new ConcurrentHashMap<UUID, Socket>();
 	protected static final int MAX_NO_OF_USERS = 2; //assume there are only 2 users
 
-	//class-level client list to synchronize
-	protected static final List<HandleAClient> CLIENT_HANDLER_LIST = new ArrayList<HandleAClient>();
-	protected static List<ChoiceBean[]> CLIENT_CHOICE_BEAN_LIST = new ArrayList<ChoiceBean[]>();
+	//class-level client lists to synchronize and store data
+	protected static final List<HandleAClient> CLIENT_HANDLER_LIST = new ArrayList<HandleAClient>();//list of 
+	protected static List<ChoiceBean[]> CLIENT_CHOICE_BEAN_LIST = new ArrayList<ChoiceBean[]>();//results of each round
 	protected static int roundNo = 1;
 
 	private Thread socketThread = null;
@@ -254,7 +254,6 @@ public class ConsoleServer
 		@Override
 		public void run() 
 		{
-
 			try {
 				initializeIOStreams();
 				sendInitBean();
@@ -270,7 +269,7 @@ public class ConsoleServer
 				{
 					handleReceivedBean();
 				}
-				catch(Exception ex) 
+				catch(IOException | ClassNotFoundException ex) 
 				{
 					ex.printStackTrace();//debug
 					System.out.println("============\n============\nWARNING!");
@@ -281,7 +280,7 @@ public class ConsoleServer
 					//					ConsoleServer.ONLINE_USER_MAP.remove(this.getUUID());
 					this.printAllUsers();
 
-					//send ExitBean to clients
+					//send ExceptionExitBean to clients
 					return;
 				}
 
@@ -334,20 +333,17 @@ public class ConsoleServer
 		}
 		else throw new Exception("Socket not found");
 
-		//compareTo
-		int result = player0ChoiceBean.getChoice().wins(player1ChoiceBean.getChoice());
 
-		
-		System.out.println(player0ChoiceBean.toString());
-		System.out.println(player1ChoiceBean.toString());
-		System.out.println(player0ChoiceBean.getChoice().getChoiseName());
-		System.out.println(player1ChoiceBean.getChoice().getChoiseName());
-		System.out.println(player0ChoiceBean.getChoice().wins(player1ChoiceBean.getChoice()));
-		
-		//symmetric
+		System.out.print(player0ChoiceBean.getChoice().toString());
+		System.out.print(player1ChoiceBean.getChoice().toString());
+
 		player0Handler.sendResultBean(player0ChoiceBean.getChoice(), player1ChoiceBean.getChoice());
 		player1Handler.sendResultBean(player1ChoiceBean.getChoice(), player0ChoiceBean.getChoice());
-
+	}
+	
+	public static void endGame() 
+	{
+		//send end bean
 
 	}
 
