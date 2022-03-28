@@ -210,18 +210,18 @@ public class ConsoleServer
 				CLIENT_CHOICE_BEAN_LIST.add(new ChoiceBean[2]);
 
 
-				if(CLIENT_CHOICE_BEAN_LIST.get(0)[0] == null)
+				if(CLIENT_CHOICE_BEAN_LIST.get(roundNo - 1)[0] == null)
 				{	
-					ChoiceBean[] choiceBeanArr = CLIENT_CHOICE_BEAN_LIST.get(0);
+					ChoiceBean[] choiceBeanArr = CLIENT_CHOICE_BEAN_LIST.get(roundNo - 1);
 					choiceBeanArr[0] = (ChoiceBean) receivedBean;
 				}
 				else 
 				{
-					ChoiceBean[] choiceBeanArr = CLIENT_CHOICE_BEAN_LIST.get(0);
+					ChoiceBean[] choiceBeanArr = CLIENT_CHOICE_BEAN_LIST.get(roundNo - 1);
 					choiceBeanArr[1] = (ChoiceBean) receivedBean;
 					//broadcast
 					try {
-						sendResults();
+						sendResults(roundNo - 1);
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -306,10 +306,10 @@ public class ConsoleServer
 		}
 	}
 
-	public static void sendResults() throws Exception 
+	public static void sendResults(int rNoI0) throws Exception 
 	{
 
-		ChoiceBean[] choiceBeanArr = ConsoleServer.CLIENT_CHOICE_BEAN_LIST.get(0);//0
+		ChoiceBean[] choiceBeanArr = ConsoleServer.CLIENT_CHOICE_BEAN_LIST.get(rNoI0);//0
 
 		ChoiceBean player0ChoiceBean = choiceBeanArr[0];
 		ChoiceBean player1ChoiceBean = choiceBeanArr[1];
@@ -339,6 +339,8 @@ public class ConsoleServer
 
 		player0Handler.sendResultBean(player0ChoiceBean.getChoice(), player1ChoiceBean.getChoice());
 		player1Handler.sendResultBean(player1ChoiceBean.getChoice(), player0ChoiceBean.getChoice());
+		
+		roundNo += 1;
 	}
 	
 	public static void endGame() 
