@@ -88,17 +88,17 @@ public class Client
 				ResultBean resultBean = (ResultBean)receivedBean;
 				display("Your choice: " + resultBean.getYourChoice().getChoiseName());
 				display("Your opponent's choice: " + resultBean.getOpponentChoice().getChoiseName());
-				switch(resultBean.getResult()) 
+				switch(resultBean.getYourChoice().wins(resultBean.getOpponentChoice())) 
 				{
-					case 0:
-						display("You Lose");
-						break;
-					case 1:
-						display("Tie");
-						break;
-					case 2:
-						display("You Win!");
-						break;
+				case 0:
+					display("You Lose");
+					break;
+				case 1:
+					display("Tie");
+					break;
+				case 2:
+					display("You Win!");
+					break;
 				}
 			}
 			else if (receivedBean instanceof EndBean) 
@@ -118,8 +118,8 @@ public class Client
 	{
 		display("The game is on!");
 		//		this.sendDataBean(new StartBean(player));
-		
-//		countDown(10);
+
+		//		countDown(10);
 	}
 	private static void countDown(int i) 
 	{
@@ -149,7 +149,7 @@ public class Client
 	}
 
 
-	private static void display(String string) 
+	private static void display(String string) //abstract and encapsulate
 	{
 		TestClientFx.appendTextArea(string);
 	}
@@ -162,6 +162,8 @@ public class Client
 		this.initializeConnection();
 
 		//start a new thread to continuously listen to the server
+		
+		//need to be closed after client terminated
 		objectListener = new Thread() {
 			public void run() 
 			{
@@ -186,7 +188,7 @@ public class Client
 				}while(!(objFromServer instanceof EndBean));
 			}
 		};
-		
+
 		objectListener.start();
 	}
 

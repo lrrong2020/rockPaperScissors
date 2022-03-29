@@ -1,7 +1,7 @@
 package rockPaperScissors.rockPaperScissors;
 
 //when the game ends
-public class EndBean extends DataBean
+public class EndBean extends ExitBean
 {
 	private static final long serialVersionUID = 1L;
 

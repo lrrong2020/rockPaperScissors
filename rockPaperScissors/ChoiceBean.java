@@ -4,8 +4,10 @@ package rockPaperScissors.rockPaperScissors;
 public class ChoiceBean extends DataBean
 {
 	private static final long serialVersionUID = 1L;
+	
 	private Choice choice = new Choice();
 	private Player player = null;
+	
 	//constructors
 	public ChoiceBean() 
 	{
@@ -25,7 +27,6 @@ public class ChoiceBean extends DataBean
 		{
 			throw new ClassNotFoundException("No such choice");
 		}
-
 	}
 	
 	//setters and getters
@@ -51,5 +52,4 @@ public class ChoiceBean extends DataBean
 	{
 		return "Player: "+this.player.getUUID() + "Choice:" + this.choice.getChoiseName();
 	}
-
 }

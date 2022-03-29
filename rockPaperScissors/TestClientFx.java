@@ -53,7 +53,9 @@ public class TestClientFx extends Application
 	}
 
 	//get JavaFX Group
-	public static StackPane getRoot()
+
+
+	public static Pane getRoot()
 	{
 		//create button and set its layout to display
 		Button rock = new Button("Rock");//create new button instance
@@ -68,16 +70,20 @@ public class TestClientFx extends Application
 		scissors.setLayoutX(320);
 		scissors.setLayoutY(200);
 
-		//set root Group & bind button and TextArea to it
-		StackPane root = new StackPane();
-		root.getChildren().addAll(rock,paper,scissors);
-		rock.layoutXProperty().bind(root.widthProperty().divide(3));
-		rock.layoutYProperty().bind(root.heightProperty().divide(3));
-		paper.layoutXProperty().bind(root.widthProperty().divide(2.5));
-		paper.layoutYProperty().bind(root.heightProperty().divide(2));
-		scissors.layoutXProperty().bind(root.widthProperty().divide(2));
-		scissors.layoutYProperty().bind(root.heightProperty().divide(1));
+		Pane root = new Pane();
+		root.getChildren().addAll(rock,paper,scissors,ta);
 		
+		
+		rock.layoutXProperty().bind(root.widthProperty().divide(3));
+		rock.layoutYProperty().bind(root.heightProperty().multiply(0.87));
+		paper.layoutXProperty().bind(root.widthProperty().divide(2));
+		paper.layoutYProperty().bind(root.heightProperty().multiply(0.87));
+		scissors.layoutXProperty().bind(root.widthProperty().divide(1.5));
+		scissors.layoutYProperty().bind(root.heightProperty().multiply(0.87));
+		ta.layoutXProperty().bind(root.widthProperty().divide(14));
+		ta.layoutYProperty().bind(root.heightProperty().multiply(0.1));
+
+
 		//listen the mouse event and handle the event
 		EventHandler<MouseEvent> rockListener = new EventHandler<MouseEvent>() 
 		{ 
