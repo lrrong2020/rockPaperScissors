@@ -1,4 +1,6 @@
-package rockPaperScissors.rockPaperScissors;
+package rockPaperScissors.rockPaperScissors.DataBeans;
+
+import rockPaperScissors.rockPaperScissors.Choice;
 
 public class ResultBean extends DataBean
 {
@@ -33,5 +35,4 @@ public class ResultBean extends DataBean
 	{
 		return opponentChoice;
 	}
-
 }

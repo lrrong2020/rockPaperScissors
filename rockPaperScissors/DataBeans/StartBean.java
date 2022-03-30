@@ -1,6 +1,8 @@
-package rockPaperScissors.rockPaperScissors;
+package rockPaperScissors.rockPaperScissors.DataBeans;
 
 import java.util.Date;
+
+import rockPaperScissors.rockPaperScissors.Player;
 
 public class StartBean extends DataBean
 {

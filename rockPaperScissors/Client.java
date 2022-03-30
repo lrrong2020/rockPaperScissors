@@ -3,6 +3,8 @@ package rockPaperScissors.rockPaperScissors;
 import java.io.*;
 import java.net.*;
 
+import rockPaperScissors.rockPaperScissors.DataBeans.*;
+
 //logical client
 public class Client
 {

@@ -1,4 +1,4 @@
-package rockPaperScissors.rockPaperScissors;
+package rockPaperScissors.rockPaperScissors.DataBeans;
 
 import java.util.Date;
 import java.util.UUID;
