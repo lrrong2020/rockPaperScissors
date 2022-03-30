@@ -4,19 +4,26 @@ import java.io.IOException;
 
 import javafx.application.Application;
 import javafx.event.EventHandler;
+import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.scene.layout.*;
+import javafx.scene.text.TextAlignment;
 
 public class TestClientFx extends Application
 {
 	// Text area to display contents
 	private static TextArea ta = new TextArea();
 	private static Client client = null;
+	private Scene welcomePage;
+	
 
 	//constructors
 	public TestClientFx() 
@@ -43,6 +50,38 @@ public class TestClientFx extends Application
 			appendTextArea("Invalid Data from server!");
 		}
 	}	
+	//Create the Welcome Page to show
+	public void CreateWelcomePage() {
+		Pane root=new Pane();
+		welcomePage=new Scene(root,600,400);
+		welcomePage.getStylesheets().add(getClass().getResource("PagesSettings.css").toExternalForm());
+		
+		Image icon=new Image("/rockPaperScissors/rockPaperScissors/media/icon.gif");
+		ImageView icon1=new ImageView(icon);
+		icon1.setFitHeight(150);
+		icon1.setFitWidth(200);
+		
+		Label label1=new Label("Rock Paper Scissors Game");
+		label1.getStyleClass().add("labelContent");
+		label1.layoutXProperty().bind(root.widthProperty().divide(3.2));
+		Button bt1=new Button("One round");
+		Button bt2=new Button("Best two out of three");
+		Button bt3=new Button("Best three out of five");
+	
+		bt1.layoutXProperty().bind(root.widthProperty().divide(1.5));
+		bt2.layoutXProperty().bind(bt1.layoutXProperty());
+		bt3.layoutXProperty().bind(bt1.layoutXProperty());
+		
+		bt1.layoutYProperty().bind(root.heightProperty().divide(3));
+		bt2.layoutYProperty().bind(root.heightProperty().divide(2));
+		bt3.layoutYProperty().bind(root.heightProperty().divide(1.5));
+		
+		icon1.layoutXProperty().bind(root.widthProperty().divide(12));
+		icon1.layoutYProperty().bind(root.heightProperty().divide(1.8));
+		
+		
+		root.getChildren().addAll(icon1,label1,bt1,bt2,bt3);
+	}
 
 	//similar syntax for rewriting append method of jTextArea of java.swing
 	//use it the same way as System.out.println(String string) !
@@ -144,28 +183,14 @@ public class TestClientFx extends Application
 		return root;
 	}
 
-	//display JavaFX scene
-	public static void showScene(Stage stage) 
-	{
-		//Creating a Scene 
-		Scene scene = new Scene(getRoot(), 600, 300); 
-
-		//Setting title to the scene 
-		stage.setTitle("Client"); 
-
-		//Adding the scene to the stage 
-		stage.setScene(scene); 
-
-		//Displaying the contents of a scene 
-		stage.show(); 
-	}
-
 	//start JavaFX application
 	@Override
 	public void start(Stage stage) throws Exception
 	{
-		appendTextArea("\nDisplaying Client");
-		showScene(stage);
+		stage.setTitle("Welcome to the Rock Paper Scissors Game!");
+    	CreateWelcomePage();
+    	stage.setScene(welcomePage);
+	    stage.show();
 	}
 
 	//main method to launch JavaFX application
