@@ -1,4 +1,4 @@
-package rockPaperScissors.rockPaperScissors;
+package rockPaperScissors.rockPaperScissors.DataBeans;
 
 public class ExitBean extends DataBean
 {

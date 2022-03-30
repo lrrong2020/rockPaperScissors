@@ -6,6 +6,8 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
+import rockPaperScissors.rockPaperScissors.DataBeans.*;
+
 
 public class ConsoleServer
 {

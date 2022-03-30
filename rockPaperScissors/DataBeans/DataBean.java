@@ -1,9 +1,8 @@
-package rockPaperScissors.rockPaperScissors;
+package rockPaperScissors.rockPaperScissors.DataBeans;
 
 import java.io.Serializable;
-import java.net.*;
 import java.util.Date;
-import java.util.*;
+
 public abstract class DataBean implements Serializable//implements Serializable to transmit through objectStream
 {	
 	private static final long serialVersionUID = 1L;

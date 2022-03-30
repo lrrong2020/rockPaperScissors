@@ -1,4 +1,4 @@
-package rockPaperScissors.rockPaperScissors;
+package rockPaperScissors.rockPaperScissors.DataBeans;
 
 //when the game ends
 public class EndBean extends ExitBean
