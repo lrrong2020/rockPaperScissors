@@ -16,6 +16,7 @@
 
 1. 页面切换
 2. 控制按钮隐藏/显示
+3. UI显示 (独立thread)
 
 
 **后端** Controller Communication
@@ -31,4 +32,5 @@
 3. 清理数据
 4. *DAO
 5. *统计所有轮 (Round)的结果 展示此局 (Game)最终胜负
+6.  严格检查roundNo Access Control
 
