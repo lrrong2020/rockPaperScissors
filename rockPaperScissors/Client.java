@@ -8,7 +8,6 @@ import rockPaperScissors.rockPaperScissors.DataBeans.*;
 //logical client
 public class Client
 {
-	
 	//socket parameters to build connection
 	private static final String HOST = "localhost";//may use IPv4 address
 	private static final int PORT = 8000;//port number
@@ -19,7 +18,7 @@ public class Client
 	private ObjectInputStream fromServer;
 	private Player player = new Player();//holds player singleton
 	private Thread objectListener = null;//class-level thread to continuously listen to the server
-	private Integer roundNoInt = Integer.valueOf(1);
+	private Integer roundNoInt = Integer.valueOf(1);//round number
 
 	public Client()
 	{
@@ -110,19 +109,6 @@ public class Client
 				}
 				display("==========");
 			}
-			else if (receivedBean instanceof ExitBean) 
-			{
-				//terminates the client
-			}
-			else if (receivedBean instanceof ExceptionExitBean) 
-			{
-				//terminates the client
-				
-			}
-			else if (receivedBean instanceof EndBean) 
-			{
-				//terminates the client
-			}
 			else
 			{
 				//when the Bean is non of defined DataBean
@@ -205,7 +191,9 @@ public class Client
 						return;
 					}
 				}while(!(objFromServer instanceof EndBean || objFromServer instanceof ExitBean || objFromServer instanceof ExceptionExitBean));
-			    display("EXITTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT");
+			    
+				//terminates the client
+				display("EXITTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT");
 			}
 		};
 
@@ -221,5 +209,4 @@ public class Client
 	{
 		this.roundNoInt = roundNoInt;
 	}
-
 }

@@ -329,6 +329,7 @@ public class ConsoleServer
 		}
 	}
 	
+	//exception occurs  
 	public static void sendExceptionExitBean() throws IOException
 	{
 		System.out.println("Inconsistency exit");
@@ -340,7 +341,6 @@ public class ConsoleServer
 	
 	public static void sendResults(int rNoI0) throws Exception 
 	{
-
 		ChoiceBean[] choiceBeanArr = ConsoleServer.CLIENT_CHOICE_BEAN_LIST.get(rNoI0);//0
 
 		ChoiceBean player0ChoiceBean = choiceBeanArr[0];
@@ -353,6 +353,7 @@ public class ConsoleServer
 
 		//find the HandleAClient instance that matches
 
+		//need to control access
 		if(player0Socket.equals(CLIENT_HANDLER_LIST.get(0).getSocket())) 
 		{
 			player0Handler = CLIENT_HANDLER_LIST.get(0);
@@ -378,7 +379,6 @@ public class ConsoleServer
 	public static void endGame() 
 	{
 		//send end bean
-
 	}
 
 	public static void main(String args[]) 
