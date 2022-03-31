@@ -8,15 +8,17 @@ public class ResultBean extends DataBean
 	private static final long serialVersionUID = 1L;
 	private Choice yourChoice = null;
 	private Choice opponentChoice = null;
+	private Integer roundNoInt;
 	public ResultBean() 
 	{
 		super();
 	}
 	
-	public ResultBean(Choice yourChoice, Choice opponentChoice) 
+	public ResultBean(Choice yourChoice, Choice opponentChoice, Integer roundNoInt) 
 	{
 		this.setYourChoice(yourChoice);
 		this.setOpponentChoice(opponentChoice);
+		this.setRoundNoInt(roundNoInt);
 	}
 	public void setYourChoice(Choice yourChoice)
 	{
@@ -34,5 +36,14 @@ public class ResultBean extends DataBean
 	public Choice getOpponentChoice()
 	{
 		return opponentChoice;
+	}
+
+	public void setRoundNoInt(Integer roundNoInt)
+	{
+		this.roundNoInt = roundNoInt;
+	}
+	public Integer getRoundNoInt()
+	{
+		return roundNoInt;
 	}
 }

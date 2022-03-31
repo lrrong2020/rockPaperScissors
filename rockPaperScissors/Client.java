@@ -8,6 +8,7 @@ import rockPaperScissors.rockPaperScissors.DataBeans.*;
 //logical client
 public class Client
 {
+	
 	//socket parameters to build connection
 	private static final String HOST = "localhost";//may use IPv4 address
 	private static final int PORT = 8000;//port number
@@ -18,7 +19,7 @@ public class Client
 	private ObjectInputStream fromServer;
 	private Player player = new Player();//holds player singleton
 	private Thread objectListener = null;//class-level thread to continuously listen to the server
-
+	private Integer roundNoInt = Integer.valueOf(1);
 
 	public Client()
 	{
@@ -88,6 +89,11 @@ public class Client
 			else if (receivedBean instanceof ResultBean) 
 			{
 				ResultBean resultBean = (ResultBean)receivedBean;
+				
+				this.setRoundNoInt(Integer.valueOf(resultBean.getRoundNoInt().intValue() + 1));//auto boxing?
+				
+				display("==========");
+				display("[Round]"+resultBean.getRoundNoInt().toString());
 				display("Your choice: " + resultBean.getYourChoice().getChoiseName());
 				display("Your opponent's choice: " + resultBean.getOpponentChoice().getChoiseName());
 				switch(resultBean.getYourChoice().wins(resultBean.getOpponentChoice())) 
@@ -102,6 +108,16 @@ public class Client
 					display("You Win!");
 					break;
 				}
+				display("==========");
+			}
+			else if (receivedBean instanceof ExitBean) 
+			{
+				//terminates the client
+			}
+			else if (receivedBean instanceof ExceptionExitBean) 
+			{
+				//terminates the client
+				
 			}
 			else if (receivedBean instanceof EndBean) 
 			{
@@ -119,6 +135,7 @@ public class Client
 	public void gameStart() 
 	{
 		display("The game is on!");
+		this.setRoundNoInt(Integer.valueOf(1));
 		//		this.sendDataBean(new StartBean(player));
 
 		//		countDown(10);
@@ -145,7 +162,7 @@ public class Client
 
 	public void choose(String choiceName) throws ClassNotFoundException 
 	{
-		ChoiceBean choiceBean = new ChoiceBean(choiceName, player);
+		ChoiceBean choiceBean = new ChoiceBean(choiceName, player, this.getRoundNoInt());
 		display("Your choice:" + choiceBean.getChoice().getChoiseName());
 		this.sendDataBean(choiceBean);
 	}
@@ -153,7 +170,7 @@ public class Client
 
 	private static void display(String string) //abstract and encapsulate
 	{
-		TestClientFx.appendTextArea(string);
+		FooFrontEndFx.appendTextArea(string);
 	}
 
 	//initialize the client
@@ -187,11 +204,22 @@ public class Client
 						display(e.toString());
 						return;
 					}
-				}while(!(objFromServer instanceof EndBean));
+				}while(!(objFromServer instanceof EndBean || objFromServer instanceof ExitBean || objFromServer instanceof ExceptionExitBean));
+			    display("EXITTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT");
 			}
 		};
 
 		objectListener.start();
+	}
+
+	public Integer getRoundNoInt()
+	{
+		return roundNoInt;
+	}
+
+	public void setRoundNoInt(Integer roundNoInt)
+	{
+		this.roundNoInt = roundNoInt;
 	}
 
 }

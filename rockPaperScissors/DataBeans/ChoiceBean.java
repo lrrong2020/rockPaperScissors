@@ -10,6 +10,7 @@ public class ChoiceBean extends DataBean
 	
 	private Choice choice = new Choice();
 	private Player player = null;
+	private Integer roundNoInt = Integer.valueOf(0);
 	
 	//constructors
 	public ChoiceBean() 
@@ -17,9 +18,10 @@ public class ChoiceBean extends DataBean
 		super();
 	}
 	
-	public ChoiceBean(String choiceName, Player player) throws ClassNotFoundException
+	public ChoiceBean(String choiceName, Player player, Integer roundNoInt) throws ClassNotFoundException
 	{
 		this.setPlayer(player);
+		this.setRoundNoInt(roundNoInt);
 
 		if(choiceName.equals(Choice.GESTURES.ROCK) || choiceName.equals(Choice.GESTURES.PAPER) || choiceName.equals(Choice.GESTURES.SCISSORS)) 
 		{
@@ -53,6 +55,15 @@ public class ChoiceBean extends DataBean
 	
 	public String toString() 
 	{
-		return "Player: "+this.player.getUUID() + "Choice:" + this.choice.getChoiseName();
+		return "Player: "+this.player.getUUID() + "\nChoice:" + this.choice.getChoiseName() + "\nroundNo: " + this.roundNoInt.toString();
+	}
+
+	public void setRoundNoInt(Integer roundNoInt)
+	{
+		this.roundNoInt = roundNoInt;
+	}
+	public Integer getRoundNoInt()
+	{
+		return roundNoInt;
 	}
 }

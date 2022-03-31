@@ -169,7 +169,17 @@ public class ConsoleServer
 		public void sendResultBean(Choice c1, Choice c2) throws IOException 
 		{
 			System.out.println("Sending result Bean");
-			DataBean idb = new ResultBean(c1, c2);//default constructor to indicates server-sent startBean
+			DataBean idb = new ResultBean(c1, c2, Integer.valueOf(roundNo));//default constructor to indicates server-sent startBean
+
+			//send the start DataBean to the client
+			this.outputToClient.writeObject(idb);
+			this.outputToClient.flush();	
+		}
+		
+		public void sendExceptionExitBean() throws IOException
+		{
+			System.out.println("Sending exception exit bean");
+			DataBean idb = new ExceptionExitBean();//default constructor to indicates server-sent startBean
 
 			//send the start DataBean to the client
 			this.outputToClient.writeObject(idb);
@@ -205,10 +215,8 @@ public class ConsoleServer
 
 			if(receivedBean instanceof ChoiceBean) 
 			{
-				System.out.println("Received Bean: " + receivedBean.toString());
+				System.out.println("Received Bean: " + receivedBean.toString() + "\n");
 				//put the (ChoiceBean) in class-level Choice list
-
-				System.out.println("Initialize choiceBeanArr for current round");
 				CLIENT_CHOICE_BEAN_LIST.add(new ChoiceBean[2]);
 
 
@@ -221,12 +229,26 @@ public class ConsoleServer
 				{
 					ChoiceBean[] choiceBeanArr = CLIENT_CHOICE_BEAN_LIST.get(roundNo - 1);
 					choiceBeanArr[1] = (ChoiceBean) receivedBean;
-					//broadcast
-					try {
-						sendResults(roundNo - 1);
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+					
+					if(choiceBeanArr[0].getRoundNoInt().equals(Integer.valueOf(roundNo))) 
+					{
+						//broadcast
+						try {
+							sendResults(roundNo - 1);
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+					else 
+					{
+						try {
+							System.out.println("Warning! Data are inconsistent.");
+							sendExceptionExitBean();
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 					}
 				}
 			}
@@ -285,7 +307,6 @@ public class ConsoleServer
 					//send ExceptionExitBean to clients
 					return;
 				}
-
 			}
 		}
 	}
@@ -307,7 +328,16 @@ public class ConsoleServer
 			}
 		}
 	}
-
+	
+	public static void sendExceptionExitBean() throws IOException
+	{
+		System.out.println("Inconsistency exit");
+		for(HandleAClient h : CLIENT_HANDLER_LIST) 
+		{
+				h.sendExceptionExitBean();
+		}
+	}
+	
 	public static void sendResults(int rNoI0) throws Exception 
 	{
 
