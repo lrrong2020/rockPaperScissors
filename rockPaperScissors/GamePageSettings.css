@@ -1,0 +1,19 @@
+/* JavaFX CSS - Leave this comment until you have at least create one rule which uses -fx-Property */
+.root{
+	-fx-background-image: url('/rockPaperScissors/rockPaperScissors/media/background.jpg');
+  	-fx-background-position: center center; 
+  	-fx-background-repeat: stretch;
+  	-fx-background-size: 800.0 600.0;
+}
+.bt{
+	 -fx-content-display: top;
+}
+
+.paper{
+	-fx-graphic: url(/rockPaperScissors/rockPaperScissors/media/paper.png);
+	-fx-content-display:top;
+	-fx-graphic-fitHeight:50;
+}
+.scissor{
+	-fx-graphic: url(/rockPaperScissors/rockPaperScissors/media/scissor.png);
+}

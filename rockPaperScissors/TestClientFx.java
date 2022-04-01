@@ -63,6 +63,7 @@ public class TestClientFx extends Application
 		
 		Label label1=new Label("Rock Paper Scissors Game");
 		label1.getStyleClass().add("labelContent");
+
 		label1.layoutXProperty().bind(root.widthProperty().divide(3.2));
 		Button bt1=new Button("One round");
 		Button bt2=new Button("Best two out of three");
@@ -75,6 +76,7 @@ public class TestClientFx extends Application
 		bt1.layoutYProperty().bind(root.heightProperty().divide(3));
 		bt2.layoutYProperty().bind(root.heightProperty().divide(2));
 		bt3.layoutYProperty().bind(root.heightProperty().divide(1.5));
+		
 		
 		icon1.layoutXProperty().bind(root.widthProperty().divide(12));
 		icon1.layoutYProperty().bind(root.heightProperty().divide(1.8));
