@@ -27,10 +27,11 @@
 
 ### **后端** + **Model**
 
-1. 处理异常重连
-2. 处理断线重连
-3. 清理数据
+1. 严格检查roundNo Access Control
+2. 清理数据接口
+3. 处理异常重连
+   - 不一致
+   - *断线
 4. *DAO
 5. *统计所有轮 (Round)的结果 展示此局 (Game)最终胜负
-6.  严格检查roundNo Access Control
 
