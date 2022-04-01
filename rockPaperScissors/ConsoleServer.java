@@ -177,10 +177,10 @@ public class ConsoleServer
 			this.outputToClient.flush();	
 		}
 
-		public void sendExceptionExitBean() throws IOException
+		public void sendExceptionExitBean(Exception exception) throws IOException
 		{
 			System.out.println("Sending exception exit bean");
-			DataBean idb = new ExceptionExitBean();//default constructor to indicates server-sent startBean
+			DataBean idb = new ExceptionExitBean(exception);//default constructor to indicates server-sent startBean
 
 			//send the start DataBean to the client
 			this.outputToClient.writeObject(idb);
@@ -241,12 +241,12 @@ public class ConsoleServer
 						} 
 						catch (ClassNotFoundException e) 
 						{
-							
+
 							e.printStackTrace();
 						} 
 						catch (IOException e) 
 						{
-							
+
 							e.printStackTrace();
 						} 
 						catch (ChoiceMoreThanOnceException e) 
@@ -254,7 +254,7 @@ public class ConsoleServer
 							try 
 							{
 								System.out.println("[Error Choice more than once]");
-								sendExceptionExitBean();
+								sendExceptionExitBean(e);
 							} catch (Exception ex) 
 							{
 								ex.printStackTrace();
@@ -266,7 +266,7 @@ public class ConsoleServer
 					{
 						try {
 							System.out.println("[Error Synchronization]");
-							sendExceptionExitBean();
+							sendExceptionExitBean(new DataInconsistentException("Inconsistent"));
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
@@ -356,11 +356,9 @@ public class ConsoleServer
 		System.out.println("Inconsistency exit");
 		for(HandleAClient h : CLIENT_HANDLER_LIST) 
 		{
-			h.sendExceptionExitBean();
+			h.sendExceptionExitBean(new DataInconsistentException("Inconsistent"));
 		}
 	}
-
-
 
 
 	public static void sendResults(int rNoI0) throws ClassNotFoundException, IOException, ChoiceMoreThanOnceException 

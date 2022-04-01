@@ -88,9 +88,9 @@ public class Client
 			else if (receivedBean instanceof ResultBean) 
 			{
 				ResultBean resultBean = (ResultBean)receivedBean;
-				
+
 				this.setRoundNoInt(Integer.valueOf(resultBean.getRoundNoInt().intValue() + 1));//auto boxing?
-				
+
 				display("==========");
 				display("[Round]"+resultBean.getRoundNoInt().toString());
 				display("Your choice: " + resultBean.getYourChoice().getChoiseName());
@@ -156,7 +156,7 @@ public class Client
 
 	private static void display(String string) //abstract and encapsulate
 	{
-		FooFrontEndFx.appendTextArea(string);
+		System.out.println(string);
 	}
 
 	//initialize the client
@@ -167,33 +167,51 @@ public class Client
 		this.initializeConnection();
 
 		//start a new thread to continuously listen to the server
-		
+
 		//need to be closed after client terminated
 		objectListener = new Thread() {
 			public void run() 
 			{
 				Object objFromServer = null;
-				do
+				while(true)
 				{
 					try 
 					{
 						//read object from the server through ObjectInputStream
 						objFromServer = fromServer.readObject();
+						if(objFromServer instanceof ExitBean) 
+						{	
+							if(objFromServer instanceof ExceptionExitBean) 
+							{
+								((ExitBean) objFromServer).getException().printStackTrace();
+								display("Exception Occurs");
+							}
+							break;
+						}
 						display("Successfully get an object!");
 						handleReceivedObject(objFromServer);
-					} 
-					catch (ClassNotFoundException | NullPointerException | IOException e) 
+					}
+					catch(ClassNotFoundException e) 
+					{
+						display("[Error]-ClassNotFound Please restart.");
+						e.printStackTrace();
+					}
+					catch (NullPointerException e) 
 					{
 						// TODO Auto-generated catch block
 						e.printStackTrace();
-						display("Error. Please restart.");
+						display("[Error]-Null Please restart.");
 						display(e.toString());
 						return;
 					}
-				}while(!(objFromServer instanceof EndBean || objFromServer instanceof ExitBean || objFromServer instanceof ExceptionExitBean));
-			    
+					catch (IOException e) 
+					{
+						return;
+					}
+				}
+
 				//terminates the client
-				display("EXITTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT");
+				display("Exit");
 			}
 		};
 

@@ -9,8 +9,7 @@
 5.  动画
 6.  *跨平台 (Android, Windows)
 
-
-### **Controller**
+### **Controller-frontend**
 
 **前端** Controller 对接GUI和后端Controller
 
@@ -25,13 +24,15 @@
 
 
 
-### **后端** + **Model**
+### **Controller-backend** + **Model**
 
-1. 严格检查roundNo Access Control
-2. 清理数据接口
-3. 处理异常重连
+1. 清理数据接口
+2. 处理异常重连
    - 不一致
    - *断线
+     1. 异常类
+     2.  argument显示
+3.  线程管理
 4. *DAO
 5. *统计所有轮 (Round)的结果 展示此局 (Game)最终胜负
 
