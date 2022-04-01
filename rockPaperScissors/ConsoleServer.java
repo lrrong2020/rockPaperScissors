@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import rockPaperScissors.rockPaperScissors.DataBeans.*;
+import rockPaperScissors.rockPaperScissors.Exceptions.*;
 
 
 public class ConsoleServer
@@ -175,7 +176,7 @@ public class ConsoleServer
 			this.outputToClient.writeObject(idb);
 			this.outputToClient.flush();	
 		}
-		
+
 		public void sendExceptionExitBean() throws IOException
 		{
 			System.out.println("Sending exception exit bean");
@@ -229,24 +230,44 @@ public class ConsoleServer
 				{
 					ChoiceBean[] choiceBeanArr = CLIENT_CHOICE_BEAN_LIST.get(roundNo - 1);
 					choiceBeanArr[1] = (ChoiceBean) receivedBean;
-					
+
 					if(choiceBeanArr[0].getRoundNoInt().equals(Integer.valueOf(roundNo))) 
 					{
 						//broadcast
-						try {
+
+						try 
+						{
 							sendResults(roundNo - 1);
-						} catch (Exception e) {
-							// TODO Auto-generated catch block
+						} 
+						catch (ClassNotFoundException e) 
+						{
+							
+							e.printStackTrace();
+						} 
+						catch (IOException e) 
+						{
+							
+							e.printStackTrace();
+						} 
+						catch (ChoiceMoreThanOnceException e) 
+						{
+							try 
+							{
+								System.out.println("[Error Choice more than once]");
+								sendExceptionExitBean();
+							} catch (Exception ex) 
+							{
+								ex.printStackTrace();
+							}
 							e.printStackTrace();
 						}
 					}
 					else 
 					{
 						try {
-							System.out.println("Warning! Data are inconsistent.");
+							System.out.println("[Error Synchronization]");
 							sendExceptionExitBean();
 						} catch (Exception e) {
-							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
 					}
@@ -328,27 +349,35 @@ public class ConsoleServer
 			}
 		}
 	}
-	
+
 	//exception occurs  
 	public static void sendExceptionExitBean() throws IOException
 	{
 		System.out.println("Inconsistency exit");
 		for(HandleAClient h : CLIENT_HANDLER_LIST) 
 		{
-				h.sendExceptionExitBean();
+			h.sendExceptionExitBean();
 		}
 	}
-	
-	public static void sendResults(int rNoI0) throws Exception 
+
+
+
+
+	public static void sendResults(int rNoI0) throws ClassNotFoundException, IOException, ChoiceMoreThanOnceException 
 	{
 		ChoiceBean[] choiceBeanArr = ConsoleServer.CLIENT_CHOICE_BEAN_LIST.get(rNoI0);//0
 
 		ChoiceBean player0ChoiceBean = choiceBeanArr[0];
 		ChoiceBean player1ChoiceBean = choiceBeanArr[1];
 
+		if(player0ChoiceBean.equals(player1ChoiceBean)) 
+		{
+			throw new ChoiceMoreThanOnceException("Write 2 times");
+		}
+
 		Socket player0Socket = ONLINE_USER_MAP.get(player0ChoiceBean.getPlayer().getUUID());
 
-		HandleAClient player0Handler = null;
+		HandleAClient player0Handler = getClientHandler(player0Socket);
 		HandleAClient player1Handler = null;
 
 		//find the HandleAClient instance that matches
@@ -364,7 +393,7 @@ public class ConsoleServer
 			player0Handler = CLIENT_HANDLER_LIST.get(1);
 			player1Handler = CLIENT_HANDLER_LIST.get(0);//get another
 		}
-		else throw new Exception("Socket not found");
+		else throw new ClassNotFoundException("Socket not found");
 
 
 		System.out.print(player0ChoiceBean.getChoice().toString());
@@ -372,10 +401,22 @@ public class ConsoleServer
 
 		player0Handler.sendResultBean(player0ChoiceBean.getChoice(), player1ChoiceBean.getChoice());
 		player1Handler.sendResultBean(player1ChoiceBean.getChoice(), player0ChoiceBean.getChoice());
-		
+
 		roundNo += 1;
 	}
-	
+
+	public static HandleAClient getClientHandler(Socket socket) 
+	{
+		for (HandleAClient clientHandler: ConsoleServer.CLIENT_HANDLER_LIST) 
+		{
+			if(clientHandler.getSocket().equals(socket))
+			{
+				return clientHandler;
+			}
+		}
+		return null;
+	}
+
 	public static void endGame() 
 	{
 		//send end bean

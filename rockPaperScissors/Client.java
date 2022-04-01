@@ -112,7 +112,7 @@ public class Client
 			else
 			{
 				//when the Bean is non of defined DataBean
-				throw new ClassNotFoundException("Undefined Bean");
+				throw new ClassNotFoundException("Undefined Bean");//more custom exceptions comming!
 			}
 		}
 	}

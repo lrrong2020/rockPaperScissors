@@ -76,4 +76,21 @@ public class Choice implements Serializable
 			return -1;
 		}
 	}
+	
+	public boolean equals(Object o) 
+	{
+		if(o instanceof Choice) 
+		{
+			Choice theChoice = (Choice) o;
+			if(theChoice.getChoiseName().equals(this.getChoiseName())) 
+			{
+				return true;
+			}
+			else 
+			{
+				return false;
+			}
+		}
+		return false;
+	}
 }

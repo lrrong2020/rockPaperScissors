@@ -1,5 +1,7 @@
 package rockPaperScissors.rockPaperScissors.DataBeans;
 
+import java.util.Comparator;
+
 import rockPaperScissors.rockPaperScissors.Choice;
 import rockPaperScissors.rockPaperScissors.Player;
 
@@ -65,5 +67,26 @@ public class ChoiceBean extends DataBean
 	public Integer getRoundNoInt()
 	{
 		return roundNoInt;
+	}
+
+	@Override
+	public boolean equals(Object o) 
+	{
+		if(o instanceof ChoiceBean) 
+		{
+			ChoiceBean theBean = (ChoiceBean) o;
+			if(theBean.getPlayer().getUUID().equals(this.getPlayer().getUUID()) && theBean.getRoundNoInt().equals(this.getRoundNoInt())) 
+			{
+				return true;
+			}
+			else 
+			{
+				return false;
+			}
+		}
+		else 
+		{
+			return false;
+		}
 	}
 }
