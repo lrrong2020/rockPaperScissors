@@ -9,28 +9,57 @@ import rockPaperScissors.rockPaperScissors.DataBeans.*;
 public class Client
 {
 	//socket parameters to build connection
-	private static final String HOST = "localhost";//may use IPv4 address
-	private static final int PORT = 8000;//port number
-
+	private static String host = "localhost";//may use IPv4 address
+	private static int port = 8000;//port number
+	private Socket socket;
 	// IOStreams
 	//Note that outputStream should always be defined first!
 	private ObjectOutputStream toServer;//defined first
 	private ObjectInputStream fromServer;
+	
 	private Player player = new Player();//holds player singleton
 	private Thread objectListener = null;//class-level thread to continuously listen to the server
-	private Integer roundNoInt = Integer.valueOf(1);//round number
+	private Integer roundNoInt = Integer.valueOf(0);//round number
 
+	//constructors
 	public Client()
 	{
 		super();
+	}
+
+	public Client(String host, int port) 
+	{
+		this.setHost(host);
+		this.setPort(port);
+	}
+
+	//setters and getters
+	public void setHost(String host) 
+	{
+		Client.host = host;
+	}
+
+	public void setPort(int port) 
+	{
+		Client.port = port;
+	}
+
+	public Integer getRoundNoInt()
+	{
+		return roundNoInt;
+	}
+
+	public void setRoundNoInt(Integer roundNoInt)
+	{
+		this.roundNoInt = roundNoInt;
 	}
 
 	//initialize socket connection with the server
 	private void initializeConnection() throws IOException 
 	{
 		// Create a socket to connect to the server
-		@SuppressWarnings("resource")//need to close socket in consideration of performance 
-		Socket socket = new Socket(HOST, PORT);
+
+		this.socket = new Socket(host, port);
 
 		// Create an output stream to send object to the server
 		toServer = new ObjectOutputStream(socket.getOutputStream());
@@ -52,7 +81,6 @@ public class Client
 			e.printStackTrace();
 		}
 	}
-
 
 	//handle received data bean
 	private void handleReceivedObject(Object objFromServer) throws IOException, ClassNotFoundException, NullPointerException
@@ -88,13 +116,15 @@ public class Client
 			else if (receivedBean instanceof ResultBean) 
 			{
 				ResultBean resultBean = (ResultBean)receivedBean;
-				
+
 				this.setRoundNoInt(Integer.valueOf(resultBean.getRoundNoInt().intValue() + 1));//auto boxing?
-				
+
 				display("==========");
 				display("[Round]"+resultBean.getRoundNoInt().toString());
 				display("Your choice: " + resultBean.getYourChoice().getChoiseName());
 				display("Your opponent's choice: " + resultBean.getOpponentChoice().getChoiseName());
+
+				//display results calculated in client
 				switch(resultBean.getYourChoice().wins(resultBean.getOpponentChoice())) 
 				{
 				case 0:
@@ -123,9 +153,10 @@ public class Client
 		display("The game is on!");
 		this.setRoundNoInt(Integer.valueOf(1));
 		//		this.sendDataBean(new StartBean(player));
-
 		//		countDown(10);
 	}
+
+	//count down timer for round time
 	private static void countDown(int i) 
 	{
 		Thread thread = new Thread() {
@@ -133,7 +164,7 @@ public class Client
 			{
 				for(int j = i;j > 0;j--) 
 				{
-					display(j+"");
+					//					display(j+"");
 					try {
 						sleep(1000);
 					} catch (InterruptedException e) {
@@ -146,6 +177,7 @@ public class Client
 		thread.start();
 	}
 
+	//the client made his/her choice
 	public void choose(String choiceName) throws ClassNotFoundException 
 	{
 		ChoiceBean choiceBean = new ChoiceBean(choiceName, player, this.getRoundNoInt());
@@ -153,10 +185,12 @@ public class Client
 		this.sendDataBean(choiceBean);
 	}
 
-
-	private static void display(String string) //abstract and encapsulate
+	//abstract and encapsulate display function
+	private static void display(String string)
 	{
-		FooFrontEndFx.appendTextArea(string);
+		System.out.println(string);
+		
+		//need to invoke display function of View layer
 	}
 
 	//initialize the client
@@ -167,46 +201,72 @@ public class Client
 		this.initializeConnection();
 
 		//start a new thread to continuously listen to the server
-		
+
 		//need to be closed after client terminated
 		objectListener = new Thread() {
 			public void run() 
 			{
 				Object objFromServer = null;
-				do
+				while(true)
 				{
 					try 
 					{
 						//read object from the server through ObjectInputStream
 						objFromServer = fromServer.readObject();
+						
+						//server inform that the client should exit
+						if(objFromServer instanceof ExitBean) 
+						{	
+							if(objFromServer instanceof ExceptionExitBean) 
+							{
+								((ExitBean) objFromServer).getException().printStackTrace();
+								display("Exception Occurs");
+								objectListener.interrupt();//terminates the listener
+							}
+							break;
+						}
 						display("Successfully get an object!");
 						handleReceivedObject(objFromServer);
-					} 
-					catch (ClassNotFoundException | NullPointerException | IOException e) 
+					}
+					catch(ClassNotFoundException e) 
 					{
-						// TODO Auto-generated catch block
+						display("[Error]-ClassNotFound Please restart.");
 						e.printStackTrace();
-						display("Error. Please restart.");
+					}
+					catch (NullPointerException e) 
+					{
+						e.printStackTrace();
+						display("[Error]-Null Please restart.");
 						display(e.toString());
 						return;
 					}
-				}while(!(objFromServer instanceof EndBean || objFromServer instanceof ExitBean || objFromServer instanceof ExceptionExitBean));
-			    
+					catch (IOException e) 
+					{
+						display("[Warning]-IO Disconnect");
+						return;
+					}
+				}
+
 				//terminates the client
-				display("EXITTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT");
+				display("Exit");
 			}
 		};
 
 		objectListener.start();
 	}
 
-	public Integer getRoundNoInt()
+	//terminate the client
+	public void stop() 
 	{
-		return roundNoInt;
-	}
-
-	public void setRoundNoInt(Integer roundNoInt)
-	{
-		this.roundNoInt = roundNoInt;
+		try
+		{
+			this.socket.close();
+			objectListener.interrupt();
+		} catch (IOException e)
+		{
+			display("[Warning]-IO");
+			e.printStackTrace();
+		}
+		display("The client stoped");
 	}
 }

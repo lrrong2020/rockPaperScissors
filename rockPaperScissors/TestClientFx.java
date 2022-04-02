@@ -83,6 +83,7 @@ public class TestClientFx extends Application
 		
 		
 		root.getChildren().addAll(icon1,label1,bt1,bt2,bt3);
+		
 	}
 
 	//similar syntax for rewriting append method of jTextArea of java.swing

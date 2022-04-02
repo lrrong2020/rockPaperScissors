@@ -29,7 +29,6 @@ public class ChoiceBean extends DataBean
 		{
 			this.setChoice(new Choice(choiceName));
 			choice.setChoiceName(choiceName);
-			choice.setChoiceImage(choiceName);
 		}
 		else 
 		{

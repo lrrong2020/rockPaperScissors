@@ -60,6 +60,10 @@ public class FooFrontEndFx extends Application
 		Button rock = new Button("Rock");//create new button instance
 		Button paper= new Button("Paper");//create new button instance
 		Button scissors = new Button("Scissors");//create new button instance
+
+		Button quit = new Button("Quit");
+
+
 		rock.setLayoutX(200);
 		rock.setLayoutY(200);
 
@@ -69,11 +73,13 @@ public class FooFrontEndFx extends Application
 		scissors.setLayoutX(320);
 		scissors.setLayoutY(200);
 
+		quit.setLayoutX(380);
+		quit.setLayoutX(200);
 
 		Pane root = new Pane();
-		root.getChildren().addAll(rock,paper,scissors,ta);
-		
-		
+		root.getChildren().addAll(rock,paper,scissors,ta,quit);
+
+
 		rock.layoutXProperty().bind(root.widthProperty().divide(3));
 		rock.layoutYProperty().bind(root.heightProperty().multiply(0.87));
 		paper.layoutXProperty().bind(root.widthProperty().divide(2));
@@ -84,6 +90,17 @@ public class FooFrontEndFx extends Application
 		ta.layoutYProperty().bind(root.heightProperty().multiply(0.1));
 
 		//listen the mouse event and handle the event
+		EventHandler<MouseEvent> quitListener = new EventHandler<MouseEvent>() 
+		{ 
+			@Override 
+			public void handle (MouseEvent e)
+			{	
+				client.stop();
+			}
+		};
+		quit.addEventHandler(MouseEvent.MOUSE_CLICKED, quitListener);
+
+
 		EventHandler<MouseEvent> rockListener = new EventHandler<MouseEvent>() 
 		{ 
 			@Override 
