@@ -11,7 +11,7 @@ public class Choice implements Serializable
 	 */
 	private static final long serialVersionUID = 1L;
 	private String choiceName = null;
-	private Image choiceImage=null;
+
 	
 	public interface GESTURES
 	{
@@ -19,11 +19,7 @@ public class Choice implements Serializable
 		String PAPER = "PAPER";
 		String SCISSORS = "SCISSORS";
 	}
-	public interface GESTURES_IMAGES{
-		Image ROCK=new Image("/rockPaperScissors/rockPaperScissors/media/rock.png");
-		Image PAPER=new Image("/rockPaperScissors/rockPaperScissors/media/paper.png");
-		Image SCISSORS=new Image("/rockPaperScissors/rockPaperScissors/media/scissor.png");
-	}
+
 	
 	//constructors
 	public Choice() 
@@ -52,21 +48,6 @@ public class Choice implements Serializable
 	public String getChoiseName()
 	{
 		return choiceName;
-	}
-	public void setChoiceImage(String choiceName) throws ClassNotFoundException{
-		if(choiceName.equals(GESTURES.ROCK)) {
-			this.choiceImage=GESTURES_IMAGES.ROCK;
-		}
-		else if(choiceName.equals(GESTURES.PAPER)) {
-			this.choiceImage=GESTURES_IMAGES.PAPER;
-		}
-		else if(choiceName.equals(GESTURES.SCISSORS)) {
-			this.choiceImage=GESTURES_IMAGES.SCISSORS;
-		}
-		else 
-		{
-			throw new ClassNotFoundException();
-		}
 	}
 
 	public int wins(Choice opponentChoice) {
