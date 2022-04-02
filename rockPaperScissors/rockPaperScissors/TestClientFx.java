@@ -23,7 +23,6 @@ public class TestClientFx extends Application
 	private static TextArea ta = new TextArea();
 	private static Client client = null;
 	private Scene welcomePage;
-	
 
 	//constructors
 	public TestClientFx() 
@@ -66,6 +65,13 @@ public class TestClientFx extends Application
 
 		label1.layoutXProperty().bind(root.widthProperty().divide(3.2));
 		Button bt1=new Button("One round");
+		bt1.setOnAction(e ->{
+			DuringTheGame during = new DuringTheGame();
+			Scene duringGame = new Scene(during.CreateGamePage());
+			Stage window = (Stage)bt1.getScene().getWindow();
+			window.setTitle("Game Started");
+			window.setScene(duringGame);
+		});
 		Button bt2=new Button("Best two out of three");
 		Button bt3=new Button("Best three out of five");
 	
@@ -83,7 +89,9 @@ public class TestClientFx extends Application
 		
 		
 		root.getChildren().addAll(icon1,label1,bt1,bt2,bt3);
+		
 	}
+	
 
 	//similar syntax for rewriting append method of jTextArea of java.swing
 	//use it the same way as System.out.println(String string) !
@@ -200,4 +208,5 @@ public class TestClientFx extends Application
 	{
 		launch(args);
 	}
+
 }
