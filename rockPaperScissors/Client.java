@@ -21,6 +21,7 @@ public class Client
 	private Thread objectListener = null;//class-level thread to continuously listen to the server
 	private Integer roundNoInt = Integer.valueOf(0);//round number
 	private int mode = 0;
+	private boolean isHost = false;
 	
 	private boolean canChoose = false;
 	
@@ -75,6 +76,16 @@ public class Client
 		return canChoose;
 	}
 
+	public boolean isHost()
+	{
+		return isHost;
+	}
+
+	public void setIsHost(boolean isHost)
+	{
+		this.isHost = isHost;
+	}
+
 	//initialize socket connection with the server
 	private void initializeConnection() throws IOException 
 	{
@@ -127,6 +138,7 @@ public class Client
 				//set UUID and isHost to the Player instance
 				player.setUUID(receivedIBean.getUUID());
 				player.setIsHost(receivedIBean.getIsHost());
+				this.setIsHost(receivedIBean.getIsHost());
 			}
 			else if (receivedBean instanceof StartBean) 
 			{
@@ -159,6 +171,13 @@ public class Client
 					break;
 				}
 				display("==========");
+				
+				//during the game
+				
+				if(resultBean.getRoundNoInt().intValue() < this.getMode()) 
+				{
+					roundBegin();
+				}
 			}
 			else
 			{

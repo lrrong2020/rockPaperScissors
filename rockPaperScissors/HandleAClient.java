@@ -19,6 +19,7 @@ class HandleAClient implements Runnable
 	private ObjectInputStream inputFromClient = null;
 
 	private UUID uuid = null;//uniquely identify the users
+	private Room room;
 
 	//construct a thread
 	public HandleAClient(Socket socket) 
@@ -61,6 +62,16 @@ class HandleAClient implements Runnable
 	public Socket getSocket() {
 		return this.socket;
 	}
+
+	public void setRoom(Room room)
+	{
+		this.room = room;
+	}
+	public Room getRoom()
+	{
+		return room;
+	}
+
 
 	//send initial data to the client
 	public void sendInitBean() throws IOException 
@@ -120,6 +131,7 @@ class HandleAClient implements Runnable
 			if(receivedSBean.getPlayer().getIsHost()) 
 			{
 				//starts the game
+				ConsoleServer.startGame(receivedSBean.getMode());
 			}
 			else 
 			{
@@ -149,10 +161,10 @@ class HandleAClient implements Runnable
 				ConsoleServer.semaphore.acquire();
 
 				//put the (ChoiceBean) in class-level Choice list
-				ConsoleServer.CLIENT_CHOICE_BEAN_LIST.add(new ChoiceBean[2]);
+				this.getRoom().getClientChoiceBeans().add(new ChoiceBean[2]);
 
 				//choice bean list contains 2 choices?
-				ChoiceBean[] currentRoundChoiceBeans = ConsoleServer.CLIENT_CHOICE_BEAN_LIST.get(ConsoleServer.roundNo - 1);
+				ChoiceBean[] currentRoundChoiceBeans = this.getRoom().getClientChoiceBeans().get(ConsoleServer.roundNo - 1);
 				if(currentRoundChoiceBeans[0] == null)
 				{	
 					currentRoundChoiceBeans[0] = (ChoiceBean) receivedBean;
@@ -167,7 +179,7 @@ class HandleAClient implements Runnable
 
 						try 
 						{
-							ConsoleServer.sendResults(ConsoleServer.roundNo - 1);
+							this.getRoom().sendResults(ConsoleServer.roundNo - 1);
 						} 
 						catch (ClassNotFoundException e) 
 						{

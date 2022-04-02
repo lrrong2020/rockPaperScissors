@@ -14,9 +14,10 @@ import rockPaperScissors.rockPaperScissors.Exceptions.ChoiceMoreThanOnceExceptio
 //to hold players and match-related classes
 public class Room
 {
+	private int roomNo = 0;
 	private Map<UUID, Socket> users = new ConcurrentHashMap<UUID, Socket>();
 	private List<HandleAClient> clientHandlers = new ArrayList<HandleAClient>();//list of 
-	private List<ChoiceBean[]> clientChoiceBeans = new ArrayList<ChoiceBean[]>();//results of each round
+	private final List<ChoiceBean[]> clientChoiceBeans = new ArrayList<ChoiceBean[]>();//results of each round
 	private int roundNo = 1;
 	//constructors
 	
@@ -25,11 +26,10 @@ public class Room
 		super();
 	}
 	
-	public Room(Map<UUID, Socket> users, List<HandleAClient> clientHandlers, List<ChoiceBean[]> clientChoiceBeans) 
+	public Room(Map<UUID, Socket> users, List<HandleAClient> clientHandlers) 
 	{ 
 		this.setUsers(users);
 		this.setClientHandlers(clientHandlers);
-		this.setClientChoiceBeans(clientChoiceBeans);
 	}
 	
 	//setters and getters
@@ -38,10 +38,6 @@ public class Room
 		return clientChoiceBeans;
 	}
 
-	public void setClientChoiceBeans(List<ChoiceBean[]> cLIENT_CHOICE_BEAN_LIST)
-	{
-		this.clientChoiceBeans = cLIENT_CHOICE_BEAN_LIST;
-	}
 	
 	public void sendResults(int rNoI0) throws ClassNotFoundException, IOException, ChoiceMoreThanOnceException 
 	{
@@ -122,4 +118,14 @@ public class Room
 	{
 		return roundNo;
 	}
+	public void setRoomNo(int roomNo)
+	{
+		this.roomNo = roomNo;
+	}
+	public int getRoomNo()
+	{
+		return roomNo;
+	}
+
+
 }

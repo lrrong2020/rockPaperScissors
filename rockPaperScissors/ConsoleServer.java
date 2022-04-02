@@ -15,7 +15,6 @@ public class ConsoleServer
 
 	//to store users and identify them with randomly generated universally unique identifier (UUID)
 	protected static final Map<UUID, Socket> ONLINE_USER_MAP = new ConcurrentHashMap<UUID, Socket>();
-	protected static final int MAX_NO_OF_USERS = 2; //assume there are only 2 users
 
 	//class-level client lists to synchronize and store data
 	protected static final List<HandleAClient> CLIENT_HANDLER_LIST = new ArrayList<HandleAClient>();//list of 
@@ -77,7 +76,7 @@ public class ConsoleServer
 				Thread clientThread = null;
 				try 
 				{
-					if(ConsoleServer.ONLINE_USER_MAP.size() <= ConsoleServer.MAX_NO_OF_USERS) 
+					if(ConsoleServer.ONLINE_USER_MAP.size() <= 2) 
 					{
 						socket = serverSocket.accept();
 						// Create a new thread for the connection
@@ -96,7 +95,7 @@ public class ConsoleServer
 							log("\nHandleAClient: 2 users have registered\n");
 							
 							//can start game
-							ConsoleServer.startGame();
+
 						}
 					}
 					else 
@@ -119,16 +118,17 @@ public class ConsoleServer
 	//end of inner class	
 
 	//class level start game
-	public static void startGame() 
+	public static void startGame(int m) 
 	{
-		Room room = new Room();
-
+		Room room = new Room(ConsoleServer.ONLINE_USER_MAP, ConsoleServer.CLIENT_HANDLER_LIST);
+		
 		log("Starting game for all clients");
 		for(HandleAClient h : CLIENT_HANDLER_LIST) 
 		{
 			try 
 			{
-				h.sendStartBean();
+				h.setRoom(room);
+				h.sendStartBean(m);
 			}
 			catch (IOException e) 
 			{
