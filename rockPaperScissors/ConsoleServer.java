@@ -3,9 +3,8 @@ package rockPaperScissors.rockPaperScissors;
 import java.io.*;
 import java.net.*;
 import java.util.*;
-import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
-
+import java.util.concurrent.Semaphore;
 import rockPaperScissors.rockPaperScissors.DataBeans.*;
 import rockPaperScissors.rockPaperScissors.Exceptions.*;
 
@@ -24,6 +23,9 @@ public class ConsoleServer
 	protected static int roundNo = 1;
 
 	private Thread socketThread = null;
+	
+	public static Semaphore semaphore = new Semaphore(1);
+	
 	
 	//constructor	
 	public ConsoleServer() 
