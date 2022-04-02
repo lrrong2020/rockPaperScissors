@@ -145,8 +145,8 @@ class HandleAClient implements Runnable
 			
 			try
 			{
+				ConsoleServer.log("Acquiring lock");
 				ConsoleServer.semaphore.acquire();
-				
 
 				//put the (ChoiceBean) in class-level Choice list
 				ConsoleServer.CLIENT_CHOICE_BEAN_LIST.add(new ChoiceBean[2]);
