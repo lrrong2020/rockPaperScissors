@@ -179,12 +179,22 @@ public class ConsoleServer
 		roundNo += 1;
 	}
 
-
+	public static void clientExit(UUID uuid)
+	{
+		getClientHandler(ONLINE_USER_MAP.get(uuid)).stop();
+		ONLINE_USER_MAP.remove(uuid);
+	}
+	
 	public static void endGame() 
 	{
 		//send end bean
 	}
 
+	public static void log(String string) 
+	{
+		System.out.println(string);
+	}
+	
 	public static void main(String args[]) 
 	{
 		new ConsoleServer();

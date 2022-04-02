@@ -81,6 +81,30 @@ public class TestClientFx extends Application
 		icon1.layoutXProperty().bind(root.widthProperty().divide(12));
 		icon1.layoutYProperty().bind(root.heightProperty().divide(1.8));
 		
+		bt1.setOnAction(e->{
+			DuringTheGame during=new DuringTheGame();
+			Scene duringGame=new Scene(during.CreateGamePage(),600,400);
+			duringGame.getStylesheets().add(getClass().getResource("GamePageSettings.css").toExternalForm());
+			Stage window=(Stage)bt1.getScene().getWindow();
+			window.setTitle("Game started");
+			window.setScene(duringGame);
+		});
+		bt2.setOnAction(e->{
+			DuringTheGame during=new DuringTheGame();
+			Scene duringGame=new Scene(during.CreateGamePage(),600,400);
+			duringGame.getStylesheets().add(getClass().getResource("GamePageSettings.css").toExternalForm());
+			Stage window=(Stage)bt2.getScene().getWindow();
+			window.setTitle("Game started");
+			window.setScene(duringGame);
+		});
+		bt3.setOnAction(e->{
+			DuringTheGame during=new DuringTheGame();
+			Scene duringGame=new Scene(during.CreateGamePage(),600,400);
+			duringGame.getStylesheets().add(getClass().getResource("GamePageSettings.css").toExternalForm());
+			Stage window=(Stage)bt3.getScene().getWindow();
+			window.setTitle("Game started");
+			window.setScene(duringGame);
+		});
 		
 		root.getChildren().addAll(icon1,label1,bt1,bt2,bt3);
 		
