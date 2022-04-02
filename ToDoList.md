@@ -43,8 +43,7 @@
      1. Socket 重复使用?
    - Timeout (A timer)
 3. 线程管理
-   - End
-   - Interrupt?
+   - Lock / Semaphore should be used in handleReceivedBean (HandleAClient)
 4. *DAO
 5. *统计所有轮 (Round)的结果 展示此局 (Game)最终胜负
 
