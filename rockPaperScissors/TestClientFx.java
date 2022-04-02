@@ -1,11 +1,13 @@
 package rockPaperScissors.rockPaperScissors;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -23,6 +25,7 @@ public class TestClientFx extends Application
 	private static TextArea ta = new TextArea();
 	private static Client client = null;
 	private Scene welcomePage;
+	private static ArrayList<EventHandler>listeners=new ArrayList<>();
 	
 
 	//constructors
@@ -85,9 +88,16 @@ public class TestClientFx extends Application
 			DuringTheGame during=new DuringTheGame();
 			Scene duringGame=new Scene(during.CreateGamePage(),600,400);
 			duringGame.getStylesheets().add(getClass().getResource("GamePageSettings.css").toExternalForm());
+			getEvent();
+			int i=0;
+			for(Node node:during.CreateGamePage().getChildrenUnmodifiable()) {
+				node.addEventHandler(MouseEvent.MOUSE_CLICKED,listeners.get(i));
+				i++;
+			}
 			Stage window=(Stage)bt1.getScene().getWindow();
 			window.setTitle("Game started");
 			window.setScene(duringGame);
+			
 		});
 		bt2.setOnAction(e->{
 			DuringTheGame during=new DuringTheGame();
@@ -121,35 +131,10 @@ public class TestClientFx extends Application
 	//get JavaFX Group
 
 
-	public static Pane getRoot()
+	public static void getEvent()
 	{
-		//create button and set its layout to display
-		Button rock = new Button("Rock");//create new button instance
-		Button paper= new Button("Paper");//create new button instance
-		Button scissors = new Button("Scissors");//create new button instance
-		rock.setLayoutX(200);
-		rock.setLayoutY(200);
 
-		paper.setLayoutX(260);
-		paper.setLayoutY(200);
-
-		scissors.setLayoutX(320);
-		scissors.setLayoutY(200);
-
-		Pane root = new Pane();
-		root.getChildren().addAll(rock,paper,scissors,ta);
 		
-		
-		rock.layoutXProperty().bind(root.widthProperty().divide(3));
-		rock.layoutYProperty().bind(root.heightProperty().multiply(0.87));
-		paper.layoutXProperty().bind(root.widthProperty().divide(2));
-		paper.layoutYProperty().bind(root.heightProperty().multiply(0.87));
-		scissors.layoutXProperty().bind(root.widthProperty().divide(1.5));
-		scissors.layoutYProperty().bind(root.heightProperty().multiply(0.87));
-		ta.layoutXProperty().bind(root.widthProperty().divide(14));
-		ta.layoutYProperty().bind(root.heightProperty().multiply(0.1));
-
-
 		//listen the mouse event and handle the event
 		EventHandler<MouseEvent> rockListener = new EventHandler<MouseEvent>() 
 		{ 
@@ -200,15 +185,19 @@ public class TestClientFx extends Application
 				}
 			}
 		};
+		listeners.add(rockListener);
+		listeners.add(paperListener);
+		listeners.add(scissorsListener);
 
 
 		// bind the event listener to the button
-		rock.addEventHandler(MouseEvent.MOUSE_CLICKED, rockListener);
-		paper.addEventHandler(MouseEvent.MOUSE_CLICKED, paperListener);
-		scissors.addEventHandler(MouseEvent.MOUSE_CLICKED, scissorsListener);
+		//rock.addEventHandler(MouseEvent.MOUSE_CLICKED, rockListener);
+		//paper.addEventHandler(MouseEvent.MOUSE_CLICKED, paperListener);
+		//scissors.addEventHandler(MouseEvent.MOUSE_CLICKED, scissorsListener);
 
-		return root;
+		
 	}
+	
 
 	//start JavaFX application
 	@Override

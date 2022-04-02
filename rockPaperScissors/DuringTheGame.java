@@ -1,16 +1,17 @@
 package rockPaperScissors.rockPaperScissors;
 import javafx.application.Application;
+import javafx.event.EventHandler;
 import javafx.scene.*;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 public class DuringTheGame{
-	private int width;
-	private int height;
+	
 	private Pane root;
-	private Scene GamePage;
+	
 	public Parent CreateGamePage() {
 		root=new Pane();
 		ImageView rock=new ImageView(new Image("/rockPaperScissors/rockPaperScissors/media/rock.png"));
@@ -31,6 +32,7 @@ public class DuringTheGame{
 		Button paper1= new Button("Paper",paper);//create new button instance
 		Button scissors1 = new Button("Scissors",scissors);
 		
+		
 		rock1.setLayoutX(50);
 		rock1.setLayoutY(300);
 		paper1.setLayoutX(250);
@@ -42,6 +44,7 @@ public class DuringTheGame{
 		scissors1.getStyleClass().add("bt");
 		
 		root.getChildren().addAll(rock1,paper1,scissors1);
+		
 		
 		return root;
 		
