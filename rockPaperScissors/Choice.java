@@ -53,7 +53,7 @@ public class Choice implements Serializable
 	{
 		return choiceName;
 	}
-	public void setChoiceImage(String choiceName) throws ClassNotFoundException{
+	public void setChoiceImage(String choiceName) {
 		if(choiceName.equals(GESTURES.ROCK)) {
 			this.choiceImage=GESTURES_IMAGES.ROCK;
 		}
@@ -63,10 +63,9 @@ public class Choice implements Serializable
 		else if(choiceName.equals(GESTURES.SCISSORS)) {
 			this.choiceImage=GESTURES_IMAGES.SCISSORS;
 		}
-		else 
-		{
-			throw new ClassNotFoundException();
-		}
+	}
+	public Image getChoiceImage() {
+		return choiceImage;
 	}
 
 	public int wins(Choice opponentChoice) {
