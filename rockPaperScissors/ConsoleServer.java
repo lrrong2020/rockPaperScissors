@@ -45,6 +45,7 @@ public class ConsoleServer
 	//handle ServerSocket
 	class HandleTheSocket implements Runnable
 	{
+		private volatile boolean exit;
 		ServerSocket serverSocket = null;
 
 		public HandleTheSocket() throws IOException 
@@ -59,7 +60,7 @@ public class ConsoleServer
 		public void run()
 		{
 			//continuously accept the connections
-			while (ConsoleServer.ONLINE_USER_MAP.size() <= ConsoleServer.MAX_NO_OF_USERS)
+			while (!exit && ConsoleServer.ONLINE_USER_MAP.size() <= ConsoleServer.MAX_NO_OF_USERS)
 			{
 				// Listen for a new connection request
 				Socket socket;
@@ -89,6 +90,10 @@ public class ConsoleServer
 				}
 			}		
 		}
+		public void stop()
+		{
+			exit = true;
+		}
 	}
 	//end of inner class
 
@@ -96,6 +101,7 @@ public class ConsoleServer
 	// Define the thread class for handling new connection
 	class HandleAClient implements Runnable 
 	{
+		private volatile boolean exit;
 		private Socket socket; // A connected socket
 
 		//connections using IOStreams
@@ -308,27 +314,53 @@ public class ConsoleServer
 			}
 
 			// Continuously serve the client
-			while(true) 
+			while(!exit) 
 			{	
 				try
-				{
-					handleReceivedBean();
+				{	
+					if(!socket.isClosed()) 
+					{
+						handleReceivedBean();
+					}
 				}
 				catch(IOException | ClassNotFoundException ex) 
 				{
-					ex.printStackTrace();//debug
-					System.out.println("============\n============\nWARNING!");
-					System.out.println("A client quit\n============\n============");
-					System.out.println("Quit client UUID:" + this.getUUID());
+					if(socket.isClosed()) 
+					{
+						System.out.println("A client closed the socket");
+						System.out.println("Quit client UUID:" + this.getUUID());
+						this.printAllUsers();
+					}
+					else 
+					{
+						ex.printStackTrace();//debug
+						System.out.println("============\n============\nWARNING!");
+						System.out.println("A client accidentally quit\n============\n============");
+						System.out.println("Accidentally quit client UUID:" + this.getUUID());
+						
+						//					//remove a client from user map
+						//					ConsoleServer.ONLINE_USER_MAP.remove(this.getUUID());
+						this.printAllUsers();
 
-					//					//remove a client from user map
-					//					ConsoleServer.ONLINE_USER_MAP.remove(this.getUUID());
-					this.printAllUsers();
-
-					//send ExceptionExitBean to clients
-					return;
+						//send ExceptionExitBean to clients
+					}
+					this.stop();
 				}
 			}
+			System.out.println();
+		}
+
+		public void stop()
+		{
+			try
+			{	
+				this.getSocket().close();
+			} catch (IOException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			exit = true;
 		}
 	}
 	//end of inner class

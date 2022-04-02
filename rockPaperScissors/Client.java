@@ -11,7 +11,7 @@ public class Client
 	//socket parameters to build connection
 	private static final String HOST = "localhost";//may use IPv4 address
 	private static final int PORT = 8000;//port number
-
+	private Socket socket;
 	// IOStreams
 	//Note that outputStream should always be defined first!
 	private ObjectOutputStream toServer;//defined first
@@ -29,8 +29,8 @@ public class Client
 	private void initializeConnection() throws IOException 
 	{
 		// Create a socket to connect to the server
-		@SuppressWarnings("resource")//need to close socket in consideration of performance 
-		Socket socket = new Socket(HOST, PORT);
+
+		this.socket = new Socket(HOST, PORT);
 
 		// Create an output stream to send object to the server
 		toServer = new ObjectOutputStream(socket.getOutputStream());
@@ -185,6 +185,7 @@ public class Client
 							{
 								((ExitBean) objFromServer).getException().printStackTrace();
 								display("Exception Occurs");
+								objectListener.interrupt();//terminates the listener
 							}
 							break;
 						}
@@ -206,6 +207,7 @@ public class Client
 					}
 					catch (IOException e) 
 					{
+						display("[Warning]-IO Disconnect");
 						return;
 					}
 				}
@@ -226,5 +228,20 @@ public class Client
 	public void setRoundNoInt(Integer roundNoInt)
 	{
 		this.roundNoInt = roundNoInt;
+	}
+	
+	public void stop() 
+	{
+		try
+		{
+			this.socket.close();
+			objectListener.interrupt();
+		} catch (IOException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		display("Stop");
 	}
 }
