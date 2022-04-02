@@ -38,11 +38,11 @@ class HandleAClient implements Runnable
 
 		/* Display connection results */
 		// Display the time
-		System.out.println("\n============Starting a thread for client at " + new Date() + "============\n");
+		ConsoleServer.log("\n============Starting a thread for client at " + new Date() + "============\n");
 
 		// Find the client's host name, and IP address
 		InetAddress inetAddress = socket.getInetAddress();
-		System.out.println("Client [" + ConsoleServer.ONLINE_USER_MAP.size() + "] 's host name is " + inetAddress.getHostName() + "\n"
+		ConsoleServer.log("Client [" + ConsoleServer.ONLINE_USER_MAP.size() + "] 's host name is " + inetAddress.getHostName() + "\n"
 				+ "IP Address is " + inetAddress.getHostAddress() + "\n");
 
 		//display all UUIDs of users who has registered in the user map
@@ -75,7 +75,7 @@ class HandleAClient implements Runnable
 
 	public void sendStartBean() throws IOException 
 	{
-		System.out.println("Sending start Bean");
+		ConsoleServer.log("Sending start Bean");
 		DataBean idb = new StartBean();//default constructor to indicates server-sent startBean
 
 		//send the start DataBean to the client
@@ -85,7 +85,7 @@ class HandleAClient implements Runnable
 
 	public void sendResultBean(Choice c1, Choice c2) throws IOException 
 	{
-		System.out.println("Sending result Bean");
+		ConsoleServer.log("Sending result Bean");
 		DataBean idb = new ResultBean(c1, c2, Integer.valueOf(ConsoleServer.roundNo));//default constructor to indicates server-sent startBean
 
 		//send the start DataBean to the client
@@ -95,7 +95,7 @@ class HandleAClient implements Runnable
 
 	public void sendExceptionExitBean(Exception exception) throws IOException
 	{
-		System.out.println("Sending exception exit bean");
+		ConsoleServer.log("Sending exception exit bean");
 		DataBean idb = new ExceptionExitBean(exception);//default constructor to indicates server-sent startBean
 
 		//send the start DataBean to the client
@@ -134,7 +134,7 @@ class HandleAClient implements Runnable
 		//atomic!!!
 		else if(receivedBean instanceof ChoiceBean) 
 		{
-			System.out.println("Received Bean: " + receivedBean.toString() + "\n");
+			ConsoleServer.log("Received Bean: " + receivedBean.toString() + "\n");
 
 			if(((ChoiceBean) receivedBean).getRoundNoInt().equals(Integer.valueOf(0))) 
 			{
@@ -165,19 +165,19 @@ class HandleAClient implements Runnable
 					} 
 					catch (ClassNotFoundException e) 
 					{
-						System.out.println("[Error]-ClassNotFound");
+						ConsoleServer.log("[Error]-ClassNotFound");
 						e.printStackTrace();
 					} 
 					catch (IOException e) 
 					{
-						System.out.println("[Error]-IO");
+						ConsoleServer.log("[Error]-IO");
 						e.printStackTrace();
 					} 
 					catch (ChoiceMoreThanOnceException e) 
 					{
 						try 
 						{
-							System.out.println("[Error Choice more than once]");
+							ConsoleServer.log("[Error Choice more than once]");
 							sendExceptionExitBean(e);
 						} catch (Exception ex) 
 						{
@@ -189,7 +189,7 @@ class HandleAClient implements Runnable
 				else 
 				{
 					try {
-						System.out.println("[Error Synchronization]");
+						ConsoleServer.log("[Error Synchronization]");
 						sendExceptionExitBean(new DataInconsistentException("Inconsistent"));
 					} catch (Exception e) {
 						e.printStackTrace();
@@ -199,7 +199,7 @@ class HandleAClient implements Runnable
 		}
 		else 
 		{
-			System.out.println("WHat bean?");
+			ConsoleServer.log("WHat bean?");
 		} 
 	}
 
@@ -213,13 +213,13 @@ class HandleAClient implements Runnable
 
 	private void printAllUsers() 
 	{
-		System.out.println("All users:");
+		ConsoleServer.log("All users:");
 		for (Entry<UUID, Socket> entry : ConsoleServer.ONLINE_USER_MAP.entrySet()) 
 		{
-			System.out.println( "<"+entry.getKey() + ">");//display UUIDs
+			ConsoleServer.log( "<"+entry.getKey() + ">");//display UUIDs
 		}
 		if(ConsoleServer.ONLINE_USER_MAP.entrySet().size() == 0) {
-			System.out.println("No User");
+			ConsoleServer.log("No User");
 		}
 	}
 
@@ -240,18 +240,15 @@ class HandleAClient implements Runnable
 		{	
 			try
 			{	
-				if(!socket.isClosed()) 
-				{
-					handleReceivedBean();
-				}
+				handleReceivedBean();
 			}
 			catch(IOException | ClassNotFoundException ex) 
 			{
 				ex.printStackTrace();//debug
-				System.out.println("============\n============\n");
-				System.out.println("Client UUID:" + this.getUUID() + " quit\n============\n============");
-				//					//remove a client from user map
-				//					ConsoleServer.ONLINE_USER_MAP.remove(this.getUUID());
+				ConsoleServer.log("============\n============\n");
+				ConsoleServer.log("Client UUID:" + this.getUUID() + " quit\n============\n============");
+
+				ConsoleServer.clientExit(this.uuid);
 
 				this.printAllUsers();
 
@@ -259,7 +256,6 @@ class HandleAClient implements Runnable
 				this.stop();
 			}
 		}
-		System.out.println();
 	}
 
 	//terminate the thread handling a client
