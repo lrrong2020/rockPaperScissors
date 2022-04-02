@@ -209,9 +209,9 @@ class HandleAClient implements Runnable
 			}
 			finally 
 			{
-				System.out.println("releasing lock...");
+				ConsoleServer.log("releasing lock...");
 				ConsoleServer.semaphore.release();
-				System.out.println("available Semaphore permits now: "
+				ConsoleServer.log("available Semaphore permits now: "
 							+ ConsoleServer.semaphore.availablePermits());
 			}
 		}
