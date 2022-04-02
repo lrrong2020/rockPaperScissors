@@ -20,6 +20,8 @@
 
 8.  *跨平台 (Android, Windows)
 
+9.  最后一张页面显示比分结果 自动跳转（几局结束）？
+
 ### **Controller-frontend**
 
 **前端** Controller 对接GUI和后端Controller
