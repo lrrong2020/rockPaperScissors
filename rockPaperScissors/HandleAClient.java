@@ -73,10 +73,10 @@ class HandleAClient implements Runnable
 		this.outputToClient.flush();		
 	}
 
-	public void sendStartBean() throws IOException 
+	public void sendStartBean(int m) throws IOException 
 	{
 		ConsoleServer.log("Sending start Bean");
-		DataBean idb = new StartBean();//default constructor to indicates server-sent startBean
+		DataBean idb = new StartBean(m);//default constructor to indicates server-sent startBean
 
 		//send the start DataBean to the client
 		this.outputToClient.writeObject(idb);
