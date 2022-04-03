@@ -8,7 +8,7 @@
 
 3. 房主界面以及非房主界面相同 非房主手动选择游戏方式（几局几胜） 会出现警告弹窗
 
-   *有没有一种可能, isHost是一个boolean, 用它可以控制选择游戏方式/开始游戏的按钮显示与否呢?*
+   *<u>bool canStartGame 控制"开始游戏"按钮 由Client.getIsHost决定</u>*, 选择后自动改为false
 
 4. 游戏中界面结果（对方选择）图片显示
 
@@ -32,10 +32,11 @@
 2. 控制按钮隐藏/显示
 3. UI显示 (独立thread)
 
-
 **后端** Controller Communication
+
 4. 异常重连
 5. timeout 独立thread
+5.  倒计时结束后再显示选择
 
 
 
@@ -45,9 +46,18 @@
 2. 处理异常重连
    - *断线 (On exit?)
      1. Socket 重复使用?
-   - Timeout (A timer)
+   - Timeout (A timer) - 心跳
 3. 线程管理
-   - Lock / Semaphore should be used in handleReceivedBean (HandleAClient)
 4. *DAO
 5. *统计所有轮 (Round)的结果 展示此局 (Game)最终胜负
+5.  每轮开始结束都要确认
 
+
+
+### **Game Logic**
+
+1.  模式选择
+    - 限制client / server 轮数上限
+    - 自动 / 随机选择
+    -  提示对手已经选择
+2.  统计数据
