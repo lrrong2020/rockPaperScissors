@@ -1,19 +1,20 @@
 package rockPaperScissors.rockPaperScissors;
 
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
 
 public class WelcomePage {
-	private Scene welcomePage;
+	private Pane root; 
 	
-	public Scene getWelcomePage() {
-		Pane root=new Pane();
-		welcomePage=new Scene(root,600,400);
-		welcomePage.getStylesheets().add(getClass().getResource("PagesSettings.css").toExternalForm());
+	public Parent getWelcomePage() {
+		root=new Pane();
+		
 		Image icon=new Image("/rockPaperScissors/rockPaperScissors/media/icon.gif");
 		ImageView icon1=new ImageView(icon);
 		icon1.setFitHeight(150);
@@ -37,8 +38,29 @@ public class WelcomePage {
 	
 		bt2.layoutXProperty().bind(bt1.layoutXProperty());
 		bt3.layoutXProperty().bind(bt1.layoutXProperty());
+		root.getChildren().addAll(label1,icon1,bt1,bt2,bt3);
 		
-		return welcomePage;
+		DuringTheGame during=new DuringTheGame();
+		Scene duringGame=new Scene(during.CreateGamePage(),600,400);
+		duringGame.getStylesheets().add(getClass().getResource("GamePageSettings.css").toExternalForm());
+		bt1.setOnAction(e->{
+			Stage window=(Stage)bt1.getScene().getWindow();
+			window.setTitle("Game started");
+			//during.CreateGamePage().getChildrenUnmodifiable()
+			window.setScene(duringGame);
+			
+		});
+		bt2.setOnAction(e->{
+			Stage window=(Stage)bt2.getScene().getWindow();
+			window.setTitle("Game started");
+			window.setScene(duringGame);
+		});
+		bt3.setOnAction(e->{
+			Stage window=(Stage)bt3.getScene().getWindow();
+			window.setTitle("Game started");
+			window.setScene(duringGame);
+		});
+		return root;
 	
 	}
 }

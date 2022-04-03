@@ -24,7 +24,10 @@ public class Client
 	private boolean isHost = false;
 	
 	private boolean canChoose = false;
-	private Thread countDownThread;
+//	private Thread countDownThread;
+	
+	private boolean hasInitialized = false;
+	
 	
 	//constructors
 	public Client()
@@ -48,7 +51,7 @@ public class Client
 	{
 		Client.port = port;
 	}
-
+	
 	public void setRoundNoInt(Integer roundNoInt)
 	{
 		this.roundNoInt = roundNoInt;
@@ -87,13 +90,24 @@ public class Client
 		this.isHost = isHost;
 	}
 
+	public void setHasInitialized(boolean hasInitialized)
+	{
+		this.hasInitialized = hasInitialized;
+	}
+	
+	public boolean getHasInitialized()
+	{
+		return hasInitialized;
+	}
+	
 	//initialize socket connection with the server
 	private void initializeConnection() throws IOException 
 	{
 		// Create a socket to connect to the server
 
 		this.socket = new Socket(host, port);
-
+		System.out.println(socket.getPort());
+		//System.out.print(socket.getLocalAddress());
 		// Create an output stream to send object to the server
 		toServer = new ObjectOutputStream(socket.getOutputStream());
 
@@ -139,6 +153,9 @@ public class Client
 				player.setUUID(receivedIBean.getUUID());
 				player.setIsHost(receivedIBean.getIsHost());
 				this.setIsHost(receivedIBean.getIsHost());
+
+				this.setHasInitialized(true);
+				
 				
 			}
 			else if (receivedBean instanceof StartBean) 
@@ -180,6 +197,10 @@ public class Client
 					//control the choice
 					roundStart();
 				}
+				else 
+				{
+					display("Game over.");
+				}
 			}
 			else
 			{
@@ -210,29 +231,29 @@ public class Client
 	{
 		int seconds = 10;
 		display("Round["+this.getRoundNoInt().intValue()+"] begins! Please make your choice in " + seconds + " seconds.");
-
-		
-		countDownThread = new Thread() {
-			public void run() 
-			{	
-				setCanChoose(true);
-				for(int j = seconds;j > 0;j--) 
-				{
-					//	display count down i s
-					display(j+"");
-					try 
-					{
-						sleep(1000);
-					} 
-					catch (InterruptedException e) 
-					{
-						//do nothing
-					}
-				}
-				setCanChoose(false);
-			}
-		};
-		countDownThread.start();
+		this.setCanChoose(true);
+//		
+//		countDownThread = new Thread() {
+//			public void run() 
+//			{	
+//				setCanChoose(true);
+//				for(int j = seconds;j > 0;j--) 
+//				{
+//					//	display count down i s
+//					display(j+"");
+//					try 
+//					{
+//						sleep(1000);
+//					} 
+//					catch (InterruptedException e) 
+//					{
+//						//do nothing
+//					}
+//				}
+//				setCanChoose(false);
+//			}
+//		};
+//		countDownThread.start();
 	}
 
 	//the client made his/her choice
@@ -240,7 +261,8 @@ public class Client
 	{
 		if(this.getCanChoose()) 
 		{
-			this.countDownThread.interrupt();
+//			this.countDownThread.interrupt();
+			this.setCanChoose(false);
 			ChoiceBean choiceBean = new ChoiceBean(choiceName, player, this.getRoundNoInt());
 			display("Your choice:" + choiceBean.getChoice().getChoiseName());
 			this.sendDataBean(choiceBean);
@@ -260,12 +282,12 @@ public class Client
 	}
 
 	//initialize the client
-	public void initialize() throws ClassNotFoundException, NullPointerException, IOException
+	public void initialize() throws ClassNotFoundException, NullPointerException, IOException, InterruptedException
 	{
 		//handle object read from the server
 		//initialize IOStreams
 		this.initializeConnection();
-
+		System.out.println(this.socket.getPort());
 		//start a new thread to continuously listen to the server
 
 		//need to be closed after client terminated
@@ -293,6 +315,8 @@ public class Client
 						}
 						display("Successfully get an object!");
 						handleReceivedObject(objFromServer);
+						//System.out.print("Intialize or not? "+hasInitialized);
+						
 					}
 					catch(ClassNotFoundException e) 
 					{
@@ -319,6 +343,8 @@ public class Client
 		};
 
 		objectListener.start();
+		objectListener.join(200);
+		
 	}
 
 	//terminate the client

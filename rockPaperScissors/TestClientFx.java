@@ -27,18 +27,11 @@ public class TestClientFx extends Application
 	// Text area to display contents
 	private static TextArea ta = new TextArea();
 	private static Client client = null;
-	private boolean isHost=false;
 	//private Scene findIPPage;
 	private Scene welcomePage;
 	private static ArrayList<EventHandler<MouseEvent>>listeners=new ArrayList<>();
-	
-
-	//constructors
-	public TestClientFx() 
-	{	
-		super();	
-		//create a new client class
-		TestClientFx.client = new Client();
+	public TestClientFx() throws InterruptedException {
+		TestClientFx.client=new Client();
 		appendTextArea("Client generated");
 		try 
 		{
@@ -57,10 +50,11 @@ public class TestClientFx extends Application
 			e.printStackTrace();
 			appendTextArea("Invalid Data from server!");
 		}
-	}	
+	}
+
 	//Create the Welcome Page to show
 	public void CreateWelcomePage() {
-		if(isHost) {
+		if(client.isHost()) {
 			GridPane grid = new GridPane();
 			grid.setAlignment(Pos.CENTER);
 			grid.setVgap(10);
@@ -81,12 +75,21 @@ public class TestClientFx extends Application
 			Button enter = new Button("OK");
 			grid.add(enter, 0, 3);
 			welcomePage=new Scene(grid,600,400);
+			WelcomePage startHost=new WelcomePage();
+			Scene startWelcomePage=new Scene(startHost.getWelcomePage(),600,400);
+			startWelcomePage.getStylesheets().add(getClass().getResource("PagesSettings.css").toExternalForm());
 			enter.setOnAction(e->{
 				Stage window=(Stage)enter.getScene().getWindow();
-				window.setTitle("Game started");
-				window.setScene(new WelcomePage().getWelcomePage());
+				window.setTitle("Welcome to the Rock Paper Scissors Game!");
+				window.setScene(startWelcomePage);
 			});
-		}	
+		}
+		else {
+			WelcomePage start=new WelcomePage();
+			welcomePage=new Scene(start.getWelcomePage(),600,400);
+			welcomePage.getStylesheets().add(getClass().getResource("PagesSettings.css").toExternalForm());
+			
+		}
 		/*DuringTheGame during=new DuringTheGame();
 		Scene duringGame=new Scene(during.CreateGamePage(),600,400);
 		duringGame.getStylesheets().add(getClass().getResource("GamePageSettings.css").toExternalForm());
@@ -188,16 +191,16 @@ public class TestClientFx extends Application
 		//paper.addEventHandler(MouseEvent.MOUSE_CLICKED, paperListener);
 		//scissors.addEventHandler(MouseEvent.MOUSE_CLICKED, scissorsListener);
 
-		
+	
 	}
 	
 
 	//start JavaFX application
 	@Override
 	public void start(Stage stage) throws Exception
-	{
-		appendTextArea("   "+client.isHost());
-		
+	{	
+		//System.out.println("Does it all ????"+client.getHasInitialized());
+		//System.out.println("cient is a host??"+client.isHost());
 		stage.setTitle("Welcome to the Rock Paper Scissors Game!");
     	CreateWelcomePage();
     	stage.setScene(welcomePage);
