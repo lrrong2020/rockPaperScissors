@@ -128,7 +128,7 @@ public class ConsoleServer
 		{
 			try 
 			{
-				h.setRoomNo(room.getRoomNo());
+				h.setRoomNo(room.getRoomNoInt());
 				h.sendStartBean(m);
 			}
 			catch (IOException e) 
@@ -160,11 +160,11 @@ public class ConsoleServer
 		return null;
 	}
 	
-	public static Room getRoom(int roomNo) 
+	public static Room getRoom(Integer roomNoInt) 
 	{
 		for (Room room: ConsoleServer.ROOM_LIST) 
 		{
-			if(room.getRoomNo() == roomNo)
+			if(room.getRoomNoInt().equals(roomNoInt))
 			{
 				return room;
 			}

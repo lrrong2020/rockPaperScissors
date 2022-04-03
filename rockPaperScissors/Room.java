@@ -9,16 +9,16 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import rockPaperScissors.rockPaperScissors.DataBeans.*;
-import rockPaperScissors.rockPaperScissors.Exceptions.ChoiceMoreThanOnceException;
+import rockPaperScissors.rockPaperScissors.Exceptions.*;
 
 //to hold players and match-related classes
 public class Room
 {
-	private int roomNo = 0;
+	private Integer roomNoInt = Integer.valueOf(0);
 	private Map<UUID, Socket> users = new ConcurrentHashMap<UUID, Socket>();
 	private List<HandleAClient> clientHandlers = new ArrayList<HandleAClient>();//list of 
 	private final List<ChoiceBean[]> clientChoiceBeans = new ArrayList<ChoiceBean[]>();//results of each round
-	private int roundNo = 1;
+	private Integer roundNoInt = Integer.valueOf(1);
 	//constructors
 	
 	public Room() 
@@ -78,7 +78,7 @@ public class Room
 		player0Handler.sendResultBean(player0ChoiceBean.getChoice(), player1ChoiceBean.getChoice());
 		player1Handler.sendResultBean(player1ChoiceBean.getChoice(), player0ChoiceBean.getChoice());
 
-		setRoundNo(getRoundNo() + 1);
+		setRoundNoInt(Integer.valueOf(getRoundNoInt().intValue() + 1));
 	}
 
 	public void setUsers(Map<UUID, Socket> users) 
@@ -110,20 +110,20 @@ public class Room
 		return null;
 	}
 	
-	public void setRoundNo(int roundNo)
+	public void setRoundNoInt(Integer roundNoInt)
 	{
-		this.roundNo = roundNo;
+		this.roundNoInt = roundNoInt;
 	}
-	public int getRoundNo()
+	public Integer getRoundNoInt()
 	{
-		return roundNo;
+		return roundNoInt;
 	}
-	public void setRoomNo(int roomNo)
+	public void setRoomNoInt(int roomNoInt)
 	{
-		this.roomNo = roomNo;
+		this.roomNoInt = roomNoInt;
 	}
-	public int getRoomNo()
+	public Integer getRoomNoInt()
 	{
-		return roomNo;
+		return roomNoInt;
 	}
 }

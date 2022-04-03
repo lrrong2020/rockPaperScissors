@@ -100,7 +100,7 @@ class HandleAClient implements Runnable
 	public void sendResultBean(Choice c1, Choice c2) throws IOException 
 	{
 		ConsoleServer.log("Sending result Bean");
-		DataBean idb = new ResultBean(c1, c2, Integer.valueOf(ConsoleServer.getRoom(roomNo).getRoundNo()));//default constructor to indicates server-sent startBean
+		DataBean idb = new ResultBean(c1, c2, ConsoleServer.getRoom(roomNo).getRoundNoInt());//default constructor to indicates server-sent startBean
 
 		//send the start DataBean to the client
 		this.outputToClient.writeObject(idb);
@@ -169,7 +169,7 @@ class HandleAClient implements Runnable
 				ConsoleServer.getRoom(roomNo).getClientChoiceBeans().add(new ChoiceBean[2]);
 
 				//choice bean list contains 2 choices?
-				ChoiceBean[] currentRoundChoiceBeans = ConsoleServer.getRoom(roomNo).getClientChoiceBeans().get(ConsoleServer.getRoom(roomNo).getRoundNo() - 1);
+				ChoiceBean[] currentRoundChoiceBeans = ConsoleServer.getRoom(roomNo).getClientChoiceBeans().get(ConsoleServer.getRoom(roomNo).getRoundNoInt() - 1);
 				if(currentRoundChoiceBeans[0] == null)
 				{	
 					currentRoundChoiceBeans[0] = (ChoiceBean) receivedBean;
@@ -178,13 +178,13 @@ class HandleAClient implements Runnable
 				{
 					currentRoundChoiceBeans[1] = (ChoiceBean) receivedBean;
 
-					if(currentRoundChoiceBeans[0].getRoundNoInt().equals(Integer.valueOf(ConsoleServer.getRoom(roomNo).getRoundNo()))) 
+					if(currentRoundChoiceBeans[0].getRoundNoInt().equals(ConsoleServer.getRoom(roomNo).getRoundNoInt())) 
 					{
 						//broadcast when the second choice bean is appended
 
 						try 
 						{
-							ConsoleServer.getRoom(roomNo).sendResults(ConsoleServer.getRoom(roomNo).getRoundNo() - 1);
+							ConsoleServer.getRoom(roomNo).sendResults(ConsoleServer.getRoom(roomNo).getRoundNoInt() - 1);
 						} 
 						catch (ClassNotFoundException e) 
 						{

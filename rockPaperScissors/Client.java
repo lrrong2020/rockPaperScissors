@@ -24,6 +24,7 @@ public class Client
 	private boolean isHost = false;
 	
 	private boolean canChoose = false;
+	private Thread countDownThread;
 	
 	//constructors
 	public Client()
@@ -177,7 +178,7 @@ public class Client
 				if(resultBean.getRoundNoInt().intValue() < this.getMode()) 
 				{
 					//control the choice
-					roundBegin();
+					roundStart();
 				}
 			}
 			else
@@ -198,42 +199,57 @@ public class Client
 	public void gameStart(int m) 
 	{	
 		this.setMode(m);
-		display("The game is on!");
+		display("The game is on!"+"\nBO"+m);
 		this.setRoundNoInt(Integer.valueOf(1));
 		//		this.sendDataBean(new StartBean(player));
-		roundBegin();
+		roundStart();
 	}
 	
 	//count down timer for round time
-	private void roundBegin() 
+	private void roundStart()
 	{
-		int i = 10;
+		int seconds = 10;
+		display("Round["+this.getRoundNoInt().intValue()+"] begins! Please make your choice in " + seconds + " seconds.");
+
 		
-		Thread thread = new Thread() {
+		countDownThread = new Thread() {
 			public void run() 
 			{	
-				for(int j = i;j > 0;j--) 
+				setCanChoose(true);
+				for(int j = seconds;j > 0;j--) 
 				{
 					//	display count down i s
-					try {
+					display(j+"");
+					try 
+					{
 						sleep(1000);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
+					} 
+					catch (InterruptedException e) 
+					{
+						//do nothing
 					}
 				}
+				setCanChoose(false);
 			}
 		};
-		this.setCanChoose(true);
-		thread.start();
-		this.setCanChoose(false);
+		countDownThread.start();
 	}
 
 	//the client made his/her choice
 	public void choose(String choiceName) throws ClassNotFoundException 
 	{
-		ChoiceBean choiceBean = new ChoiceBean(choiceName, player, this.getRoundNoInt());
-		display("Your choice:" + choiceBean.getChoice().getChoiseName());
-		this.sendDataBean(choiceBean);
+		if(this.getCanChoose()) 
+		{
+			this.countDownThread.interrupt();
+			ChoiceBean choiceBean = new ChoiceBean(choiceName, player, this.getRoundNoInt());
+			display("Your choice:" + choiceBean.getChoice().getChoiseName());
+			this.sendDataBean(choiceBean);
+		}
+		else 
+		{
+			display("You can't choose now!");
+		}
+
 	}
 
 	//abstract and encapsulate display function
