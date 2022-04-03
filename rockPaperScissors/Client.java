@@ -20,7 +20,11 @@ public class Client
 	private Player player = new Player();//holds player singleton
 	private Thread objectListener = null;//class-level thread to continuously listen to the server
 	private Integer roundNoInt = Integer.valueOf(0);//round number
-
+	private int mode = 0;
+	private boolean isHost = false;
+	
+	private boolean canChoose = false;
+	
 	//constructors
 	public Client()
 	{
@@ -44,14 +48,42 @@ public class Client
 		Client.port = port;
 	}
 
+	public void setRoundNoInt(Integer roundNoInt)
+	{
+		this.roundNoInt = roundNoInt;
+	}
 	public Integer getRoundNoInt()
 	{
 		return roundNoInt;
 	}
 
-	public void setRoundNoInt(Integer roundNoInt)
+	
+	public void setMode(int mode)
 	{
-		this.roundNoInt = roundNoInt;
+		this.mode = mode;
+	}
+	public int getMode()
+	{
+		return mode;
+	}
+	
+	public void setCanChoose(boolean canChoose)
+	{
+		this.canChoose = canChoose;
+	}
+	public boolean getCanChoose()
+	{
+		return canChoose;
+	}
+
+	public boolean isHost()
+	{
+		return isHost;
+	}
+
+	public void setIsHost(boolean isHost)
+	{
+		this.isHost = isHost;
 	}
 
 	//initialize socket connection with the server
@@ -106,12 +138,13 @@ public class Client
 				//set UUID and isHost to the Player instance
 				player.setUUID(receivedIBean.getUUID());
 				player.setIsHost(receivedIBean.getIsHost());
+				this.setIsHost(receivedIBean.getIsHost());
 			}
 			else if (receivedBean instanceof StartBean) 
 			{
 				//when the game starts
 				display("Received Bean is instanceof StartBean");
-				gameStart();
+				gameStart(((StartBean) receivedBean).getMode());
 			}
 			else if (receivedBean instanceof ResultBean) 
 			{
@@ -138,6 +171,14 @@ public class Client
 					break;
 				}
 				display("==========");
+				
+				//during the game
+				
+				if(resultBean.getRoundNoInt().intValue() < this.getMode()) 
+				{
+					//control the choice
+					roundBegin();
+				}
 			}
 			else
 			{
@@ -147,34 +188,44 @@ public class Client
 		}
 	}
 
-	//send the player instance to the server indicates that the game starts
-	public void gameStart() 
+	public void hostStartGame(int m) 
 	{
+		display("Host starting game" + "\nBO"+m);
+		sendDataBean(new StartBean(m));
+	}
+	
+	//send the player instance to the server indicates that the game starts
+	public void gameStart(int m) 
+	{	
+		this.setMode(m);
 		display("The game is on!");
 		this.setRoundNoInt(Integer.valueOf(1));
 		//		this.sendDataBean(new StartBean(player));
-		//		countDown(10);
+		roundBegin();
 	}
-
+	
 	//count down timer for round time
-	private static void countDown(int i) 
+	private void roundBegin() 
 	{
+		int i = 10;
+		
 		Thread thread = new Thread() {
 			public void run() 
-			{
+			{	
 				for(int j = i;j > 0;j--) 
 				{
-					//					display(j+"");
+					//	display count down i s
 					try {
 						sleep(1000);
 					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
 			}
 		};
+		this.setCanChoose(true);
 		thread.start();
+		this.setCanChoose(false);
 	}
 
 	//the client made his/her choice

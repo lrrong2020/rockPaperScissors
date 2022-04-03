@@ -45,9 +45,15 @@
 2. 处理异常重连
    - *断线 (On exit?)
      1. Socket 重复使用?
-   - Timeout (A timer)
+   - Timeout (A timer) - 心跳
 3. 线程管理
-   - Lock / Semaphore should be used in handleReceivedBean (HandleAClient)
 4. *DAO
 5. *统计所有轮 (Round)的结果 展示此局 (Game)最终胜负
+5.  每轮开始结束都要确认
 
+
+
+### **Game Logic**
+
+1.  模式选择
+2.  统计数据

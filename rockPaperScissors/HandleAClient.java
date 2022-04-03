@@ -19,6 +19,8 @@ class HandleAClient implements Runnable
 	private ObjectInputStream inputFromClient = null;
 
 	private UUID uuid = null;//uniquely identify the users
+	private Room room;
+	private int roomNo;
 
 	//construct a thread
 	public HandleAClient(Socket socket) 
@@ -62,6 +64,18 @@ class HandleAClient implements Runnable
 		return this.socket;
 	}
 
+
+
+	public int getRoomNo()
+	{
+		return roomNo;
+	}
+
+	public void setRoomNo(int roomNo)
+	{
+		this.roomNo = roomNo;
+	}
+
 	//send initial data to the client
 	public void sendInitBean() throws IOException 
 	{
@@ -73,10 +87,10 @@ class HandleAClient implements Runnable
 		this.outputToClient.flush();		
 	}
 
-	public void sendStartBean() throws IOException 
+	public void sendStartBean(int m) throws IOException 
 	{
 		ConsoleServer.log("Sending start Bean");
-		DataBean idb = new StartBean();//default constructor to indicates server-sent startBean
+		DataBean idb = new StartBean(m);//default constructor to indicates server-sent startBean
 
 		//send the start DataBean to the client
 		this.outputToClient.writeObject(idb);
@@ -86,7 +100,7 @@ class HandleAClient implements Runnable
 	public void sendResultBean(Choice c1, Choice c2) throws IOException 
 	{
 		ConsoleServer.log("Sending result Bean");
-		DataBean idb = new ResultBean(c1, c2, Integer.valueOf(ConsoleServer.roundNo));//default constructor to indicates server-sent startBean
+		DataBean idb = new ResultBean(c1, c2, Integer.valueOf(ConsoleServer.getRoom(roomNo).getRoundNo()));//default constructor to indicates server-sent startBean
 
 		//send the start DataBean to the client
 		this.outputToClient.writeObject(idb);
@@ -116,18 +130,21 @@ class HandleAClient implements Runnable
 			/** only host can start the game
 				StartGame operation should not open to non-host player
 				which is to be implemented in the front end or View part **/
-
-			if(receivedSBean.getPlayer().getIsHost()) 
-			{
-				//starts the game
-			}
-			else 
-			{
-				//do nothing
-			}
+//
+//			if(receivedSBean.getPlayer().getIsHost()) 
+//			{
+//				//starts the game
+//				ConsoleServer.startGame(receivedSBean.getMode());
+//			}
+//			else 
+//			{
+//				//do nothing
+//			}
 
 			//send StartBean to all users indicates that the game is on
-			this.outputToClient.writeObject(new StartBean());//incomplete constructor
+//			this.outputToClient.writeObject(new StartBean());//incomplete constructor
+			ConsoleServer.log("Starting game (HandleAClient)");
+			ConsoleServer.startGame(receivedSBean.getMode());
 		}
 
 
@@ -149,10 +166,10 @@ class HandleAClient implements Runnable
 				ConsoleServer.semaphore.acquire();
 
 				//put the (ChoiceBean) in class-level Choice list
-				ConsoleServer.CLIENT_CHOICE_BEAN_LIST.add(new ChoiceBean[2]);
+				ConsoleServer.getRoom(roomNo).getClientChoiceBeans().add(new ChoiceBean[2]);
 
 				//choice bean list contains 2 choices?
-				ChoiceBean[] currentRoundChoiceBeans = ConsoleServer.CLIENT_CHOICE_BEAN_LIST.get(ConsoleServer.roundNo - 1);
+				ChoiceBean[] currentRoundChoiceBeans = ConsoleServer.getRoom(roomNo).getClientChoiceBeans().get(ConsoleServer.getRoom(roomNo).getRoundNo() - 1);
 				if(currentRoundChoiceBeans[0] == null)
 				{	
 					currentRoundChoiceBeans[0] = (ChoiceBean) receivedBean;
@@ -161,13 +178,13 @@ class HandleAClient implements Runnable
 				{
 					currentRoundChoiceBeans[1] = (ChoiceBean) receivedBean;
 
-					if(currentRoundChoiceBeans[0].getRoundNoInt().equals(Integer.valueOf(ConsoleServer.roundNo))) 
+					if(currentRoundChoiceBeans[0].getRoundNoInt().equals(Integer.valueOf(ConsoleServer.getRoom(roomNo).getRoundNo()))) 
 					{
 						//broadcast when the second choice bean is appended
 
 						try 
 						{
-							ConsoleServer.sendResults(ConsoleServer.roundNo - 1);
+							ConsoleServer.getRoom(roomNo).sendResults(ConsoleServer.getRoom(roomNo).getRoundNo() - 1);
 						} 
 						catch (ClassNotFoundException e) 
 						{
@@ -209,9 +226,9 @@ class HandleAClient implements Runnable
 			}
 			finally 
 			{
-				System.out.println("releasing lock...");
+				ConsoleServer.log("releasing lock...");
 				ConsoleServer.semaphore.release();
-				System.out.println("available Semaphore permits now: "
+				ConsoleServer.log("available Semaphore permits now: "
 							+ ConsoleServer.semaphore.availablePermits());
 			}
 		}
