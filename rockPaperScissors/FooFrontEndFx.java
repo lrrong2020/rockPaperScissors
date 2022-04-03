@@ -18,7 +18,7 @@ public class FooFrontEndFx extends Application
 	private static Client client = null;
 
 	//constructors
-	public FooFrontEndFx() 
+	public FooFrontEndFx() throws InterruptedException 
 	{	
 		super();	
 		//create a new client class

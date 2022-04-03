@@ -28,6 +28,7 @@ public class Client
 	
 	private boolean hasInitialized = false;
 	
+	
 	//constructors
 	public Client()
 	{
@@ -50,7 +51,7 @@ public class Client
 	{
 		Client.port = port;
 	}
-
+	
 	public void setRoundNoInt(Integer roundNoInt)
 	{
 		this.roundNoInt = roundNoInt;
@@ -105,7 +106,8 @@ public class Client
 		// Create a socket to connect to the server
 
 		this.socket = new Socket(host, port);
-
+		System.out.println(socket.getPort());
+		//System.out.print(socket.getLocalAddress());
 		// Create an output stream to send object to the server
 		toServer = new ObjectOutputStream(socket.getOutputStream());
 
@@ -147,12 +149,14 @@ public class Client
 				display("Status: " + receivedIBean.getClass());
 				display("Your UUID: " + receivedIBean.getUUID().toString());
 				display("You are" + (receivedIBean.getIsHost()?" the ":" not the ") + "host.");
-
 				//set UUID and isHost to the Player instance
 				player.setUUID(receivedIBean.getUUID());
 				player.setIsHost(receivedIBean.getIsHost());
 				this.setIsHost(receivedIBean.getIsHost());
+
 				this.setHasInitialized(true);
+				
+				
 			}
 			else if (receivedBean instanceof StartBean) 
 			{
@@ -274,17 +278,16 @@ public class Client
 	private static void display(String string)
 	{
 		System.out.println(string);
-		
 		//need to invoke display function of View layer
 	}
 
 	//initialize the client
-	public void initialize() throws ClassNotFoundException, NullPointerException, IOException
+	public void initialize() throws ClassNotFoundException, NullPointerException, IOException, InterruptedException
 	{
 		//handle object read from the server
 		//initialize IOStreams
 		this.initializeConnection();
-
+		System.out.println(this.socket.getPort());
 		//start a new thread to continuously listen to the server
 
 		//need to be closed after client terminated
@@ -320,6 +323,7 @@ public class Client
 							display("Successfully get an object!");
 							handleReceivedObject(objFromServer);
 						}
+
 					}
 					catch(ClassNotFoundException e) 
 					{
@@ -343,6 +347,8 @@ public class Client
 		};
 
 		objectListener.start();
+		objectListener.join(200);
+		
 	}
 
 	//terminate the client
