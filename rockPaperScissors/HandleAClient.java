@@ -97,7 +97,7 @@ class HandleAClient implements Runnable
 	public void sendResultBean(Choice c1, Choice c2) throws IOException 
 	{
 		ConsoleServer.log("Sending result Bean");
-		DataBean idb = new ResultBean(c1, c2, Integer.valueOf(ConsoleServer.roundNo));//default constructor to indicates server-sent startBean
+		DataBean idb = new ResultBean(c1, c2, Integer.valueOf(this.getRoom().getRoundNo()));//default constructor to indicates server-sent startBean
 
 		//send the start DataBean to the client
 		this.outputToClient.writeObject(idb);
@@ -127,19 +127,21 @@ class HandleAClient implements Runnable
 			/** only host can start the game
 				StartGame operation should not open to non-host player
 				which is to be implemented in the front end or View part **/
-
-			if(receivedSBean.getPlayer().getIsHost()) 
-			{
-				//starts the game
-				ConsoleServer.startGame(receivedSBean.getMode());
-			}
-			else 
-			{
-				//do nothing
-			}
+//
+//			if(receivedSBean.getPlayer().getIsHost()) 
+//			{
+//				//starts the game
+//				ConsoleServer.startGame(receivedSBean.getMode());
+//			}
+//			else 
+//			{
+//				//do nothing
+//			}
 
 			//send StartBean to all users indicates that the game is on
-			this.outputToClient.writeObject(new StartBean());//incomplete constructor
+//			this.outputToClient.writeObject(new StartBean());//incomplete constructor
+			ConsoleServer.log("Starting game (HandleAClient)");
+			ConsoleServer.startGame(receivedSBean.getMode());
 		}
 
 
@@ -164,7 +166,7 @@ class HandleAClient implements Runnable
 				this.getRoom().getClientChoiceBeans().add(new ChoiceBean[2]);
 
 				//choice bean list contains 2 choices?
-				ChoiceBean[] currentRoundChoiceBeans = this.getRoom().getClientChoiceBeans().get(ConsoleServer.roundNo - 1);
+				ChoiceBean[] currentRoundChoiceBeans = this.getRoom().getClientChoiceBeans().get(this.getRoom().getRoundNo() - 1);
 				if(currentRoundChoiceBeans[0] == null)
 				{	
 					currentRoundChoiceBeans[0] = (ChoiceBean) receivedBean;
@@ -173,13 +175,13 @@ class HandleAClient implements Runnable
 				{
 					currentRoundChoiceBeans[1] = (ChoiceBean) receivedBean;
 
-					if(currentRoundChoiceBeans[0].getRoundNoInt().equals(Integer.valueOf(ConsoleServer.roundNo))) 
+					if(currentRoundChoiceBeans[0].getRoundNoInt().equals(Integer.valueOf(this.getRoom().getRoundNo()))) 
 					{
 						//broadcast when the second choice bean is appended
 
 						try 
 						{
-							this.getRoom().sendResults(ConsoleServer.roundNo - 1);
+							this.getRoom().sendResults(this.getRoom().getRoundNo() - 1);
 						} 
 						catch (ClassNotFoundException e) 
 						{

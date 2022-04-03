@@ -187,6 +187,12 @@ public class Client
 		}
 	}
 
+	public void hostStartGame(int m) 
+	{
+		display("Host starting game" + "\nBO"+m);
+		sendDataBean(new StartBean(m));
+	}
+	
 	//send the player instance to the server indicates that the game starts
 	public void gameStart(int m) 
 	{	

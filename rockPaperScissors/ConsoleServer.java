@@ -120,9 +120,10 @@ public class ConsoleServer
 	//class level start game
 	public static void startGame(int m) 
 	{
+		log("Starting game for all clients");
 		Room room = new Room(ConsoleServer.ONLINE_USER_MAP, ConsoleServer.CLIENT_HANDLER_LIST);
 		
-		log("Starting game for all clients");
+
 		for(HandleAClient h : CLIENT_HANDLER_LIST) 
 		{
 			try 
