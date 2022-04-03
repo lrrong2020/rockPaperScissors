@@ -5,9 +5,6 @@ import java.util.ArrayList;
 
 import javafx.application.Application;
 import javafx.event.EventHandler;
-import javafx.geometry.Pos;
-import javafx.scene.Group;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -15,9 +12,8 @@ import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-import javafx.scene.layout.*;
-import javafx.scene.text.TextAlignment;
 
 public class TestClientFx extends Application
 {
@@ -193,6 +189,8 @@ public class TestClientFx extends Application
 	@Override
 	public void start(Stage stage) throws Exception
 	{
+		
+		
 		stage.setTitle("Welcome to the Rock Paper Scissors Game!");
     	CreateWelcomePage();
     	stage.setScene(welcomePage);
