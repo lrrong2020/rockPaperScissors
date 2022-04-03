@@ -25,7 +25,7 @@ public class TestClientFx extends Application
 	private static TextArea ta = new TextArea();
 	private static Client client = null;
 	private Scene welcomePage;
-	private static ArrayList<EventHandler>listeners=new ArrayList<>();
+	private static ArrayList<EventHandler<MouseEvent>>listeners=new ArrayList<>();
 	
 
 	//constructors
@@ -84,33 +84,22 @@ public class TestClientFx extends Application
 		icon1.layoutXProperty().bind(root.widthProperty().divide(12));
 		icon1.layoutYProperty().bind(root.heightProperty().divide(1.8));
 		
+		DuringTheGame during=new DuringTheGame();
+		Scene duringGame=new Scene(during.CreateGamePage(),600,400);
+		duringGame.getStylesheets().add(getClass().getResource("GamePageSettings.css").toExternalForm());
 		bt1.setOnAction(e->{
-			DuringTheGame during=new DuringTheGame();
-			Scene duringGame=new Scene(during.CreateGamePage(),600,400);
-			duringGame.getStylesheets().add(getClass().getResource("GamePageSettings.css").toExternalForm());
-			getEvent();
-			int i=0;
-			for(Node node:during.CreateGamePage().getChildrenUnmodifiable()) {
-				node.addEventHandler(MouseEvent.MOUSE_CLICKED,listeners.get(i));
-				i++;
-			}
 			Stage window=(Stage)bt1.getScene().getWindow();
 			window.setTitle("Game started");
+			//during.CreateGamePage().getChildrenUnmodifiable()
 			window.setScene(duringGame);
 			
 		});
 		bt2.setOnAction(e->{
-			DuringTheGame during=new DuringTheGame();
-			Scene duringGame=new Scene(during.CreateGamePage(),600,400);
-			duringGame.getStylesheets().add(getClass().getResource("GamePageSettings.css").toExternalForm());
 			Stage window=(Stage)bt2.getScene().getWindow();
 			window.setTitle("Game started");
 			window.setScene(duringGame);
 		});
 		bt3.setOnAction(e->{
-			DuringTheGame during=new DuringTheGame();
-			Scene duringGame=new Scene(during.CreateGamePage(),600,400);
-			duringGame.getStylesheets().add(getClass().getResource("GamePageSettings.css").toExternalForm());
 			Stage window=(Stage)bt3.getScene().getWindow();
 			window.setTitle("Game started");
 			window.setScene(duringGame);
@@ -131,7 +120,7 @@ public class TestClientFx extends Application
 	//get JavaFX Group
 
 
-	public static void getEvent()
+	public static ArrayList<EventHandler<MouseEvent>> getEvent()
 	{
 
 		
@@ -188,7 +177,8 @@ public class TestClientFx extends Application
 		listeners.add(rockListener);
 		listeners.add(paperListener);
 		listeners.add(scissorsListener);
-
+		
+		return listeners;
 
 		// bind the event listener to the button
 		//rock.addEventHandler(MouseEvent.MOUSE_CLICKED, rockListener);

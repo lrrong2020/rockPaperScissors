@@ -43,6 +43,9 @@ public class DuringTheGame{
 		paper1.getStyleClass().add("bt");
 		scissors1.getStyleClass().add("bt");
 		
+		rock1.addEventHandler(MouseEvent.MOUSE_CLICKED, TestClientFx.getEvent().get(0));
+		paper1.addEventHandler(MouseEvent.MOUSE_CLICKED, TestClientFx.getEvent().get(1));
+		scissors1.addEventHandler(MouseEvent.MOUSE_CLICKED, TestClientFx.getEvent().get(2));
 		root.getChildren().addAll(rock1,paper1,scissors1);
 		
 		
