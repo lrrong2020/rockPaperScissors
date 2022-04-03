@@ -200,6 +200,7 @@ public class Client
 				//set UUID and isHost to the Player instance
 				player.setUUID(receivedIBean.getUUID());
 				player.setIsHost(receivedIBean.getIsHost());
+				
 				this.setIsHost(receivedIBean.getIsHost());
 			}
 			else if (receivedBean instanceof StartBean) 
