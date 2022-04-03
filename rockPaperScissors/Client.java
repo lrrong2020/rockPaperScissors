@@ -24,7 +24,9 @@ public class Client
 	private boolean isHost = false;
 	
 	private boolean canChoose = false;
-	private Thread countDownThread;
+//	private Thread countDownThread;
+	
+	private boolean hasInitialized = false;
 	
 	//constructors
 	public Client()
@@ -87,6 +89,16 @@ public class Client
 		this.isHost = isHost;
 	}
 
+	public void setHasInitialized(boolean hasInitialized)
+	{
+		this.hasInitialized = hasInitialized;
+	}
+	
+	public boolean getHasInitialized()
+	{
+		return hasInitialized;
+	}
+	
 	//initialize socket connection with the server
 	private void initializeConnection() throws IOException 
 	{
@@ -140,6 +152,7 @@ public class Client
 				player.setUUID(receivedIBean.getUUID());
 				player.setIsHost(receivedIBean.getIsHost());
 				this.setIsHost(receivedIBean.getIsHost());
+				this.setHasInitialized(true);
 			}
 			else if (receivedBean instanceof StartBean) 
 			{
