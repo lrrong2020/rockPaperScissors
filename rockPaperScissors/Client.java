@@ -16,16 +16,17 @@ public class Client
 	//Note that outputStream should always be defined first!
 	private ObjectOutputStream toServer;//defined first
 	private ObjectInputStream fromServer;
-	
-	private Player player = new Player();//holds player singleton
-	private Thread objectListener = null;//class-level thread to continuously listen to the server
+
+	private Player player = new Player();
+
 	private Integer roundNoInt = Integer.valueOf(0);//round number
-	private int mode = 0;
+	private Integer modeInt = Integer.valueOf(0);
 	private boolean isHost = false;
-	
 	private boolean canChoose = false;
-	private Thread countDownThread;
 	
+	private Thread objectListener = null;//class-level thread to continuously listen to the server
+	private Thread countDownThread;
+
 	//constructors
 	public Client()
 	{
@@ -58,16 +59,15 @@ public class Client
 		return roundNoInt;
 	}
 
-	
-	public void setMode(int mode)
+	public void setModeInt(Integer modeInt)
 	{
-		this.mode = mode;
+		this.modeInt = modeInt;
 	}
-	public int getMode()
+	public Integer getModeInt()
 	{
-		return mode;
+		return modeInt;
 	}
-	
+
 	public void setCanChoose(boolean canChoose)
 	{
 		this.canChoose = canChoose;
@@ -77,16 +77,77 @@ public class Client
 		return canChoose;
 	}
 
-	public boolean isHost()
-	{
-		return isHost;
-	}
-
 	public void setIsHost(boolean isHost)
 	{
 		this.isHost = isHost;
 	}
+	public boolean getIsHost()
+	{
+		return isHost;
+	}
 
+
+	//initialize the client
+	public void initialize() throws ClassNotFoundException, NullPointerException, IOException
+	{
+		//handle object read from the server
+		//initialize IOStreams
+		this.initializeConnection();
+
+		//start a new thread to continuously listen to the server
+
+		//need to be closed after client terminated
+		objectListener = new Thread() {
+			public void run() 
+			{
+				Object objFromServer = null;
+				while(true)
+				{
+					try 
+					{
+						//read object from the server through ObjectInputStream
+						objFromServer = fromServer.readObject();
+
+						//server inform that the client should exit
+						if(objFromServer instanceof ExitBean) 
+						{	
+							if(objFromServer instanceof ExceptionExitBean) 
+							{
+								((ExitBean) objFromServer).getException().printStackTrace();
+								display("Exception Occurs");
+								objectListener.interrupt();//terminates the listener
+							}
+							break;
+						}
+						display("Successfully get an object!");
+						handleReceivedObject(objFromServer);
+					}
+					catch(ClassNotFoundException e) 
+					{
+						display("[Error]-ClassNotFound Please restart.");
+						e.printStackTrace();
+					}
+					catch (NullPointerException e) 
+					{
+						e.printStackTrace();
+						display("[Error]-Null Please restart.");
+						display(e.toString());
+						return;
+					}
+					catch (IOException e) 
+					{
+						display("[Warning]-IO Disconnect");
+						return;
+					}
+				}
+
+				//terminates the client
+				display("Exit");
+			}
+		};
+
+		objectListener.start();
+	}
 	//initialize socket connection with the server
 	private void initializeConnection() throws IOException 
 	{
@@ -101,8 +162,8 @@ public class Client
 		fromServer = new ObjectInputStream(socket.getInputStream());
 	}
 
-	//handle DataBean to be sent
-	public void sendDataBean(DataBean sdBean) 
+	//handle DataBeans to be sent
+	private void sendDataBean(DataBean sdBean) 
 	{
 		try 
 		{
@@ -172,10 +233,10 @@ public class Client
 					break;
 				}
 				display("==========");
-				
+
 				//during the game
-				
-				if(resultBean.getRoundNoInt().intValue() < this.getMode()) 
+
+				if(resultBean.getRoundNoInt().compareTo(modeInt) < 0) 
 				{
 					//control the choice
 					roundStart();
@@ -189,29 +250,29 @@ public class Client
 		}
 	}
 
-	public void hostStartGame(int m) 
+	public void hostStartGame(int mode) 
 	{
-		display("Host starting game" + "\nBO"+m);
-		sendDataBean(new StartBean(m));
+		display("Host starting game" + "\nBO"+mode);
+		sendDataBean(new StartBean(mode));
 	}
-	
+
 	//send the player instance to the server indicates that the game starts
-	public void gameStart(int m) 
+	private void gameStart(int mode) 
 	{	
-		this.setMode(m);
-		display("The game is on!"+"\nBO"+m);
+		this.setModeInt(mode);
+		display("The game is on!"+"\nBO"+mode);
 		this.setRoundNoInt(Integer.valueOf(1));
 		//		this.sendDataBean(new StartBean(player));
 		roundStart();
 	}
-	
+
 	//count down timer for round time
 	private void roundStart()
 	{
 		int seconds = 10;
 		display("Round["+this.getRoundNoInt().intValue()+"] begins! Please make your choice in " + seconds + " seconds.");
 
-		
+
 		countDownThread = new Thread() {
 			public void run() 
 			{	
@@ -256,70 +317,8 @@ public class Client
 	private static void display(String string)
 	{
 		System.out.println(string);
-		
+
 		//need to invoke display function of View layer
-	}
-
-	//initialize the client
-	public void initialize() throws ClassNotFoundException, NullPointerException, IOException
-	{
-		//handle object read from the server
-		//initialize IOStreams
-		this.initializeConnection();
-
-		//start a new thread to continuously listen to the server
-
-		//need to be closed after client terminated
-		objectListener = new Thread() {
-			public void run() 
-			{
-				Object objFromServer = null;
-				while(true)
-				{
-					try 
-					{
-						//read object from the server through ObjectInputStream
-						objFromServer = fromServer.readObject();
-						
-						//server inform that the client should exit
-						if(objFromServer instanceof ExitBean) 
-						{	
-							if(objFromServer instanceof ExceptionExitBean) 
-							{
-								((ExitBean) objFromServer).getException().printStackTrace();
-								display("Exception Occurs");
-								objectListener.interrupt();//terminates the listener
-							}
-							break;
-						}
-						display("Successfully get an object!");
-						handleReceivedObject(objFromServer);
-					}
-					catch(ClassNotFoundException e) 
-					{
-						display("[Error]-ClassNotFound Please restart.");
-						e.printStackTrace();
-					}
-					catch (NullPointerException e) 
-					{
-						e.printStackTrace();
-						display("[Error]-Null Please restart.");
-						display(e.toString());
-						return;
-					}
-					catch (IOException e) 
-					{
-						display("[Warning]-IO Disconnect");
-						return;
-					}
-				}
-
-				//terminates the client
-				display("Exit");
-			}
-		};
-
-		objectListener.start();
 	}
 
 	//terminate the client
