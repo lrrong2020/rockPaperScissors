@@ -176,6 +176,7 @@ public class Client
 				
 				if(resultBean.getRoundNoInt().intValue() < this.getMode()) 
 				{
+					//control the choice
 					roundBegin();
 				}
 			}

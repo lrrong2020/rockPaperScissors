@@ -126,6 +126,4 @@ public class Room
 	{
 		return roomNo;
 	}
-
-
 }

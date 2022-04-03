@@ -14,11 +14,11 @@ public class ConsoleServer
 	protected static final int PORT = 8000;//for socket connection
 
 	//to store users and identify them with randomly generated universally unique identifier (UUID)
-	protected static final Map<UUID, Socket> ONLINE_USER_MAP = new ConcurrentHashMap<UUID, Socket>();
+	public static final Map<UUID, Socket> ONLINE_USER_MAP = new ConcurrentHashMap<UUID, Socket>();
 
 	//class-level client lists to synchronize and store data
-	protected static final List<HandleAClient> CLIENT_HANDLER_LIST = new ArrayList<HandleAClient>();//list of 
-	private static final List<Room> ROOM_LIST = new ArrayList<Room>();
+	public static final List<HandleAClient> CLIENT_HANDLER_LIST = new ArrayList<HandleAClient>();//list of 
+	public static final List<Room> ROOM_LIST = new ArrayList<Room>();
 
 	protected static int roundNo = 1;
 
@@ -37,6 +37,7 @@ public class ConsoleServer
 		socketThread.start();
 	}
 
+	
 	//Inner Class
 	//handle ServerSocket singleton
 	static class HandleTheSocket implements Runnable
@@ -102,7 +103,6 @@ public class ConsoleServer
 					{
 						return;
 					}
-
 				} 
 				catch (IOException e) 
 				{
@@ -122,13 +122,13 @@ public class ConsoleServer
 	{
 		log("Starting game for all clients");
 		Room room = new Room(ConsoleServer.ONLINE_USER_MAP, ConsoleServer.CLIENT_HANDLER_LIST);
-		
+		ConsoleServer.ROOM_LIST.add(room);
 
 		for(HandleAClient h : CLIENT_HANDLER_LIST) 
 		{
 			try 
 			{
-				h.setRoom(room);
+				h.setRoomNo(room.getRoomNo());
 				h.sendStartBean(m);
 			}
 			catch (IOException e) 
@@ -155,6 +155,18 @@ public class ConsoleServer
 			if(clientHandler.getSocket().equals(socket))
 			{
 				return clientHandler;
+			}
+		}
+		return null;
+	}
+	
+	public static Room getRoom(int roomNo) 
+	{
+		for (Room room: ConsoleServer.ROOM_LIST) 
+		{
+			if(room.getRoomNo() == roomNo)
+			{
+				return room;
 			}
 		}
 		return null;
