@@ -37,6 +37,8 @@ public class TestClientFx extends Application
 		{
 			client.initialize();
 			appendTextArea("Client initialized");
+			System.out.println("releasing");
+
 		}
 		catch(IOException ioe) 
 		{

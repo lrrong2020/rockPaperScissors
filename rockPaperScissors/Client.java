@@ -2,6 +2,7 @@ package rockPaperScissors.rockPaperScissors;
 
 import java.io.*;
 import java.net.*;
+import java.util.concurrent.Semaphore;
 
 import rockPaperScissors.rockPaperScissors.DataBeans.*;
 
@@ -27,6 +28,7 @@ public class Client
 //	private Thread countDownThread;
 	
 	private boolean hasInitialized = false;
+
 	
 	
 	//constructors
@@ -155,7 +157,9 @@ public class Client
 				this.setIsHost(receivedIBean.getIsHost());
 
 				this.setHasInitialized(true);
-				
+				Test.semaphore.release();
+				System.out.println("available Semaphore permits now: "
+						+ Test.semaphore.availablePermits());
 				
 			}
 			else if (receivedBean instanceof StartBean) 
@@ -284,6 +288,9 @@ public class Client
 	//initialize the client
 	public void initialize() throws ClassNotFoundException, NullPointerException, IOException, InterruptedException
 	{
+		System.out.println("Acquiring in client.initialize()");
+
+		Test.semaphore.acquire();
 		//handle object read from the server
 		//initialize IOStreams
 		this.initializeConnection();
@@ -347,8 +354,8 @@ public class Client
 		};
 
 		objectListener.start();
-		objectListener.join(200);
-		
+//		objectListener.join(200);
+	
 	}
 
 	//terminate the client
