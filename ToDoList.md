@@ -20,7 +20,9 @@
 
 8.  *跨平台 (Android, Windows)
 
-9.  最后一张页面显示比分结果 自动跳转（几局结束）？
+9. 最后一张页面显示比分结果 自动跳转（几局结束）？
+
+9.   退出前client.stop()
 
 ### **Controller-frontend**
 

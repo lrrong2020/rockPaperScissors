@@ -132,69 +132,87 @@ class HandleAClient implements Runnable
 
 
 		//atomic!!!
-		else if(receivedBean instanceof ChoiceBean) 
+		else if(receivedBean instanceof ChoiceBean)
 		{
+			
 			ConsoleServer.log("Received Bean: " + receivedBean.toString() + "\n");
-
+			
 			if(((ChoiceBean) receivedBean).getRoundNoInt().equals(Integer.valueOf(0))) 
 			{
 				sendExceptionExitBean(new ChoiceBeforeGameStartException("Not started yet"));
 				return;
 			}
-
-			//put the (ChoiceBean) in class-level Choice list
-			ConsoleServer.CLIENT_CHOICE_BEAN_LIST.add(new ChoiceBean[2]);
-
-			//choice bean list contains 2 choices?
-			ChoiceBean[] currentRoundChoiceBeans = ConsoleServer.CLIENT_CHOICE_BEAN_LIST.get(ConsoleServer.roundNo - 1);
-			if(currentRoundChoiceBeans[0] == null)
-			{	
-				currentRoundChoiceBeans[0] = (ChoiceBean) receivedBean;
-			}
-			else 
+			
+			try
 			{
-				currentRoundChoiceBeans[1] = (ChoiceBean) receivedBean;
+				ConsoleServer.log("Acquiring lock");
+				ConsoleServer.semaphore.acquire();
 
-				if(currentRoundChoiceBeans[0].getRoundNoInt().equals(Integer.valueOf(ConsoleServer.roundNo))) 
-				{
-					//broadcast when the second choice bean is appended
+				//put the (ChoiceBean) in class-level Choice list
+				ConsoleServer.CLIENT_CHOICE_BEAN_LIST.add(new ChoiceBean[2]);
 
-					try 
-					{
-						ConsoleServer.sendResults(ConsoleServer.roundNo - 1);
-					} 
-					catch (ClassNotFoundException e) 
-					{
-						ConsoleServer.log("[Error]-ClassNotFound");
-						e.printStackTrace();
-					} 
-					catch (IOException e) 
-					{
-						ConsoleServer.log("[Error]-IO");
-						e.printStackTrace();
-					} 
-					catch (ChoiceMoreThanOnceException e) 
-					{
-						try 
-						{
-							ConsoleServer.log("[Error Choice more than once]");
-							sendExceptionExitBean(e);
-						} catch (Exception ex) 
-						{
-							ex.printStackTrace();
-						}
-						e.printStackTrace();
-					}
+				//choice bean list contains 2 choices?
+				ChoiceBean[] currentRoundChoiceBeans = ConsoleServer.CLIENT_CHOICE_BEAN_LIST.get(ConsoleServer.roundNo - 1);
+				if(currentRoundChoiceBeans[0] == null)
+				{	
+					currentRoundChoiceBeans[0] = (ChoiceBean) receivedBean;
 				}
 				else 
 				{
-					try {
-						ConsoleServer.log("[Error Synchronization]");
-						sendExceptionExitBean(new DataInconsistentException("Inconsistent"));
-					} catch (Exception e) {
-						e.printStackTrace();
+					currentRoundChoiceBeans[1] = (ChoiceBean) receivedBean;
+
+					if(currentRoundChoiceBeans[0].getRoundNoInt().equals(Integer.valueOf(ConsoleServer.roundNo))) 
+					{
+						//broadcast when the second choice bean is appended
+
+						try 
+						{
+							ConsoleServer.sendResults(ConsoleServer.roundNo - 1);
+						} 
+						catch (ClassNotFoundException e) 
+						{
+							ConsoleServer.log("[Error]-ClassNotFound");
+							e.printStackTrace();
+						} 
+						catch (IOException e) 
+						{
+							ConsoleServer.log("[Error]-IO");
+							e.printStackTrace();
+						} 
+						catch (ChoiceMoreThanOnceException e) 
+						{
+							try 
+							{
+								ConsoleServer.log("[Error Choice more than once]");
+								sendExceptionExitBean(e);
+							} catch (Exception ex) 
+							{
+								ex.printStackTrace();
+							}
+							e.printStackTrace();
+						}
+					}
+					else 
+					{
+						try {
+							ConsoleServer.log("[Error Synchronization]");
+							sendExceptionExitBean(new DataInconsistentException("Inconsistent"));
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
 					}
 				}
+			}
+			catch (InterruptedException e1)
+			{
+				e1.printStackTrace();
+			}
+			finally 
+			{
+				System.out.println("releasing lock...");
+				ConsoleServer.semaphore.release();
+				System.out.println("available Semaphore permits now: "
+							+ ConsoleServer.semaphore.availablePermits());
 			}
 		}
 		else 
