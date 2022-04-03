@@ -1,5 +1,5 @@
 package rockPaperScissors.rockPaperScissors;
-
+import java.net.InetAddress;
 import javafx.animation.FadeTransition;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -47,7 +47,7 @@ public class IPaddress extends Application {
 		
 		
 		TextField IP = new TextField();
-		IP.setUserData("172.28.141.189");
+		
 		IP.setPromptText("IP address");
 		grid.add(IP, 0, 2);
 		

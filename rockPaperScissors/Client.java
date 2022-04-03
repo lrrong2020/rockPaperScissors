@@ -135,11 +135,11 @@ public class Client
 				display("Status: " + receivedIBean.getClass());
 				display("Your UUID: " + receivedIBean.getUUID().toString());
 				display("You are" + (receivedIBean.getIsHost()?" the ":" not the ") + "host.");
-
 				//set UUID and isHost to the Player instance
 				player.setUUID(receivedIBean.getUUID());
 				player.setIsHost(receivedIBean.getIsHost());
 				this.setIsHost(receivedIBean.getIsHost());
+				
 			}
 			else if (receivedBean instanceof StartBean) 
 			{
@@ -256,7 +256,6 @@ public class Client
 	private static void display(String string)
 	{
 		System.out.println(string);
-		
 		//need to invoke display function of View layer
 	}
 
