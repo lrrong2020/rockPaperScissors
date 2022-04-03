@@ -180,6 +180,10 @@ public class Client
 					//control the choice
 					roundStart();
 				}
+				else 
+				{
+					display("Game over.");
+				}
 			}
 			else
 			{
@@ -210,29 +214,29 @@ public class Client
 	{
 		int seconds = 10;
 		display("Round["+this.getRoundNoInt().intValue()+"] begins! Please make your choice in " + seconds + " seconds.");
-
-		
-		countDownThread = new Thread() {
-			public void run() 
-			{	
-				setCanChoose(true);
-				for(int j = seconds;j > 0;j--) 
-				{
-					//	display count down i s
-					display(j+"");
-					try 
-					{
-						sleep(1000);
-					} 
-					catch (InterruptedException e) 
-					{
-						//do nothing
-					}
-				}
-				setCanChoose(false);
-			}
-		};
-		countDownThread.start();
+		this.setCanChoose(true);
+//		
+//		countDownThread = new Thread() {
+//			public void run() 
+//			{	
+//				setCanChoose(true);
+//				for(int j = seconds;j > 0;j--) 
+//				{
+//					//	display count down i s
+//					display(j+"");
+//					try 
+//					{
+//						sleep(1000);
+//					} 
+//					catch (InterruptedException e) 
+//					{
+//						//do nothing
+//					}
+//				}
+//				setCanChoose(false);
+//			}
+//		};
+//		countDownThread.start();
 	}
 
 	//the client made his/her choice
@@ -240,7 +244,8 @@ public class Client
 	{
 		if(this.getCanChoose()) 
 		{
-			this.countDownThread.interrupt();
+//			this.countDownThread.interrupt();
+			this.setCanChoose(false);
 			ChoiceBean choiceBean = new ChoiceBean(choiceName, player, this.getRoundNoInt());
 			display("Your choice:" + choiceBean.getChoice().getChoiseName());
 			this.sendDataBean(choiceBean);
