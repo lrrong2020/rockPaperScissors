@@ -306,12 +306,20 @@ public class Client
 							{
 								((ExitBean) objFromServer).getException().printStackTrace();
 								display("Exception Occurs");
-								objectListener.interrupt();//terminates the listener
 							}
-							break;
+							else
+							{
+								
+							}
+							//terminates the client
+							display("Exit");
+							interrupt();
 						}
-						display("Successfully get an object!");
-						handleReceivedObject(objFromServer);
+						else 
+						{
+							display("Successfully get an object!");
+							handleReceivedObject(objFromServer);
+						}
 					}
 					catch(ClassNotFoundException e) 
 					{
@@ -331,9 +339,6 @@ public class Client
 						return;
 					}
 				}
-
-				//terminates the client
-				display("Exit");
 			}
 		};
 
