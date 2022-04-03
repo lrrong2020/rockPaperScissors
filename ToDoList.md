@@ -32,10 +32,11 @@
 2. 控制按钮隐藏/显示
 3. UI显示 (独立thread)
 
-
 **后端** Controller Communication
+
 4. 异常重连
 5. timeout 独立thread
+5.  倒计时结束后再显示选择
 
 
 
@@ -56,4 +57,7 @@
 ### **Game Logic**
 
 1.  模式选择
+    - 限制client / server 轮数上限
+    - 自动 / 随机选择
+    -  提示对手已经选择
 2.  统计数据
