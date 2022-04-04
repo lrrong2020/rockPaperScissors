@@ -4,6 +4,7 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 
 import rockPaperScissors.rockPaperScissors.DataBeans.*;
 
@@ -296,6 +297,17 @@ public class Client
 				if(resultBean.getRoundNoInt().compareTo(modeInt) < 0) 
 				{
 					//control the choice
+					
+					//get users some time
+					try
+					{
+						TimeUnit.SECONDS.sleep(3);
+					} catch (InterruptedException e)
+					{
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
 					startRound();
 				}
 				else 
