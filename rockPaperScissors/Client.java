@@ -29,6 +29,7 @@ public class Client
 	
 	private boolean hasInitialized = false;
 
+	Semaphore initSemaphore = new Semaphore(1);
 	
 
 	
@@ -96,8 +97,9 @@ public class Client
 	}
 
 	//initialize the client
-	public void initialize() throws ClassNotFoundException, NullPointerException, IOException
+	public void initialize() throws ClassNotFoundException, NullPointerException, IOException, InterruptedException
 	{
+		initSemaphore.acquire();
 		//handle object read from the server
 		//initialize IOStreams
 		this.initializeConnection();
@@ -115,7 +117,7 @@ public class Client
 					{
 						//read object from the server through ObjectInputStream
 						objFromServer = fromServer.readObject();
-
+						
 						if(objFromServer instanceof InitBean)
 						{
 							InitBean receivedIBean = (InitBean)objFromServer;//cast to subclass
@@ -130,6 +132,7 @@ public class Client
 							player.setIsHost(receivedIBean.getIsHost());
 							
 							setIsHost(receivedIBean.getIsHost());
+							initSemaphore.release();
 						}
 						else if(objFromServer instanceof ExitBean) //server inform that the client should exit
 						{	
