@@ -29,8 +29,10 @@ public class Client
 
 	//	private Thread countDownThread;
 
+	//boolean indicate states
 	private boolean hasInitialized = false;//determine whether the client has initialized or not
-
+	private boolean hasStopped = false;
+	
 	public Semaphore initSemaphore = new Semaphore(1); //can be invoked outside to make sure initialization is done before the client is used
 
 	private Thread objectListener = null;//class-level thread to continuously listen to the server
@@ -106,6 +108,16 @@ public class Client
 	public List<Choice[]> getChoiceList() 
 	{
 		return this.choices;
+	}
+
+
+	public void setHasStopped(boolean hasStopped)
+	{
+		this.hasStopped = hasStopped;
+	}
+	public boolean getHasStopped()
+	{
+		return hasStopped;
 	}
 
 	//initialize the client
@@ -290,7 +302,8 @@ public class Client
 				else 
 				{
 					display("Game over.");
-					
+					this.stop();
+					this.setHasStopped(true);
 					//cut off connection to the server
 					//display End page
 					//restart button? initialize again?
