@@ -236,6 +236,7 @@ public class TestClientFx extends Application
     		alert.setContentText("Do you want to exit?");
     		Optional<ButtonType> result = alert.showAndWait();
     		if(result.get() == ButtonType.OK) {
+    			if(client != null)
     			client.stop();
     			Platform.exit();
     		}
