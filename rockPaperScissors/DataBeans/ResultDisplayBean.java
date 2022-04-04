@@ -7,7 +7,6 @@ import rockPaperScissors.rockPaperScissors.Choice;
 public class ResultDisplayBean
 {
 	private List<Result> resultList = new ArrayList<Result>();
-	private String gameResultText = null;
 	
 	public class Result
 	{
@@ -92,13 +91,20 @@ public class ResultDisplayBean
 
 	public String getGameResultText()
 	{
-		return gameResultText;
+		if(this.getRoundsYouWinInt().compareTo(getRoundsOpponentWinInt()) > 0) 
+		{
+			return "YOU WIN";
+		}
+		else if(this.getRoundsYouWinInt().compareTo(getRoundsOpponentWinInt()) < 0)
+		{
+			return "YOU LOSE";
+		}
+		else 
+		{
+			return "TIE";
+		}
 	}
 
-	public void setGameResultText(String gameResultText)
-	{
-		this.gameResultText = gameResultText;
-	}
 	
 	public void appendResult(Choice yourChoice, Choice opponentChoice, Integer winOrNotInt) 
 	{

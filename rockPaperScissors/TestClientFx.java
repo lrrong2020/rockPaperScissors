@@ -94,6 +94,7 @@ public class TestClientFx extends Application
 						e1.printStackTrace();
 					}
 				}
+				
 				if(client.getIsHost()) {
 					Stage window=(Stage)enter.getScene().getWindow();
 					window.setTitle("Welcome to the Rock Paper Scissors Game!");

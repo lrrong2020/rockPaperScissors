@@ -38,8 +38,9 @@ public class Client
 
 	private Thread objectListener = null;//class-level thread to continuously listen to the server
 	private Thread countDownThread = null;//handle the count down timer
-
-	private List<Choice[]> choices = new ArrayList<Choice[]>();
+	
+	public ResultDisplayBean rdp = new ResultDisplayBean();
+	
 
 	//constructors
 	public Client()
@@ -104,11 +105,6 @@ public class Client
 	public boolean getIsHost()
 	{
 		return isHost;
-	}
-
-	public List<Choice[]> getChoiceList() 
-	{
-		return this.choices;
 	}
 
 
@@ -274,24 +270,32 @@ public class Client
 				display("Your choice: " + resultBean.getYourChoice().getChoiseName());
 				display("Your opponent's choice: " + resultBean.getOpponentChoice().getChoiseName());
 
+				Integer winOrLose = Integer.valueOf(resultBean.getYourChoice().wins(resultBean.getOpponentChoice()));
 				//display results calculated in client
-				switch(resultBean.getYourChoice().wins(resultBean.getOpponentChoice())) 
+				switch(winOrLose) 
 				{
 				case 0:
 					display("You Lose");
+					
 					break;
 				case 1:
 					display("Tie");
+					
 					break;
 				case 2:
 					display("You Win!");
+					
 					break;
 				}
 				display("==========");
 
-				//store choices
-				choices.add(new Choice[] {resultBean.getYourChoice(), resultBean.getOpponentChoice()});
 
+				
+				rdp.appendResult(resultBean.getYourChoice(), resultBean.getOpponentChoice(), winOrLose);
+				
+				
+				
+				
 				//during the game
 
 				if(resultBean.getRoundNoInt().compareTo(modeInt) < 0) 
@@ -314,6 +318,7 @@ public class Client
 					display("Game over.");
 					this.stop();
 					this.setHasStopped(true);
+					
 					//cut off connection to the server
 					//display End page
 					//restart button? initialize again?
