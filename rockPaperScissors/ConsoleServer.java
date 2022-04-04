@@ -36,6 +36,7 @@ public class ConsoleServer
 		HandleTheSocket socketHandler = HandleTheSocket.getInstance();
 		socketThread = new Thread(socketHandler);
 		socketThread.start();
+		log("Server initialized");
 	}
 	
 	//Inner Class
@@ -103,6 +104,8 @@ public class ConsoleServer
 					{
 						return;
 					}
+
+					
 				} 
 				catch (IOException e) 
 				{
