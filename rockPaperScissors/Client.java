@@ -25,7 +25,7 @@ public class Client
 	private boolean canChoose = false;
 	
 	private Thread objectListener = null;//class-level thread to continuously listen to the server
-	private Thread countDownThread;
+	private Thread countDownThread = null;
 
 	//constructors
 	public Client()
@@ -59,6 +59,7 @@ public class Client
 		return roundNoInt;
 	}
 
+	//BOX
 	public void setModeInt(Integer modeInt)
 	{
 		this.modeInt = modeInt;
@@ -86,7 +87,6 @@ public class Client
 		return isHost;
 	}
 
-
 	//initialize the client
 	public void initialize() throws ClassNotFoundException, NullPointerException, IOException
 	{
@@ -108,19 +108,40 @@ public class Client
 						//read object from the server through ObjectInputStream
 						objFromServer = fromServer.readObject();
 
-						//server inform that the client should exit
-						if(objFromServer instanceof ExitBean) 
+						if(objFromServer instanceof InitBean)
+						{
+							InitBean receivedIBean = (InitBean)objFromServer;//cast to subclass
+
+							//display initial information
+							display("Status: " + receivedIBean.getClass());
+							display("Your UUID: " + receivedIBean.getUUID().toString());
+							display("You are" + (receivedIBean.getIsHost()?" the ":" not the ") + "host.");
+
+							//set UUID and isHost to the Player instance
+							player.setUUID(receivedIBean.getUUID());
+							player.setIsHost(receivedIBean.getIsHost());
+							
+							setIsHost(receivedIBean.getIsHost());
+						}
+						else if(objFromServer instanceof ExitBean) //server inform that the client should exit
 						{	
 							if(objFromServer instanceof ExceptionExitBean) 
 							{
 								((ExitBean) objFromServer).getException().printStackTrace();
 								display("Exception Occurs");
-								objectListener.interrupt();//terminates the listener
 							}
-							break;
+							else 
+							{
+								
+							}
+							display("Exit");
+							objectListener.interrupt();//terminates the listener
 						}
+						else 
+						{
 						display("Successfully get an object!");
 						handleReceivedObject(objFromServer);
+						}
 					}
 					catch(ClassNotFoundException e) 
 					{
@@ -141,8 +162,6 @@ public class Client
 					}
 				}
 
-				//terminates the client
-				display("Exit");
 			}
 		};
 
@@ -188,22 +207,7 @@ public class Client
 			DataBean receivedBean = (DataBean)objFromServer;
 
 			//polymorphism style of handling handling different events or status
-			if(receivedBean instanceof InitBean) 
-			{
-				InitBean receivedIBean = (InitBean)receivedBean;//cast to subclass
-
-				//display initial information
-				display("Status: " + receivedIBean.getClass());
-				display("Your UUID: " + receivedIBean.getUUID().toString());
-				display("You are" + (receivedIBean.getIsHost()?" the ":" not the ") + "host.");
-
-				//set UUID and isHost to the Player instance
-				player.setUUID(receivedIBean.getUUID());
-				player.setIsHost(receivedIBean.getIsHost());
-				
-				this.setIsHost(receivedIBean.getIsHost());
-			}
-			else if (receivedBean instanceof StartBean) 
+			if (receivedBean instanceof StartBean) 
 			{
 				//when the game starts
 				display("Received Bean is instanceof StartBean");
@@ -255,6 +259,7 @@ public class Client
 		}
 	}
 
+	//the host click on start game button
 	public void hostStartGame(int mode) 
 	{
 		display("Host starting game" + "\nBO"+mode);
