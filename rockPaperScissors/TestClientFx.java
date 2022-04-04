@@ -32,7 +32,7 @@ public class TestClientFx extends Application
 	// Text area to display contents
 	private static TextArea ta = new TextArea();
 	public static Client client = null;
-	public static Semaphore s=new Semaphore(1);
+	
 	//private Scene findIPPage;
 	private Scene welcomePage;
 	private static ArrayList<EventHandler<MouseEvent>>listeners=new ArrayList<>();
@@ -119,9 +119,8 @@ public class TestClientFx extends Application
 					window.setScene(waitingRes);
 					window.setTitle("Game will be started in several seconds");
 					try {
-						s.acquire();
-						System.out.print("acquire it oooo "+s.availablePermits());
-						System.out.println("The bool is "+client.getHasStarted());
+						client.s.acquire();
+						
 					} catch (InterruptedException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
@@ -133,7 +132,8 @@ public class TestClientFx extends Application
 						window.setScene(duringGame);
 						window.setTitle("Game started");
 						}
-					s.release();
+					client.s.release();
+					System.out.println("The available is"+client.s.availablePermits());
 					System.out.print("Nothing");
 					}
 				
