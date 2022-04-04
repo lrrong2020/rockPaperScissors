@@ -3,6 +3,7 @@ package rockPaperScissors.rockPaperScissors;
 import java.io.*;
 import java.net.*;
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
 import rockPaperScissors.rockPaperScissors.DataBeans.*;
@@ -182,6 +183,18 @@ public class ConsoleServer
 		//send end bean
 	}
 
+	public static void printAllUsers() 
+	{
+		ConsoleServer.log("All users:");
+		for (Entry<UUID, Socket> entry : ConsoleServer.ONLINE_USER_MAP.entrySet()) 
+		{
+			ConsoleServer.log( "<"+entry.getKey() + ">");//display UUIDs
+		}
+		if(ConsoleServer.ONLINE_USER_MAP.entrySet().size() == 0) {
+			ConsoleServer.log("No User");
+		}
+	}
+	
 	public static void log(String string) 
 	{
 		System.out.println(string);

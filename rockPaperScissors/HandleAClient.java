@@ -47,7 +47,7 @@ class HandleAClient implements Runnable
 				+ "IP Address is " + inetAddress.getHostAddress() + "\n");
 
 		//display all UUIDs of users who has registered in the user map
-		this.printAllUsers();
+		ConsoleServer.printAllUsers();
 	}
 
 	//setter and getters
@@ -243,17 +243,7 @@ class HandleAClient implements Runnable
 		this.inputFromClient = new ObjectInputStream(socket.getInputStream());
 	}
 
-	private void printAllUsers() 
-	{
-		ConsoleServer.log("All users:");
-		for (Entry<UUID, Socket> entry : ConsoleServer.ONLINE_USER_MAP.entrySet()) 
-		{
-			ConsoleServer.log( "<"+entry.getKey() + ">");//display UUIDs
-		}
-		if(ConsoleServer.ONLINE_USER_MAP.entrySet().size() == 0) {
-			ConsoleServer.log("No User");
-		}
-	}
+
 
 	/** Run a thread for each client **/
 	@Override
@@ -276,13 +266,13 @@ class HandleAClient implements Runnable
 			}
 			catch(IOException | ClassNotFoundException ex) 
 			{
-				ex.printStackTrace();//debug
+//				ex.printStackTrace();//debug
 				ConsoleServer.log("============\n============\n");
 				ConsoleServer.log("Client UUID:" + this.getUUID() + " quit\n============\n============");
 
 				ConsoleServer.clientExit(this.uuid);
 
-				this.printAllUsers();
+				ConsoleServer.printAllUsers();
 
 				//send ExceptionExitBean to clients
 				this.stop();
