@@ -27,7 +27,7 @@ public class Client
 	private boolean isHost = false;//the same as player.getIsHost()
 	private boolean canChoose = false;
 
-	private static boolean hasStarted=false;
+	private boolean hasStarted=false;
 	//	private Thread countDownThread;
 
 	//boolean indicate states
@@ -116,8 +116,12 @@ public class Client
 	{
 		return hasStopped;
 	}
-	public static boolean getHasStarted() {
-		return hasStarted;
+	
+	public void setHasStarted(boolean hasStarted) {
+		this.hasStarted = hasStarted;
+	}
+	public boolean getHasStarted() {
+		return this.hasStarted;
 	}
 
 	//initialize the client
@@ -197,6 +201,10 @@ public class Client
 					{
 						display("[Warning]-IO Disconnect");
 						return;
+					} catch (InterruptedException e)
+					{
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
 				}
 			}
@@ -245,7 +253,7 @@ public class Client
 	}
 
 	//handle received data bean
-	private void handleGameOnObject(Object objFromServer) throws IOException, ClassNotFoundException, NullPointerException
+	private void handleGameOnObject(Object objFromServer) throws IOException, ClassNotFoundException, NullPointerException, InterruptedException
 	{
 		if(objFromServer == null) 
 		{
@@ -260,9 +268,13 @@ public class Client
 
 			{
 				//when the game starts
-				
+
 				display("Received Bean is instanceof StartBean");
+				
+				this.setHasStarted(true);
+				s.release();
 				startGame(((StartBean) receivedBean).getMode());
+				System.out.println("Client release. The available is"+s.availablePermits());
 			}
 			else if (receivedBean instanceof ResultBean) 
 			{
@@ -340,9 +352,7 @@ public class Client
 	public void hostStartGame(int mode) throws InterruptedException 
 	{
 		display("Host starting game" + "\nBO"+mode);
-		s.acquire();
-		hasStarted=true;
-		s.release();
+
 		sendDataBean(new StartBean(mode));
 	}
 	
