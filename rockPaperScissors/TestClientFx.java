@@ -3,6 +3,7 @@ package rockPaperScissors.rockPaperScissors;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Optional;
+import java.util.concurrent.Semaphore;
 
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -31,11 +32,12 @@ public class TestClientFx extends Application
 	// Text area to display contents
 	private static TextArea ta = new TextArea();
 	private static Client client = null;
+	private static Semaphore s=new Semaphore(1);
 	//private Scene findIPPage;
 	private Scene welcomePage;
 	private static ArrayList<EventHandler<MouseEvent>>listeners=new ArrayList<>();
 	public TestClientFx() {
-		TestClientFx.client=new Client();
+		
 		
 	}
 
@@ -69,13 +71,15 @@ public class TestClientFx extends Application
 			startWelcomePage.getStylesheets().add(getClass().getResource("PagesSettings.css").toExternalForm());
 			
 			enter.setOnAction(e->{
-				if(IP.getText().length()!=0){
-					client.setHost(IP.getText());
+					System.out.println(IP.getText().toString().trim());
+					String ipAddr=IP.textProperty().get().trim();
+					TestClientFx.client=new Client(ipAddr);
 					appendTextArea("Client generated");
 					try 
 					{
 						client.initialize();
 						appendTextArea("Client initialized");
+						
 
 					}
 					catch(IOException ioe) 
@@ -93,6 +97,13 @@ public class TestClientFx extends Application
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
+				
+				try {
+					client.initSemaphore.acquire();
+					System.out.print("acquiring");
+				} catch (InterruptedException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
 				}
 				if(client.getIsHost()) {
 					Stage window=(Stage)enter.getScene().getWindow();
@@ -104,12 +115,15 @@ public class TestClientFx extends Application
 					Scene duringGame=new Scene(during.CreateGamePage(),600,400);
 					duringGame.getStylesheets().add(getClass().getResource("GamePageSettings.css").toExternalForm());
 					Stage window=(Stage)enter.getScene().getWindow();
+					window.setScene(duringGame);
 					window.setTitle("Game started");
 					}
+				System.out.print("Release!!");
+				client.initSemaphore.release();
 				
 				
 				
-			});
+	});
 		
 		
 			
@@ -222,9 +236,9 @@ public class TestClientFx extends Application
 	public void start(Stage stage) throws Exception
 	{	
 		stage.setTitle("Welcome to the Rock Paper Scissors Game!");
-		client.initSemaphore.acquire();
+		
     	CreateWelcomePage();
-    	client.initSemaphore.release();
+    	
     	stage.setScene(welcomePage);
     	Platform.setImplicitExit(false);
     	stage.setOnCloseRequest(event ->{
