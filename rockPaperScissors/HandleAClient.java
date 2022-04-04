@@ -19,7 +19,6 @@ class HandleAClient implements Runnable
 	private ObjectInputStream inputFromClient = null;
 
 	private UUID uuid = null;//uniquely identify the users
-	private Room room;
 	private int roomNo;
 
 	//construct a thread
@@ -63,8 +62,6 @@ class HandleAClient implements Runnable
 	public Socket getSocket() {
 		return this.socket;
 	}
-
-
 
 	public int getRoomNo()
 	{

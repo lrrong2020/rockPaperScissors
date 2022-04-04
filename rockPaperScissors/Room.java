@@ -37,7 +37,6 @@ public class Room
 	{
 		return clientChoiceBeans;
 	}
-
 	
 	public void sendResults(int rNoI0) throws ClassNotFoundException, IOException, ChoiceMoreThanOnceException 
 	{
@@ -53,7 +52,7 @@ public class Room
 
 		Socket player0Socket = users.get(player0ChoiceBean.getPlayer().getUUID());
 
-		HandleAClient player0Handler = getClientHandler(player0Socket);
+		HandleAClient player0Handler = ConsoleServer.getClientHandler(clientHandlers, player0Socket);
 		HandleAClient player1Handler = null;
 
 		//find the HandleAClient instance that matches
@@ -97,17 +96,6 @@ public class Room
 	public List<HandleAClient> getClientHandlers()
 	{
 		return clientHandlers;
-	}
-	public HandleAClient getClientHandler(Socket socket) 
-	{
-		for (HandleAClient clientHandler: this.getClientHandlers()) 
-		{
-			if(clientHandler.getSocket().equals(socket))
-			{
-				return clientHandler;
-			}
-		}
-		return null;
 	}
 	
 	public void setRoundNoInt(Integer roundNoInt)

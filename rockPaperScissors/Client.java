@@ -15,22 +15,26 @@ public class Client
 	private Socket socket;
 	// IOStreams
 	//Note that outputStream should always be defined first!
-	private ObjectOutputStream toServer;//defined first
+	private ObjectOutputStream toServer;//defined first!
 	private ObjectInputStream fromServer;
-	
-	private Player player = new Player();//holds player singleton
-	private Thread objectListener = null;//class-level thread to continuously listen to the server
-	private Integer roundNoInt = Integer.valueOf(0);//round number
-	private int mode = 0;
-	private boolean isHost = false;
-	
-	private boolean canChoose = false;
-//	private Thread countDownThread;
-	
-	private boolean hasInitialized = false;
 
-	
-	
+	private Player player = new Player();//hide player to view
+
+	private Integer roundNoInt = Integer.valueOf(0);//round number
+	private Integer modeInt = Integer.valueOf(0);
+
+	private boolean isHost = false;//the same as player.getIsHost()
+	private boolean canChoose = false;
+
+	//	private Thread countDownThread;
+
+	private boolean hasInitialized = false;//determine whether the client has initialized or not
+
+	public Semaphore initSemaphore = new Semaphore(1); //can be invoked outside to make sure initialization is done before the client is used
+
+	private Thread objectListener = null;//class-level thread to continuously listen to the server
+	private Thread countDownThread = null;//handle the count down timer
+
 	//constructors
 	public Client()
 	{
@@ -53,7 +57,7 @@ public class Client
 	{
 		Client.port = port;
 	}
-	
+
 	public void setRoundNoInt(Integer roundNoInt)
 	{
 		this.roundNoInt = roundNoInt;
@@ -63,16 +67,16 @@ public class Client
 		return roundNoInt;
 	}
 
-	
-	public void setMode(int mode)
+	//BOX
+	public void setModeInt(Integer modeInt)
 	{
-		this.mode = mode;
+		this.modeInt = modeInt;
 	}
-	public int getMode()
+	public Integer getModeInt()
 	{
-		return mode;
+		return modeInt;
 	}
-	
+
 	public void setCanChoose(boolean canChoose)
 	{
 		this.canChoose = canChoose;
@@ -82,26 +86,110 @@ public class Client
 		return canChoose;
 	}
 
-	public boolean isHost()
+	public void setIsHost(boolean isHost)
+	{
+		this.isHost = isHost;
+	}
+	public boolean getIsHost()
 	{
 		return isHost;
 	}
 
-	public void setIsHost(boolean isHost)
+	//initialize the client
+	public void initialize() throws ClassNotFoundException, NullPointerException, IOException, InterruptedException
 	{
-		this.isHost = isHost;
+		initSemaphore.acquire();//acquire semaphore
+
+		//handle object read from the server
+		//initialize IOStreams
+		this.initializeConnection();
+
+		//start a new thread to continuously listen to the server
+
+		//need to be closed after client terminated
+		objectListener = new Thread() {
+			public void run() 
+			{
+				Object objFromServer = null;
+				while(true)
+				{
+					try 
+					{
+						//read object from the server through ObjectInputStream
+						objFromServer = fromServer.readObject();
+
+						if(objFromServer instanceof InitBean)
+						{
+							InitBean receivedIBean = (InitBean)objFromServer;//cast to subclass
+
+							//display initial information
+							display("Status: " + receivedIBean.getClass());
+							display("Your UUID: " + receivedIBean.getUUID().toString());
+							display("You are" + (receivedIBean.getIsHost()?" the ":" not the ") + "host.");
+
+							//set UUID and isHost to the Player instance
+							player.setUUID(receivedIBean.getUUID());
+							player.setIsHost(receivedIBean.getIsHost());
+
+							setIsHost(receivedIBean.getIsHost());
+							initSemaphore.release();//release semaphore
+						}
+						else if(objFromServer instanceof ExitBean) //server inform that the client should exit
+						{	
+							if(objFromServer instanceof ExceptionExitBean) 
+							{
+								((ExitBean) objFromServer).getException().printStackTrace();
+								display("Exception Occurs");
+							}
+							else 
+							{
+								//other exit beans send by the server
+								//may be end bean to determine the results
+							}
+							display("Exit");
+							objectListener.interrupt();//terminates the listener
+						}
+						else 
+						{
+							//gameOn objects
+							display("Successfully get an object!");
+							handleGameOnObject(objFromServer);
+						}
+					}
+					catch(ClassNotFoundException e) 
+					{
+						display("[Error]-ClassNotFound Please restart.");
+						e.printStackTrace();
+					}
+					catch (NullPointerException e) 
+					{
+						e.printStackTrace();
+						display("[Error]-Null Please restart.");
+						display(e.toString());
+						return;
+					}
+					catch (IOException e) 
+					{
+						display("[Warning]-IO Disconnect");
+						return;
+					}
+				}
+			}
+		};
+
+		objectListener.start();
 	}
 
 	public void setHasInitialized(boolean hasInitialized)
 	{
 		this.hasInitialized = hasInitialized;
 	}
-	
+
 	public boolean getHasInitialized()
 	{
 		return hasInitialized;
 	}
-	
+
 	//initialize socket connection with the server
 	private void initializeConnection() throws IOException 
 	{
@@ -117,8 +205,8 @@ public class Client
 		fromServer = new ObjectInputStream(socket.getInputStream());
 	}
 
-	//handle DataBean to be sent
-	public void sendDataBean(DataBean sdBean) 
+	//handle DataBeans to be sent
+	private void sendDataBean(DataBean sdBean) 
 	{
 		try 
 		{
@@ -132,7 +220,7 @@ public class Client
 	}
 
 	//handle received data bean
-	private void handleReceivedObject(Object objFromServer) throws IOException, ClassNotFoundException, NullPointerException
+	private void handleGameOnObject(Object objFromServer) throws IOException, ClassNotFoundException, NullPointerException
 	{
 		if(objFromServer == null) 
 		{
@@ -143,30 +231,12 @@ public class Client
 			DataBean receivedBean = (DataBean)objFromServer;
 
 			//polymorphism style of handling handling different events or status
-			if(receivedBean instanceof InitBean) 
-			{
-				InitBean receivedIBean = (InitBean)receivedBean;//cast to subclass
+			if (receivedBean instanceof StartBean) 
 
-				//display initial information
-				display("Status: " + receivedIBean.getClass());
-				display("Your UUID: " + receivedIBean.getUUID().toString());
-				display("You are" + (receivedIBean.getIsHost()?" the ":" not the ") + "host.");
-				//set UUID and isHost to the Player instance
-				player.setUUID(receivedIBean.getUUID());
-				player.setIsHost(receivedIBean.getIsHost());
-				this.setIsHost(receivedIBean.getIsHost());
-
-				this.setHasInitialized(true);
-				Test.semaphore.release();
-				System.out.println("available Semaphore permits now: "
-						+ Test.semaphore.availablePermits());
-				
-			}
-			else if (receivedBean instanceof StartBean) 
 			{
 				//when the game starts
 				display("Received Bean is instanceof StartBean");
-				gameStart(((StartBean) receivedBean).getMode());
+				startGame(((StartBean) receivedBean).getMode());
 			}
 			else if (receivedBean instanceof ResultBean) 
 			{
@@ -193,13 +263,13 @@ public class Client
 					break;
 				}
 				display("==========");
-				
+
 				//during the game
-				
-				if(resultBean.getRoundNoInt().intValue() < this.getMode()) 
+
+				if(resultBean.getRoundNoInt().compareTo(modeInt) < 0) 
 				{
 					//control the choice
-					roundStart();
+					startRound();
 				}
 				else 
 				{
@@ -214,50 +284,53 @@ public class Client
 		}
 	}
 
-	public void hostStartGame(int m) 
+	//the host click on start game button
+	public void hostStartGame(int mode) 
 	{
-		display("Host starting game" + "\nBO"+m);
-		sendDataBean(new StartBean(m));
+		display("Host starting game" + "\nBO"+mode);
+		sendDataBean(new StartBean(mode));
 	}
-	
+
 	//send the player instance to the server indicates that the game starts
-	public void gameStart(int m) 
+	private void startGame(int mode) 
 	{	
-		this.setMode(m);
-		display("The game is on!"+"\nBO"+m);
+		this.setModeInt(mode);
+		display("The game is on!"+"\nBO"+mode);
 		this.setRoundNoInt(Integer.valueOf(1));
 		//		this.sendDataBean(new StartBean(player));
-		roundStart();
+		startRound();
 	}
-	
+
 	//count down timer for round time
-	private void roundStart()
+	private void startRound()
 	{
 		int seconds = 10;
 		display("Round["+this.getRoundNoInt().intValue()+"] begins! Please make your choice in " + seconds + " seconds.");
+
 		this.setCanChoose(true);
-//		
-//		countDownThread = new Thread() {
-//			public void run() 
-//			{	
-//				setCanChoose(true);
-//				for(int j = seconds;j > 0;j--) 
-//				{
-//					//	display count down i s
-//					display(j+"");
-//					try 
-//					{
-//						sleep(1000);
-//					} 
-//					catch (InterruptedException e) 
-//					{
-//						//do nothing
-//					}
-//				}
-//				setCanChoose(false);
-//			}
-//		};
-//		countDownThread.start();
+		//		
+		//		countDownThread = new Thread() {
+		//			public void run() 
+		//			{	
+		//				setCanChoose(true);
+		//				for(int j = seconds;j > 0;j--) 
+		//				{
+		//					//	display count down i s
+		//					display(j+"");
+		//					try 
+		//					{
+		//						sleep(1000);
+		//					} 
+		//					catch (InterruptedException e) 
+		//					{
+		//						//do nothing
+		//					}
+		//				}
+		//				setCanChoose(false);
+		//			}
+		//		};
+		//		countDownThread.start();
+
 	}
 
 	//the client made his/her choice
@@ -265,7 +338,7 @@ public class Client
 	{
 		if(this.getCanChoose()) 
 		{
-//			this.countDownThread.interrupt();
+			//			this.countDownThread.interrupt();
 			this.setCanChoose(false);
 			ChoiceBean choiceBean = new ChoiceBean(choiceName, player, this.getRoundNoInt());
 			display("Your choice:" + choiceBean.getChoice().getChoiseName());
@@ -282,80 +355,8 @@ public class Client
 	private static void display(String string)
 	{
 		System.out.println(string);
+
 		//need to invoke display function of View layer
-	}
-
-	//initialize the client
-	public void initialize() throws ClassNotFoundException, NullPointerException, IOException, InterruptedException
-	{
-		System.out.println("Acquiring in client.initialize()");
-
-		Test.semaphore.acquire();
-		//handle object read from the server
-		//initialize IOStreams
-		this.initializeConnection();
-		System.out.println(this.socket.getPort());
-		//start a new thread to continuously listen to the server
-
-		//need to be closed after client terminated
-		objectListener = new Thread() {
-			public void run() 
-			{
-				Object objFromServer = null;
-				while(true)
-				{
-					try 
-					{
-						//read object from the server through ObjectInputStream
-						objFromServer = fromServer.readObject();
-						
-						//server inform that the client should exit
-						if(objFromServer instanceof ExitBean) 
-						{	
-							if(objFromServer instanceof ExceptionExitBean) 
-							{
-								((ExitBean) objFromServer).getException().printStackTrace();
-								display("Exception Occurs");
-							}
-							else
-							{
-								
-							}
-							//terminates the client
-							display("Exit");
-							interrupt();
-						}
-						else 
-						{
-							display("Successfully get an object!");
-							handleReceivedObject(objFromServer);
-						}
-
-					}
-					catch(ClassNotFoundException e) 
-					{
-						display("[Error]-ClassNotFound Please restart.");
-						e.printStackTrace();
-					}
-					catch (NullPointerException e) 
-					{
-						e.printStackTrace();
-						display("[Error]-Null Please restart.");
-						display(e.toString());
-						return;
-					}
-					catch (IOException e) 
-					{
-						display("[Warning]-IO Disconnect");
-						return;
-					}
-				}
-			}
-		};
-
-		objectListener.start();
-//		objectListener.join(200);
-	
 	}
 
 	//terminate the client

@@ -41,7 +41,6 @@ public class TestClientFx extends Application
 		{
 			client.initialize();
 			appendTextArea("Client initialized");
-			System.out.println("releasing");
 
 		}
 		catch(IOException ioe) 
@@ -60,7 +59,7 @@ public class TestClientFx extends Application
 
 	//Create the Welcome Page to show
 	public void CreateWelcomePage() {
-		if(client.isHost()) {
+		if(client.getIsHost()) {
 			GridPane grid = new GridPane();
 			grid.setAlignment(Pos.CENTER);
 			grid.setVgap(10);
@@ -207,8 +206,11 @@ public class TestClientFx extends Application
 	{	
 		//System.out.println("Does it all ????"+client.getHasInitialized());
 		//System.out.println("cient is a host??"+client.isHost());
+		System.out.println("client.getHasINitialized(): "+client.getHasInitialized());
 		stage.setTitle("Welcome to the Rock Paper Scissors Game!");
+		client.initSemaphore.acquire();
     	CreateWelcomePage();
+    	client.initSemaphore.release();
     	stage.setScene(welcomePage);
     	Platform.setImplicitExit(false);
     	stage.setOnCloseRequest(event ->{
