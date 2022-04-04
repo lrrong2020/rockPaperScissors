@@ -360,6 +360,18 @@ public class Client
 						return;
 					}
 				}
+				if(getCanChoose()) 
+				{
+					try
+					{
+						choose(Choice.GESTURES.ROCK);
+					}
+					catch (ClassNotFoundException e)
+					{
+						e.printStackTrace();
+					}
+				}
+				
 				setCanChoose(false);
 				return;
 			}
