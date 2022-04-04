@@ -31,8 +31,8 @@ public class TestClientFx extends Application
 {
 	// Text area to display contents
 	private static TextArea ta = new TextArea();
-	private static Client client = null;
-	private static Semaphore s=new Semaphore(1);
+	public static Client client = null;
+	public static Semaphore s=new Semaphore(1);
 	//private Scene findIPPage;
 	private Scene welcomePage;
 	private static ArrayList<EventHandler<MouseEvent>>listeners=new ArrayList<>();
@@ -100,25 +100,43 @@ public class TestClientFx extends Application
 				
 				try {
 					client.initSemaphore.acquire();
-					System.out.print("acquiring");
+					
 				} catch (InterruptedException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
+				Stage window;
 				if(client.getIsHost()) {
-					Stage window=(Stage)enter.getScene().getWindow();
+					window=(Stage)enter.getScene().getWindow();
 					window.setTitle("Welcome to the Rock Paper Scissors Game!");
 					window.setScene(startWelcomePage);
 				}
 				else {
-					DuringTheGame during=new DuringTheGame();
-					Scene duringGame=new Scene(during.CreateGamePage(),600,400);
-					duringGame.getStylesheets().add(getClass().getResource("GamePageSettings.css").toExternalForm());
-					Stage window=(Stage)enter.getScene().getWindow();
-					window.setScene(duringGame);
-					window.setTitle("Game started");
+					WaitingPage waiting=new WaitingPage();
+					Scene waitingRes=new Scene(waiting.CreateWaitingPage(),600,400);
+					waitingRes.getStylesheets().add(getClass().getResource("PagesSettings.css").toExternalForm());
+					window=(Stage)enter.getScene().getWindow();
+					window.setScene(waitingRes);
+					window.setTitle("Game will be started in several seconds");
+					try {
+						s.acquire();
+						System.out.print("acquire it oooo "+s.availablePermits());
+						System.out.println("The bool is "+client.getHasStarted());
+					} catch (InterruptedException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
 					}
-				System.out.print("Release!!");
+					if(client.getHasStarted()) {
+						DuringTheGame during=new DuringTheGame();
+						Scene duringGame=new Scene(during.CreateGamePage(),600,400);
+						duringGame.getStylesheets().add(getClass().getResource("GamePageSettings.css").toExternalForm());
+						window.setScene(duringGame);
+						window.setTitle("Game started");
+						}
+					s.release();
+					System.out.print("Nothing");
+					}
+				
 				client.initSemaphore.release();
 				
 				

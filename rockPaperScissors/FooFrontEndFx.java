@@ -95,7 +95,12 @@ public class FooFrontEndFx extends Application
 			@Override 
 			public void handle (MouseEvent e)
 			{	
-				client.hostStartGame(5);
+				try {
+					client.hostStartGame(5);
+				} catch (InterruptedException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			}
 		};
 		start.addEventHandler(MouseEvent.MOUSE_CLICKED, startListener);

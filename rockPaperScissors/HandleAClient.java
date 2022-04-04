@@ -21,6 +21,7 @@ class HandleAClient implements Runnable
 	private UUID uuid = null;//uniquely identify the users
 	private int roomNo;
 
+	private boolean sendStartBeanOrNot=false;
 	//construct a thread
 	public HandleAClient(Socket socket) 
 	{
