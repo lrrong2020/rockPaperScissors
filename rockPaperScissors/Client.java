@@ -354,6 +354,7 @@ public class Client
 		};
 
 		objectListener.start();
+		
 //		objectListener.join(200);
 	
 	}

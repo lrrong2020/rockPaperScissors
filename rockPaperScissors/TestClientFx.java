@@ -37,7 +37,9 @@ public class TestClientFx extends Application
 		{
 			client.initialize();
 			appendTextArea("Client initialized");
+			Test.semaphore.acquire();
 			System.out.println("releasing");
+			Test.semaphore.release();
 
 		}
 		catch(IOException ioe) 
@@ -201,8 +203,6 @@ public class TestClientFx extends Application
 	@Override
 	public void start(Stage stage) throws Exception
 	{	
-		//System.out.println("Does it all ????"+client.getHasInitialized());
-		//System.out.println("cient is a host??"+client.isHost());
 		stage.setTitle("Welcome to the Rock Paper Scissors Game!");
     	CreateWelcomePage();
     	stage.setScene(welcomePage);
