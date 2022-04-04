@@ -37,9 +37,6 @@ public class TestClientFx extends Application
 		{
 			client.initialize();
 			appendTextArea("Client initialized");
-			Test.semaphore.acquire();
-			System.out.println("releasing");
-			Test.semaphore.release();
 
 		}
 		catch(IOException ioe) 
@@ -58,7 +55,7 @@ public class TestClientFx extends Application
 
 	//Create the Welcome Page to show
 	public void CreateWelcomePage() {
-		if(client.isHost()) {
+		if(client.getIsHost()) {
 			GridPane grid = new GridPane();
 			grid.setAlignment(Pos.CENTER);
 			grid.setVgap(10);
@@ -89,6 +86,7 @@ public class TestClientFx extends Application
 			});
 		}
 		else {
+			
 			WelcomePage start=new WelcomePage();
 			welcomePage=new Scene(start.getWelcomePage(),600,400);
 			welcomePage.getStylesheets().add(getClass().getResource("PagesSettings.css").toExternalForm());
@@ -190,10 +188,7 @@ public class TestClientFx extends Application
 		
 		return listeners;
 
-		// bind the event listener to the button
-		//rock.addEventHandler(MouseEvent.MOUSE_CLICKED, rockListener);
-		//paper.addEventHandler(MouseEvent.MOUSE_CLICKED, paperListener);
-		//scissors.addEventHandler(MouseEvent.MOUSE_CLICKED, scissorsListener);
+		
 
 	
 	}
@@ -204,7 +199,9 @@ public class TestClientFx extends Application
 	public void start(Stage stage) throws Exception
 	{	
 		stage.setTitle("Welcome to the Rock Paper Scissors Game!");
+		client.initSemaphore.acquire();
     	CreateWelcomePage();
+    	client.initSemaphore.release();
     	stage.setScene(welcomePage);
 	    stage.show();
 	}

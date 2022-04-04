@@ -36,7 +36,6 @@ public class ConsoleServer
 		socketThread = new Thread(socketHandler);
 		socketThread.start();
 	}
-
 	
 	//Inner Class
 	//handle ServerSocket singleton
@@ -148,7 +147,7 @@ public class ConsoleServer
 		}
 	}
 
-	public static HandleAClient getClientHandler(Socket socket) 
+	public static HandleAClient getClientHandler(List<HandleAClient> clientHandlers, Socket socket) 
 	{
 		for (HandleAClient clientHandler: ConsoleServer.CLIENT_HANDLER_LIST) 
 		{
@@ -172,10 +171,9 @@ public class ConsoleServer
 		return null;
 	}
 
-
 	public static void clientExit(UUID uuid)
 	{
-		getClientHandler(ONLINE_USER_MAP.get(uuid)).stop();
+		getClientHandler(CLIENT_HANDLER_LIST, ONLINE_USER_MAP.get(uuid)).stop();
 		ONLINE_USER_MAP.remove(uuid);
 	}
 
