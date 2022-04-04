@@ -2,6 +2,7 @@ package rockPaperScissors.rockPaperScissors;
 
 import java.io.*;
 import java.net.*;
+import java.util.*;
 import java.util.concurrent.Semaphore;
 
 import rockPaperScissors.rockPaperScissors.DataBeans.*;
@@ -34,6 +35,8 @@ public class Client
 
 	private Thread objectListener = null;//class-level thread to continuously listen to the server
 	private Thread countDownThread = null;//handle the count down timer
+	
+	private List<Choice[]> choices = new ArrayList<Choice[]>();
 
 	//constructors
 	public Client()
@@ -98,6 +101,11 @@ public class Client
 	public boolean getIsHost()
 	{
 		return isHost;
+	}
+	
+	public List<Choice[]> getChoiceList() 
+	{
+		return this.choices;
 	}
 
 	//initialize the client
@@ -269,6 +277,9 @@ public class Client
 				}
 				display("==========");
 
+				//store choices
+				choices.add(new Choice[] {resultBean.getYourChoice(), resultBean.getOpponentChoice()});
+				
 				//during the game
 
 				if(resultBean.getRoundNoInt().compareTo(modeInt) < 0) 

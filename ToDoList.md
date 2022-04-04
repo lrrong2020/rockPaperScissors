@@ -42,7 +42,7 @@
 
 ### **Controller-backend** + **Model**
 
-1. 清理数据接口
+1. 清理数据
 2. 处理异常重连
    - *断线 (On exit?)
      1. Socket 重复使用?
