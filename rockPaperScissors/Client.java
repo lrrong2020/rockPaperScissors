@@ -27,6 +27,7 @@ public class Client
 	private boolean isHost = false;//the same as player.getIsHost()
 	private boolean canChoose = false;
 
+	private static boolean hasStarted=false;
 	//	private Thread countDownThread;
 
 	//boolean indicate states
@@ -114,6 +115,9 @@ public class Client
 	public boolean getHasStopped()
 	{
 		return hasStopped;
+	}
+	public static boolean getHasStarted() {
+		return hasStarted;
 	}
 
 	//initialize the client
@@ -256,6 +260,7 @@ public class Client
 
 			{
 				//when the game starts
+				
 				display("Received Bean is instanceof StartBean");
 				startGame(((StartBean) receivedBean).getMode());
 			}
@@ -332,11 +337,15 @@ public class Client
 	}
 
 	//the host click on start game button
-	public void hostStartGame(int mode) 
+	public void hostStartGame(int mode) throws InterruptedException 
 	{
 		display("Host starting game" + "\nBO"+mode);
+		TestClientFx.s.acquire();
+		hasStarted=true;
+		TestClientFx.s.release();
 		sendDataBean(new StartBean(mode));
 	}
+	
 
 	//send the player instance to the server indicates that the game starts
 	private void startGame(int mode) 
