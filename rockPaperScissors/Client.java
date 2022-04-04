@@ -318,28 +318,28 @@ public class Client
 
 		this.setCanChoose(true);
 				
-				countDownThread = new Thread() {
-					public void run() 
-					{	
+//				countDownThread = new Thread() {
+//					public void run() 
+//					{	
 //						setCanChoose(true);
-						for(int j = seconds;j > 0;j--) 
-						{
-							//	display count down i s
-							display(j+"");
-							try 
-							{
-								sleep(1000);
-							} 
-							catch (InterruptedException e) 
-							{
-								//do nothing
-							}
-						}
-						setCanChoose(false);
-						interrupt();
-					}
-				};
-				countDownThread.start();
+//						for(int j = seconds;j > 0;j--) 
+//						{
+//							//	display count down i s
+//							display(j+"");
+//							try 
+//							{
+//								sleep(1000);
+//							} 
+//							catch (InterruptedException e) 
+//							{
+//								//do nothing
+//							}
+//						}
+//						setCanChoose(false);
+//						interrupt();
+//					}
+//				};
+//				countDownThread.start();
 
 	}
 
