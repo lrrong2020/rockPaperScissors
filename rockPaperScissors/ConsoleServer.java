@@ -6,7 +6,6 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
-import rockPaperScissors.rockPaperScissors.DataBeans.*;
 import rockPaperScissors.rockPaperScissors.Exceptions.*;
 
 

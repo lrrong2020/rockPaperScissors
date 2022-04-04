@@ -27,6 +27,7 @@ public class FooFrontEndFx extends Application
 		try 
 		{
 			client.initialize();
+			
 			appendTextArea("Client initialized");
 		}
 		catch(IOException ioe) 
@@ -174,6 +175,7 @@ public class FooFrontEndFx extends Application
 
 		//Displaying the contents of a scene 
 		stage.show(); 
+
 	}
 
 	//start JavaFX application

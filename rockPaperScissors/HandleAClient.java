@@ -3,7 +3,7 @@ package rockPaperScissors.rockPaperScissors;
 import java.io.*;
 import java.net.*;
 import java.util.*;
-import java.util.Map.Entry;
+
 
 import rockPaperScissors.rockPaperScissors.DataBeans.*;
 import rockPaperScissors.rockPaperScissors.Exceptions.*;
@@ -161,6 +161,7 @@ class HandleAClient implements Runnable
 			{
 				ConsoleServer.log("Acquiring lock");
 				ConsoleServer.semaphore.acquire();
+
 
 				//put the (ChoiceBean) in class-level Choice list
 				ConsoleServer.getRoom(roomNo).getClientChoiceBeans().add(new ChoiceBean[2]);
