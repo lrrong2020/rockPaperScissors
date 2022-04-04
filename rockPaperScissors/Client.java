@@ -345,6 +345,15 @@ public class Client
 		display("The game is on!"+"\nBO"+mode);
 		this.setRoundNoInt(Integer.valueOf(1));
 		//		this.sendDataBean(new StartBean(player));
+		
+		//get users some time
+		try
+		{
+			TimeUnit.SECONDS.sleep(3);
+		} catch (InterruptedException e)
+		{
+			e.printStackTrace();
+		}
 		startRound();
 	}
 
