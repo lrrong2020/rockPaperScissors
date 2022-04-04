@@ -32,12 +32,12 @@ public class Client
 	//boolean indicate states
 	private boolean hasInitialized = false;//determine whether the client has initialized or not
 	private boolean hasStopped = false;
-	
+
 	public Semaphore initSemaphore = new Semaphore(1); //can be invoked outside to make sure initialization is done before the client is used
 
 	private Thread objectListener = null;//class-level thread to continuously listen to the server
 	private Thread countDownThread = null;//handle the count down timer
-	
+
 	private List<Choice[]> choices = new ArrayList<Choice[]>();
 
 	//constructors
@@ -51,7 +51,7 @@ public class Client
 		this.setHost(host);
 		this.setPort(port);
 	}
-	
+
 	public Client(String host) 
 	{
 		this.setHost(host);
@@ -104,7 +104,7 @@ public class Client
 	{
 		return isHost;
 	}
-	
+
 	public List<Choice[]> getChoiceList() 
 	{
 		return this.choices;
@@ -269,8 +269,7 @@ public class Client
 
 				this.setRoundNoInt(Integer.valueOf(resultBean.getRoundNoInt().intValue() + 1));//auto boxing?
 
-				display("==========");
-				display("[Round]"+resultBean.getRoundNoInt().toString());
+
 				display("Your choice: " + resultBean.getYourChoice().getChoiseName());
 				display("Your opponent's choice: " + resultBean.getOpponentChoice().getChoiseName());
 
@@ -291,7 +290,7 @@ public class Client
 
 				//store choices
 				choices.add(new Choice[] {resultBean.getYourChoice(), resultBean.getOpponentChoice()});
-				
+
 				//during the game
 
 				if(resultBean.getRoundNoInt().compareTo(modeInt) < 0) 
@@ -338,32 +337,34 @@ public class Client
 	private void startRound()
 	{
 		int seconds = 10;
+		display("==========");
 		display("Round["+this.getRoundNoInt().intValue()+"] begins! Please make your choice in " + seconds + " seconds.");
 
 		this.setCanChoose(true);
-				
-//				countDownThread = new Thread() {
-//					public void run() 
-//					{	
-//						setCanChoose(true);
-//						for(int j = seconds;j > 0;j--) 
-//						{
-//							//	display count down i s
-//							display(j+"");
-//							try 
-//							{
-//								sleep(1000);
-//							} 
-//							catch (InterruptedException e) 
-//							{
-//								//do nothing
-//							}
-//						}
-//						setCanChoose(false);
-//						interrupt();
-//					}
-//				};
-//				countDownThread.start();
+
+		countDownThread = new Thread() {
+			public void run() 
+			{	
+				setCanChoose(true);
+				for(int j = seconds;j > 0;j--) 
+				{
+					//	display count down i s
+					display(j+"");
+					try 
+					{
+						sleep(1000);
+					} 
+					catch (InterruptedException e) 
+					{
+						//do nothing
+						return;
+					}
+				}
+				setCanChoose(false);
+				return;
+			}
+		};
+		countDownThread.start();
 
 	}
 
@@ -372,10 +373,10 @@ public class Client
 	{
 		if(this.getCanChoose()) 
 		{
-			//			this.countDownThread.interrupt();
+			this.countDownThread.interrupt();
 			this.setCanChoose(false);
 			ChoiceBean choiceBean = new ChoiceBean(choiceName, player, this.getRoundNoInt());
-			display("Your choice:" + choiceBean.getChoice().getChoiseName());
+//			display("Your choice:" + choiceBean.getChoice().getChoiseName());
 			this.sendDataBean(choiceBean);
 		}
 		else 
