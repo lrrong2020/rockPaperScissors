@@ -5,14 +5,21 @@ import java.util.ArrayList;
 
 import javafx.application.Application;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 public class TestClientFx extends Application
@@ -20,21 +27,18 @@ public class TestClientFx extends Application
 	// Text area to display contents
 	private static TextArea ta = new TextArea();
 	private static Client client = null;
+	//private Scene findIPPage;
 	private Scene welcomePage;
 	private static ArrayList<EventHandler<MouseEvent>>listeners=new ArrayList<>();
-	
-
-	//constructors
-	public TestClientFx() 
-	{	
-		super();	
-		//create a new client class
-		TestClientFx.client = new Client();
+	public TestClientFx() throws InterruptedException {
+		TestClientFx.client=new Client();
 		appendTextArea("Client generated");
 		try 
 		{
 			client.initialize();
 			appendTextArea("Client initialized");
+			System.out.println("releasing");
+
 		}
 		catch(IOException ioe) 
 		{
@@ -48,39 +52,47 @@ public class TestClientFx extends Application
 			e.printStackTrace();
 			appendTextArea("Invalid Data from server!");
 		}
-	}	
+	}
+
 	//Create the Welcome Page to show
 	public void CreateWelcomePage() {
-		Pane root=new Pane();
-		welcomePage=new Scene(root,600,400);
-		welcomePage.getStylesheets().add(getClass().getResource("PagesSettings.css").toExternalForm());
-		
-		Image icon=new Image("/rockPaperScissors/rockPaperScissors/media/icon.gif");
-		ImageView icon1=new ImageView(icon);
-		icon1.setFitHeight(150);
-		icon1.setFitWidth(200);
-		
-		Label label1=new Label("Rock Paper Scissors Game");
-		label1.getStyleClass().add("labelContent");
-
-		label1.layoutXProperty().bind(root.widthProperty().divide(3.2));
-		Button bt1=new Button("One round");
-		Button bt2=new Button("Best two out of three");
-		Button bt3=new Button("Best three out of five");
-	
-		bt1.layoutXProperty().bind(root.widthProperty().divide(1.5));
-		bt2.layoutXProperty().bind(bt1.layoutXProperty());
-		bt3.layoutXProperty().bind(bt1.layoutXProperty());
-		
-		bt1.layoutYProperty().bind(root.heightProperty().divide(3));
-		bt2.layoutYProperty().bind(root.heightProperty().divide(2));
-		bt3.layoutYProperty().bind(root.heightProperty().divide(1.5));
-		
-		
-		icon1.layoutXProperty().bind(root.widthProperty().divide(12));
-		icon1.layoutYProperty().bind(root.heightProperty().divide(1.8));
-		
-		DuringTheGame during=new DuringTheGame();
+		if(client.isHost()) {
+			GridPane grid = new GridPane();
+			grid.setAlignment(Pos.CENTER);
+			grid.setVgap(10);
+			grid.setHgap(10);
+			grid.setPadding(new Insets(10));
+			
+			Text enterTxt = new Text("Enter the IP address:");
+			enterTxt.setFont(Font.font("Tahoma", FontWeight.LIGHT, 25));
+			grid.add(enterTxt, 0, 0);
+			
+			
+			TextField IP = new TextField();
+			
+			IP.setPromptText("IP address");
+			grid.add(IP, 0, 2);
+			
+			
+			Button enter = new Button("OK");
+			grid.add(enter, 0, 3);
+			welcomePage=new Scene(grid,600,400);
+			WelcomePage startHost=new WelcomePage();
+			Scene startWelcomePage=new Scene(startHost.getWelcomePage(),600,400);
+			startWelcomePage.getStylesheets().add(getClass().getResource("PagesSettings.css").toExternalForm());
+			enter.setOnAction(e->{
+				Stage window=(Stage)enter.getScene().getWindow();
+				window.setTitle("Welcome to the Rock Paper Scissors Game!");
+				window.setScene(startWelcomePage);
+			});
+		}
+		else {
+			WelcomePage start=new WelcomePage();
+			welcomePage=new Scene(start.getWelcomePage(),600,400);
+			welcomePage.getStylesheets().add(getClass().getResource("PagesSettings.css").toExternalForm());
+			
+		}
+		/*DuringTheGame during=new DuringTheGame();
 		Scene duringGame=new Scene(during.CreateGamePage(),600,400);
 		duringGame.getStylesheets().add(getClass().getResource("GamePageSettings.css").toExternalForm());
 		bt1.setOnAction(e->{
@@ -101,7 +113,7 @@ public class TestClientFx extends Application
 			window.setScene(duringGame);
 		});
 		
-		root.getChildren().addAll(icon1,label1,bt1,bt2,bt3);
+		root.getChildren().addAll(icon1,label1,bt1,bt2,bt3);*/
 		
 	}
 
@@ -181,16 +193,16 @@ public class TestClientFx extends Application
 		//paper.addEventHandler(MouseEvent.MOUSE_CLICKED, paperListener);
 		//scissors.addEventHandler(MouseEvent.MOUSE_CLICKED, scissorsListener);
 
-		
+	
 	}
 	
 
 	//start JavaFX application
 	@Override
 	public void start(Stage stage) throws Exception
-	{
-		
-		
+	{	
+		//System.out.println("Does it all ????"+client.getHasInitialized());
+		//System.out.println("cient is a host??"+client.isHost());
 		stage.setTitle("Welcome to the Rock Paper Scissors Game!");
     	CreateWelcomePage();
     	stage.setScene(welcomePage);

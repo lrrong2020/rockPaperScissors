@@ -2,6 +2,7 @@ package rockPaperScissors.rockPaperScissors;
 
 import java.io.*;
 import java.net.*;
+import java.util.concurrent.Semaphore;
 
 import rockPaperScissors.rockPaperScissors.DataBeans.*;
 
@@ -23,6 +24,13 @@ public class Client
 	private Integer modeInt = Integer.valueOf(0);
 	private boolean isHost = false;
 	private boolean canChoose = false;
+
+//	private Thread countDownThread;
+	
+	private boolean hasInitialized = false;
+
+	
+
 	
 	private Thread objectListener = null;//class-level thread to continuously listen to the server
 	private Thread countDownThread = null;
@@ -49,7 +57,7 @@ public class Client
 	{
 		Client.port = port;
 	}
-
+	
 	public void setRoundNoInt(Integer roundNoInt)
 	{
 		this.roundNoInt = roundNoInt;
@@ -164,16 +172,28 @@ public class Client
 
 			}
 		};
-
+		
 		objectListener.start();
 	}
+
+	public void setHasInitialized(boolean hasInitialized)
+	{
+		this.hasInitialized = hasInitialized;
+	}
+	
+	public boolean getHasInitialized()
+	{
+		return hasInitialized;
+	}
+
 	//initialize socket connection with the server
 	private void initializeConnection() throws IOException 
 	{
 		// Create a socket to connect to the server
 
 		this.socket = new Socket(host, port);
-
+		System.out.println(socket.getPort());
+		//System.out.print(socket.getLocalAddress());
 		// Create an output stream to send object to the server
 		toServer = new ObjectOutputStream(socket.getOutputStream());
 
@@ -208,6 +228,7 @@ public class Client
 
 			//polymorphism style of handling handling different events or status
 			if (receivedBean instanceof StartBean) 
+
 			{
 				//when the game starts
 				display("Received Bean is instanceof StartBean");
