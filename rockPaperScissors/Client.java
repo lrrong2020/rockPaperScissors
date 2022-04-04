@@ -15,26 +15,25 @@ public class Client
 	private Socket socket;
 	// IOStreams
 	//Note that outputStream should always be defined first!
-	private ObjectOutputStream toServer;//defined first
+	private ObjectOutputStream toServer;//defined first!
 	private ObjectInputStream fromServer;
 
-	private Player player = new Player();
+	private Player player = new Player();//hide player to view
 
 	private Integer roundNoInt = Integer.valueOf(0);//round number
 	private Integer modeInt = Integer.valueOf(0);
-	private boolean isHost = false;
+
+	private boolean isHost = false;//the same as player.getIsHost()
 	private boolean canChoose = false;
 
-//	private Thread countDownThread;
-	
-	private boolean hasInitialized = false;
+	//	private Thread countDownThread;
 
-	Semaphore initSemaphore = new Semaphore(1);
-	
+	private boolean hasInitialized = false;//determine whether the client has initialized or not
 
-	
+	public Semaphore initSemaphore = new Semaphore(1); //can be invoked outside to make sure initialization is done before the client is used
+
 	private Thread objectListener = null;//class-level thread to continuously listen to the server
-	private Thread countDownThread = null;
+	private Thread countDownThread = null;//handle the count down timer
 
 	//constructors
 	public Client()
@@ -58,7 +57,7 @@ public class Client
 	{
 		Client.port = port;
 	}
-	
+
 	public void setRoundNoInt(Integer roundNoInt)
 	{
 		this.roundNoInt = roundNoInt;
@@ -99,7 +98,8 @@ public class Client
 	//initialize the client
 	public void initialize() throws ClassNotFoundException, NullPointerException, IOException, InterruptedException
 	{
-		initSemaphore.acquire();
+		initSemaphore.acquire();//acquire semaphore
+
 		//handle object read from the server
 		//initialize IOStreams
 		this.initializeConnection();
@@ -117,7 +117,7 @@ public class Client
 					{
 						//read object from the server through ObjectInputStream
 						objFromServer = fromServer.readObject();
-						
+
 						if(objFromServer instanceof InitBean)
 						{
 							InitBean receivedIBean = (InitBean)objFromServer;//cast to subclass
@@ -130,9 +130,9 @@ public class Client
 							//set UUID and isHost to the Player instance
 							player.setUUID(receivedIBean.getUUID());
 							player.setIsHost(receivedIBean.getIsHost());
-							
+
 							setIsHost(receivedIBean.getIsHost());
-							initSemaphore.release();
+							initSemaphore.release();//release semaphore
 						}
 						else if(objFromServer instanceof ExitBean) //server inform that the client should exit
 						{	
@@ -143,15 +143,17 @@ public class Client
 							}
 							else 
 							{
-								
+								//other exit beans send by the server
+								//may be end bean to determine the results
 							}
 							display("Exit");
 							objectListener.interrupt();//terminates the listener
 						}
 						else 
 						{
-						display("Successfully get an object!");
-						handleReceivedObject(objFromServer);
+							//gameOn objects
+							display("Successfully get an object!");
+							handleGameOnObject(objFromServer);
 						}
 					}
 					catch(ClassNotFoundException e) 
@@ -172,10 +174,9 @@ public class Client
 						return;
 					}
 				}
-
 			}
 		};
-		
+
 		objectListener.start();
 	}
 
@@ -183,7 +184,7 @@ public class Client
 	{
 		this.hasInitialized = hasInitialized;
 	}
-	
+
 	public boolean getHasInitialized()
 	{
 		return hasInitialized;
@@ -219,7 +220,7 @@ public class Client
 	}
 
 	//handle received data bean
-	private void handleReceivedObject(Object objFromServer) throws IOException, ClassNotFoundException, NullPointerException
+	private void handleGameOnObject(Object objFromServer) throws IOException, ClassNotFoundException, NullPointerException
 	{
 		if(objFromServer == null) 
 		{
@@ -235,7 +236,7 @@ public class Client
 			{
 				//when the game starts
 				display("Received Bean is instanceof StartBean");
-				gameStart(((StartBean) receivedBean).getMode());
+				startGame(((StartBean) receivedBean).getMode());
 			}
 			else if (receivedBean instanceof ResultBean) 
 			{
@@ -268,7 +269,7 @@ public class Client
 				if(resultBean.getRoundNoInt().compareTo(modeInt) < 0) 
 				{
 					//control the choice
-					roundStart();
+					startRound();
 				}
 				else 
 				{
@@ -291,44 +292,44 @@ public class Client
 	}
 
 	//send the player instance to the server indicates that the game starts
-	private void gameStart(int mode) 
+	private void startGame(int mode) 
 	{	
 		this.setModeInt(mode);
 		display("The game is on!"+"\nBO"+mode);
 		this.setRoundNoInt(Integer.valueOf(1));
 		//		this.sendDataBean(new StartBean(player));
-		roundStart();
+		startRound();
 	}
 
 	//count down timer for round time
-	private void roundStart()
+	private void startRound()
 	{
 		int seconds = 10;
 		display("Round["+this.getRoundNoInt().intValue()+"] begins! Please make your choice in " + seconds + " seconds.");
 
 		this.setCanChoose(true);
-//		
-//		countDownThread = new Thread() {
-//			public void run() 
-//			{	
-//				setCanChoose(true);
-//				for(int j = seconds;j > 0;j--) 
-//				{
-//					//	display count down i s
-//					display(j+"");
-//					try 
-//					{
-//						sleep(1000);
-//					} 
-//					catch (InterruptedException e) 
-//					{
-//						//do nothing
-//					}
-//				}
-//				setCanChoose(false);
-//			}
-//		};
-//		countDownThread.start();
+		//		
+		//		countDownThread = new Thread() {
+		//			public void run() 
+		//			{	
+		//				setCanChoose(true);
+		//				for(int j = seconds;j > 0;j--) 
+		//				{
+		//					//	display count down i s
+		//					display(j+"");
+		//					try 
+		//					{
+		//						sleep(1000);
+		//					} 
+		//					catch (InterruptedException e) 
+		//					{
+		//						//do nothing
+		//					}
+		//				}
+		//				setCanChoose(false);
+		//			}
+		//		};
+		//		countDownThread.start();
 
 	}
 
@@ -337,7 +338,7 @@ public class Client
 	{
 		if(this.getCanChoose()) 
 		{
-//			this.countDownThread.interrupt();
+			//			this.countDownThread.interrupt();
 			this.setCanChoose(false);
 			ChoiceBean choiceBean = new ChoiceBean(choiceName, player, this.getRoundNoInt());
 			display("Your choice:" + choiceBean.getChoice().getChoiseName());
