@@ -56,7 +56,7 @@ public class TestClientFx extends Application
 
 	//Create the Welcome Page to show
 	public void CreateWelcomePage() {
-		if(client.isHost()) {
+		if(client.getIsHost()) {
 			GridPane grid = new GridPane();
 			grid.setAlignment(Pos.CENTER);
 			grid.setVgap(10);
