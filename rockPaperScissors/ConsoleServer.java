@@ -27,7 +27,7 @@ public class ConsoleServer
 	public static Semaphore semaphore = new Semaphore(1);
 
 	//constructor	
-	public ConsoleServer() 
+	public ConsoleServer()
 	{
 		super();
 		log("Initializing server");

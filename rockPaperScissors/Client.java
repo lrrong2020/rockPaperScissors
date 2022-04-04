@@ -10,8 +10,8 @@ import rockPaperScissors.rockPaperScissors.DataBeans.*;
 public class Client
 {
 	//socket parameters to build connection
-	private static String host = "localhost";//may use IPv4 address
-	private static int port = 8000;//port number
+	private String host = "localhost";//may use IPv4 address
+	private int port = 8000;//port number
 	private Socket socket;
 	// IOStreams
 	//Note that outputStream should always be defined first!
@@ -46,16 +46,21 @@ public class Client
 		this.setHost(host);
 		this.setPort(port);
 	}
+	
+	public Client(String host) 
+	{
+		this.setHost(host);
+	}
 
 	//setters and getters
 	public void setHost(String host) 
 	{
-		Client.host = host;
+		this.host = host;
 	}
 
 	public void setPort(int port) 
 	{
-		Client.port = port;
+		this.port = port;
 	}
 
 	public void setRoundNoInt(Integer roundNoInt)
@@ -274,6 +279,10 @@ public class Client
 				else 
 				{
 					display("Game over.");
+					
+					//cut off connection to the server
+					//display End page
+					//restart button? initialize again?
 				}
 			}
 			else
@@ -308,28 +317,29 @@ public class Client
 		display("Round["+this.getRoundNoInt().intValue()+"] begins! Please make your choice in " + seconds + " seconds.");
 
 		this.setCanChoose(true);
-		//		
-		//		countDownThread = new Thread() {
-		//			public void run() 
-		//			{	
-		//				setCanChoose(true);
-		//				for(int j = seconds;j > 0;j--) 
-		//				{
-		//					//	display count down i s
-		//					display(j+"");
-		//					try 
-		//					{
-		//						sleep(1000);
-		//					} 
-		//					catch (InterruptedException e) 
-		//					{
-		//						//do nothing
-		//					}
-		//				}
-		//				setCanChoose(false);
-		//			}
-		//		};
-		//		countDownThread.start();
+				
+//				countDownThread = new Thread() {
+//					public void run() 
+//					{	
+//						setCanChoose(true);
+//						for(int j = seconds;j > 0;j--) 
+//						{
+//							//	display count down i s
+//							display(j+"");
+//							try 
+//							{
+//								sleep(1000);
+//							} 
+//							catch (InterruptedException e) 
+//							{
+//								//do nothing
+//							}
+//						}
+//						setCanChoose(false);
+//						interrupt();
+//					}
+//				};
+//				countDownThread.start();
 
 	}
 

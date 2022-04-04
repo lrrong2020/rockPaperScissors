@@ -2,13 +2,17 @@ package rockPaperScissors.rockPaperScissors;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Optional;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -203,6 +207,18 @@ public class TestClientFx extends Application
     	CreateWelcomePage();
     	client.initSemaphore.release();
     	stage.setScene(welcomePage);
+    	Platform.setImplicitExit(false);
+    	stage.setOnCloseRequest(event ->{
+    		event.consume();
+    		Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+    		alert.setTitle("Exit");
+    		alert.setHeaderText(null);
+    		alert.setContentText("Do you want to exit?");
+    		Optional<ButtonType> result = alert.showAndWait();
+    		if(result.get() == ButtonType.OK) {
+    			Platform.exit();
+    		}
+    	});
 	    stage.show();
 	}
 
