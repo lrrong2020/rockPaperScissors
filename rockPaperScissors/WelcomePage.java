@@ -44,6 +44,7 @@ public class WelcomePage {
 		Scene duringGame=new Scene(during.CreateGamePage(),600,400);
 		duringGame.getStylesheets().add(getClass().getResource("GamePageSettings.css").toExternalForm());
 		bt1.setOnAction(e->{
+			
 			Stage window=(Stage)bt1.getScene().getWindow();
 			window.setTitle("Game started");
 			//during.CreateGamePage().getChildrenUnmodifiable()

@@ -34,32 +34,14 @@ public class TestClientFx extends Application
 	//private Scene findIPPage;
 	private Scene welcomePage;
 	private static ArrayList<EventHandler<MouseEvent>>listeners=new ArrayList<>();
-	public TestClientFx() throws InterruptedException {
+	public TestClientFx() {
 		TestClientFx.client=new Client();
-		appendTextArea("Client generated");
-		try 
-		{
-			client.initialize();
-			appendTextArea("Client initialized");
-
-		}
-		catch(IOException ioe) 
-		{
-			appendTextArea("Client initialize failed");
-
-		}
-		catch (ClassNotFoundException | NullPointerException e) 
-		{
-			//Invalid DataBean
-			//server passed a null
-			e.printStackTrace();
-			appendTextArea("Invalid Data from server!");
-		}
+		
 	}
 
 	//Create the Welcome Page to show
 	public void CreateWelcomePage() {
-		if(client.getIsHost()) {
+		
 			GridPane grid = new GridPane();
 			grid.setAlignment(Pos.CENTER);
 			grid.setVgap(10);
@@ -77,24 +59,62 @@ public class TestClientFx extends Application
 			grid.add(IP, 0, 2);
 			
 			
+	
+			
 			Button enter = new Button("OK");
 			grid.add(enter, 0, 3);
 			welcomePage=new Scene(grid,600,400);
-			WelcomePage startHost=new WelcomePage();
-			Scene startWelcomePage=new Scene(startHost.getWelcomePage(),600,400);
-			startWelcomePage.getStylesheets().add(getClass().getResource("PagesSettings.css").toExternalForm());
-			enter.setOnAction(e->{
-				Stage window=(Stage)enter.getScene().getWindow();
-				window.setTitle("Welcome to the Rock Paper Scissors Game!");
-				window.setScene(startWelcomePage);
-			});
-		}
-		else {
 			WelcomePage start=new WelcomePage();
-			welcomePage=new Scene(start.getWelcomePage(),600,400);
-			welcomePage.getStylesheets().add(getClass().getResource("PagesSettings.css").toExternalForm());
+			Scene startWelcomePage=new Scene(start.getWelcomePage(),600,400);
+			startWelcomePage.getStylesheets().add(getClass().getResource("PagesSettings.css").toExternalForm());
 			
-		}
+			enter.setOnAction(e->{
+				if(IP.getText().length()!=0){
+					client.setHost(IP.getText());
+					appendTextArea("Client generated");
+					try 
+					{
+						client.initialize();
+						appendTextArea("Client initialized");
+
+					}
+					catch(IOException ioe) 
+					{
+						appendTextArea("Client initialize failed");
+	
+					}
+					catch (ClassNotFoundException | NullPointerException e1) 
+					{
+						//Invalid DataBean
+						//server passed a null
+						e1.printStackTrace();
+						appendTextArea("Invalid Data from server!");
+					} catch (InterruptedException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				}
+				if(client.getIsHost()) {
+					Stage window=(Stage)enter.getScene().getWindow();
+					window.setTitle("Welcome to the Rock Paper Scissors Game!");
+					window.setScene(startWelcomePage);
+				}
+				else {
+					DuringTheGame during=new DuringTheGame();
+					Scene duringGame=new Scene(during.CreateGamePage(),600,400);
+					duringGame.getStylesheets().add(getClass().getResource("GamePageSettings.css").toExternalForm());
+					Stage window=(Stage)enter.getScene().getWindow();
+					window.setTitle("Game started");
+					}
+				
+				
+				
+			});
+		
+		
+			
+			
+		
 		/*DuringTheGame during=new DuringTheGame();
 		Scene duringGame=new Scene(during.CreateGamePage(),600,400);
 		duringGame.getStylesheets().add(getClass().getResource("GamePageSettings.css").toExternalForm());
@@ -191,10 +211,7 @@ public class TestClientFx extends Application
 		
 		return listeners;
 
-		// bind the event listener to the button
-		//rock.addEventHandler(MouseEvent.MOUSE_CLICKED, rockListener);
-		//paper.addEventHandler(MouseEvent.MOUSE_CLICKED, paperListener);
-		//scissors.addEventHandler(MouseEvent.MOUSE_CLICKED, scissorsListener);
+		
 
 	
 	}
@@ -204,9 +221,6 @@ public class TestClientFx extends Application
 	@Override
 	public void start(Stage stage) throws Exception
 	{	
-		//System.out.println("Does it all ????"+client.getHasInitialized());
-		//System.out.println("cient is a host??"+client.isHost());
-		System.out.println("client.getHasINitialized(): "+client.getHasInitialized());
 		stage.setTitle("Welcome to the Rock Paper Scissors Game!");
 		client.initSemaphore.acquire();
     	CreateWelcomePage();

@@ -406,6 +406,7 @@ public class Client
 		//need to invoke display function of View layer
 	}
 
+
 	//terminate the client
 	public void stop() 
 	{
