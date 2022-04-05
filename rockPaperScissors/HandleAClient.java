@@ -47,7 +47,7 @@ class HandleAClient implements Runnable
 				+ "IP Address is " + inetAddress.getHostAddress() + "\n");
 
 		//display all UUIDs of users who has registered in the user map
-		ConsoleServer.printAllUsers();
+		ConsoleServer.checkAllUsers();
 	}
 
 	//setter and getters
@@ -273,7 +273,7 @@ class HandleAClient implements Runnable
 
 				ConsoleServer.clientExit(this.uuid);
 
-				ConsoleServer.printAllUsers();
+				ConsoleServer.checkAllUsers();
 
 				//send ExceptionExitBean to clients
 				this.stop();
@@ -284,14 +284,14 @@ class HandleAClient implements Runnable
 	//terminate the thread handling a client
 	public void stop()
 	{
-		try
-		{	
-			this.getSocket().close();
-		} catch (IOException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		try
+//		{	
+//			this.getSocket().close();
+//		} catch (IOException e)
+//		{
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		exit = true;
 	}
 }
