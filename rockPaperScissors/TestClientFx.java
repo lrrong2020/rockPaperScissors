@@ -18,6 +18,8 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
@@ -67,7 +69,17 @@ public class TestClientFx extends Application
 			WelcomePage start=new WelcomePage();
 			Scene startWelcomePage=new Scene(start.getWelcomePage(),600,400);
 			startWelcomePage.getStylesheets().add(getClass().getResource("PagesSettings.css").toExternalForm());
-			
+			IP.setOnKeyPressed(new EventHandler<KeyEvent>() {
+			    @Override
+			    public void handle(KeyEvent ke) {
+			        if (ke.getCode().equals(KeyCode.ENTER)) {
+			        	Stage window=(Stage)enter.getScene().getWindow();
+						window.setTitle("Welcome to the Rock Paper Scissors Game!");
+						window.setScene(startWelcomePage);
+			        }
+			    }
+			});
+
 			enter.setOnAction(e->{
 				if(IP.getText().length()!=0){
 					client.setHost(IP.getText());
@@ -236,7 +248,6 @@ public class TestClientFx extends Application
     		alert.setContentText("Do you want to exit?");
     		Optional<ButtonType> result = alert.showAndWait();
     		if(result.get() == ButtonType.OK) {
-    			if(client != null)
     			client.stop();
     			Platform.exit();
     		}
