@@ -436,11 +436,15 @@ public class Client
 	{
 		try
 		{
-			this.socket.close();
-			objectListener.interrupt();
+			if(this.socket != null)
+				this.socket.close();
+			if(this.objectListener != null)
+				objectListener.interrupt();
+			if(this.countDownThread != null)
+				countDownThread.interrupt();
 		} catch (IOException e)
 		{
-			display("[Warning]-IO");
+			display("[Warning]-Disconnection");
 			e.printStackTrace();
 		}
 		display("The client stoped");
