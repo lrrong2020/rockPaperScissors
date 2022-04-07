@@ -35,7 +35,6 @@ public class Client
 	private boolean hasStopped = false;
 
 	public Semaphore initSemaphore = new Semaphore(1); //can be invoked outside to make sure initialization is done before the client is used
-	public Semaphore s=new Semaphore(1);
 	private Thread objectListener = null;//class-level thread to continuously listen to the server
 	private Thread countDownThread = null;//handle the count down timer
 	
@@ -124,6 +123,98 @@ public class Client
 		return this.hasStarted;
 	}
 
+	
+	public void hostInitialize() throws ClassNotFoundException, NullPointerException, IOException, InterruptedException
+	{
+		new ConsoleServer();
+		
+		initSemaphore.acquire();//acquire semaphore
+
+		//handle object read from the server
+		//initialize IOStreams
+		this.initializeConnection();
+
+		//start a new thread to continuously listen to the server
+
+		//need to be closed after client terminated
+		objectListener = new Thread() {
+			public void run() 
+			{
+				Object objFromServer = null;
+				while(true)
+				{
+					try 
+					{
+						//read object from the server through ObjectInputStream
+						objFromServer = fromServer.readObject();
+
+						if(objFromServer instanceof InitBean)
+						{
+							InitBean receivedIBean = (InitBean)objFromServer;//cast to subclass
+
+							//display initial information
+							display("Status: " + receivedIBean.getClass());
+							display("Your UUID: " + receivedIBean.getUUID().toString());
+							display("You are" + (receivedIBean.getIsHost()?" the ":" not the ") + "host.");
+
+							//set UUID and isHost to the Player instance
+							player.setUUID(receivedIBean.getUUID());
+							player.setIsHost(receivedIBean.getIsHost());
+
+							setIsHost(receivedIBean.getIsHost());
+							initSemaphore.release();//release semaphore
+						}
+						else if(objFromServer instanceof ExitBean) //server inform that the client should exit
+						{	
+							if(objFromServer instanceof ExceptionExitBean) 
+							{
+								((ExitBean) objFromServer).getException().printStackTrace();
+								display("Exception Occurs");
+							}
+							else 
+							{
+								//other exit beans send by the server
+								//may be end bean to determine the results
+							}
+							display("Exit");
+							objectListener.interrupt();//terminates the listener
+						}
+						else 
+						{
+							//gameOn objects
+							display("Successfully get an object!");
+							handleGameOnObject(objFromServer);
+						}
+					}
+					catch(ClassNotFoundException e) 
+					{
+						display("[Error]-ClassNotFound Please restart.");
+						e.printStackTrace();
+					}
+					catch (NullPointerException e) 
+					{
+						e.printStackTrace();
+						display("[Error]-Null Please restart.");
+						display(e.toString());
+						return;
+					}
+					catch (IOException e) 
+					{
+						display("[Warning]-IO Disconnect");
+						return;
+					} catch (InterruptedException e)
+					{
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+		};
+
+		objectListener.start();
+	}
+
+	
 	//initialize the client
 	public void initialize() throws ClassNotFoundException, NullPointerException, IOException, InterruptedException
 	{
@@ -272,9 +363,7 @@ public class Client
 				display("Received Bean is instanceof StartBean");
 				
 				this.setHasStarted(true);
-				s.release();
 				startGame(((StartBean) receivedBean).getMode());
-				System.out.println("Client release. The available is"+s.availablePermits());
 			}
 			else if (receivedBean instanceof ResultBean) 
 			{
@@ -364,6 +453,15 @@ public class Client
 		display("The game is on!"+"\nBO"+mode);
 		this.setRoundNoInt(Integer.valueOf(1));
 		//		this.sendDataBean(new StartBean(player));
+		
+		//get users some time
+		try
+		{
+			TimeUnit.SECONDS.sleep(3);
+		} catch (InterruptedException e)
+		{
+			e.printStackTrace();
+		}
 		startRound();
 	}
 
@@ -446,11 +544,15 @@ public class Client
 	{
 		try
 		{
-			this.socket.close();
-			objectListener.interrupt();
+			if(this.socket != null)
+				this.socket.close();
+			if(this.objectListener != null)
+				objectListener.interrupt();
+			if(this.countDownThread != null)
+				countDownThread.interrupt();
 		} catch (IOException e)
 		{
-			display("[Warning]-IO");
+			display("[Warning]-Disconnection");
 			e.printStackTrace();
 		}
 		display("The client stoped");

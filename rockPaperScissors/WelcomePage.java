@@ -50,12 +50,10 @@ public class WelcomePage {
 			window.setTitle("Game started");
 			try {
 				TestClientFx.client.hostStartGame(1);
-				System.out.println("Available is "+TestClientFx.client.s.availablePermits());
 			} catch (InterruptedException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-			
 			window.setScene(duringGame);
 			
 		});
@@ -64,7 +62,6 @@ public class WelcomePage {
 			window.setTitle("Game started");
 			try {
 				TestClientFx.client.hostStartGame(3);
-				System.out.println("Available is "+TestClientFx.client.s.availablePermits());
 			} catch (InterruptedException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -77,7 +74,6 @@ public class WelcomePage {
 			window.setTitle("Game started");
 			try {
 				TestClientFx.client.hostStartGame(5);
-				System.out.println("Available is "+TestClientFx.client.s.availablePermits());
 			} catch (InterruptedException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
