@@ -3,7 +3,9 @@ package rockPaperScissors.rockPaperScissors;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Optional;
+import java.util.concurrent.Semaphore;
 
+import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
@@ -18,8 +20,6 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
@@ -32,12 +32,16 @@ public class TestClientFx extends Application
 {
 	// Text area to display contents
 	private static TextArea ta = new TextArea();
-	private static Client client = null;
+	
+	public static Client client = null;
+	public static boolean hasStarted = false;
+	public static boolean hasStopped = false;
+	
 	//private Scene findIPPage;
 	private Scene welcomePage;
 	private static ArrayList<EventHandler<MouseEvent>>listeners=new ArrayList<>();
 	public TestClientFx() {
-		TestClientFx.client=new Client();
+		
 		
 	}
 
@@ -69,25 +73,17 @@ public class TestClientFx extends Application
 			WelcomePage start=new WelcomePage();
 			Scene startWelcomePage=new Scene(start.getWelcomePage(),600,400);
 			startWelcomePage.getStylesheets().add(getClass().getResource("PagesSettings.css").toExternalForm());
-			IP.setOnKeyPressed(new EventHandler<KeyEvent>() {
-			    @Override
-			    public void handle(KeyEvent ke) {
-			        if (ke.getCode().equals(KeyCode.ENTER)) {
-			        	Stage window=(Stage)enter.getScene().getWindow();
-						window.setTitle("Welcome to the Rock Paper Scissors Game!");
-						window.setScene(startWelcomePage);
-			        }
-			    }
-			});
-
+			
 			enter.setOnAction(e->{
-				if(IP.getText().length()!=0){
-					client.setHost(IP.getText());
+					System.out.println(IP.getText().toString().trim());
+					String ipAddr=IP.textProperty().get().trim();
+					TestClientFx.client=new Client(ipAddr);
 					appendTextArea("Client generated");
 					try 
 					{
 						client.initialize();
 						appendTextArea("Client initialized");
+						
 
 					}
 					catch(IOException ioe) 
@@ -105,24 +101,63 @@ public class TestClientFx extends Application
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
-				}
 				
+				try {
+					client.initSemaphore.acquire();
+					
+				} catch (InterruptedException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+
+				Stage window;
 				if(client.getIsHost()) {
-					Stage window=(Stage)enter.getScene().getWindow();
+					window=(Stage)enter.getScene().getWindow();
 					window.setTitle("Welcome to the Rock Paper Scissors Game!");
 					window.setScene(startWelcomePage);
-				}
-				else {
-					DuringTheGame during=new DuringTheGame();
-					Scene duringGame=new Scene(during.CreateGamePage(),600,400);
-					duringGame.getStylesheets().add(getClass().getResource("GamePageSettings.css").toExternalForm());
-					Stage window=(Stage)enter.getScene().getWindow();
-					window.setTitle("Game started");
 					}
-				
-				
-				
-			});
+				else {
+
+					WaitingPage waiting=new WaitingPage();
+					Scene waitingRes=new Scene(waiting.CreateWaitingPage(),600,400);
+					waitingRes.getStylesheets().add(getClass().getResource("PagesSettings.css").toExternalForm());
+					window=(Stage)enter.getScene().getWindow();
+					window.setScene(waitingRes);
+					window.setTitle("Game will be started in several seconds");
+					
+					
+
+//					try
+//					{
+//						client.s.acquire();
+//					} catch (InterruptedException e2)
+//					{
+//						// TODO Auto-generated catch block
+//						e2.printStackTrace();
+//					}
+					
+//					boolean b = false;
+//					try {
+//						System.out.println("TestClientFx acquiring ...");
+//						client.s.acquire();
+//						b=client.getHasStarted();
+
+						
+//					} catch (InterruptedException e1) {
+//						// TODO Auto-generated catch block
+//						e1.printStackTrace();
+//					}
+//					if(!hasStarted) {
+						AnimationTimer am = new StartGameChecker(window);
+						am.start();
+//						client.s.release();
+						
+//						System.out.println("TestClientFx released. The available is"+client.s.availablePermits());
+//						}
+
+					}	
+				client.initSemaphore.release();
+	});
 		
 		
 			
@@ -161,6 +196,12 @@ public class TestClientFx extends Application
 		System.out.println("\n" + string);//debug
 	}
 
+	public static void log(String string) 
+	{
+		System.out.println(string);
+	}
+	
+	
 	//get JavaFX Group
 
 
@@ -235,9 +276,9 @@ public class TestClientFx extends Application
 	public void start(Stage stage) throws Exception
 	{	
 		stage.setTitle("Welcome to the Rock Paper Scissors Game!");
-		client.initSemaphore.acquire();
+		
     	CreateWelcomePage();
-    	client.initSemaphore.release();
+    	
     	stage.setScene(welcomePage);
     	Platform.setImplicitExit(false);
     	stage.setOnCloseRequest(event ->{
@@ -248,6 +289,7 @@ public class TestClientFx extends Application
     		alert.setContentText("Do you want to exit?");
     		Optional<ButtonType> result = alert.showAndWait();
     		if(result.get() == ButtonType.OK) {
+    			if(client != null)
     			client.stop();
     			Platform.exit();
     		}
@@ -260,4 +302,69 @@ public class TestClientFx extends Application
 	{
 		launch(args);
 	}
+	
+	
+	private class StartGameChecker extends AnimationTimer 
+	{
+		Stage window;
+
+		public StartGameChecker(Stage window)
+		{
+			this.window = window;
+		}
+
+		@Override
+		public void handle(long arg0)
+		{
+			if(!hasStarted) 
+			{
+				checkStartGame();
+			}
+			else 
+			{
+				System.out.println("The situation is "+client.getHasStarted());
+				DuringTheGame during=new DuringTheGame();
+				Scene duringGame=new Scene(during.CreateGamePage(),600,400);
+				duringGame.getStylesheets().add(getClass().getResource("GamePageSettings.css").toExternalForm());
+				window.setScene(duringGame);
+				window.setTitle("Game started");
+				stop();
+			}
+		}
+	}
+	
+	private class StartEndChecker extends AnimationTimer 
+	{
+		/*Stage window;
+		public StartEndChecker(Stage window)
+		{
+			this.window = window;
+		}
+			*/
+		@Override
+		public void handle(long arg0)
+		{
+			if(!hasStarted) 
+			{
+				checkEndGame();
+			}
+			else 
+			{
+				//set scene here
+				stop();
+			}
+		}
+	}
+	
+	
+	public static void checkStartGame() 
+	{
+		hasStarted=client.getHasStarted();
+	}
+	
+	public static void checkEndGame() 
+	{
+		hasStopped = client.getHasStopped();
+	}
+	
 }

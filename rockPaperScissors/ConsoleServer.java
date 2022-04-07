@@ -25,6 +25,8 @@ public class ConsoleServer
 	private Thread socketThread = null;
 
 	public static Semaphore semaphore = new Semaphore(1);
+	
+	private static HandleTheSocket socketHandler = HandleTheSocket.getInstance();
 
 	//constructor	
 	public ConsoleServer()
@@ -32,7 +34,6 @@ public class ConsoleServer
 		super();
 		log("Initializing server");
 
-		HandleTheSocket socketHandler = HandleTheSocket.getInstance();
 		socketThread = new Thread(socketHandler);
 		socketThread.start();
 		log("Server initialized");
@@ -65,6 +66,8 @@ public class ConsoleServer
 		{
 			return HandleTheSocket.socketHandler;
 		}
+		
+		
 
 		@Override
 		public void run()
@@ -124,6 +127,7 @@ public class ConsoleServer
 	{
 		log("Starting game for all clients");
 		Room room = new Room(ConsoleServer.ONLINE_USER_MAP, ConsoleServer.CLIENT_HANDLER_LIST);
+		room.setRoomNoInt(ROOM_LIST.size());
 		ConsoleServer.ROOM_LIST.add(room);
 
 		for(HandleAClient h : CLIENT_HANDLER_LIST) 
@@ -176,7 +180,15 @@ public class ConsoleServer
 
 	public static void clientExit(UUID uuid)
 	{
+//		ROOM_LIST.remove(getClientHandler(CLIENT_HANDLER_LIST, ONLINE_USER_MAP.get(uuid)).getRoomNo());
 		getClientHandler(CLIENT_HANDLER_LIST, ONLINE_USER_MAP.get(uuid)).stop();
+		for (HandleAClient clientHandler : CLIENT_HANDLER_LIST) 
+		{
+			if(clientHandler.getUUID().equals(uuid)) 
+			{
+				CLIENT_HANDLER_LIST.remove(CLIENT_HANDLER_LIST.indexOf(clientHandler));
+			}
+		}
 		ONLINE_USER_MAP.remove(uuid);
 	}
 
@@ -185,7 +197,7 @@ public class ConsoleServer
 		//send end bean
 	}
 
-	public static void printAllUsers() 
+	public static void checkAllUsers() 
 	{
 		ConsoleServer.log("All users:");
 		for (Entry<UUID, Socket> entry : ConsoleServer.ONLINE_USER_MAP.entrySet()) 
@@ -194,6 +206,7 @@ public class ConsoleServer
 		}
 		if(ConsoleServer.ONLINE_USER_MAP.entrySet().size() == 0) {
 			ConsoleServer.log("No User");
+			
 		}
 	}
 	

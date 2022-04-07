@@ -8,6 +8,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import rockPaperScissors.rockPaperScissors.DataBeans.StartBean;
 
 public class WelcomePage {
 	private Pane root; 
@@ -50,18 +51,37 @@ public class WelcomePage {
 			
 			Stage window=(Stage)bt1.getScene().getWindow();
 			window.setTitle("Game started");
-			//during.CreateGamePage().getChildrenUnmodifiable()
+			try {
+				TestClientFx.client.hostStartGame(1);
+			} catch (InterruptedException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			window.setScene(duringGame);
 			
 		});
 		bt2.setOnAction(e->{
 			Stage window=(Stage)bt2.getScene().getWindow();
 			window.setTitle("Game started");
+			try {
+				TestClientFx.client.hostStartGame(3);
+			} catch (InterruptedException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			
 			window.setScene(duringGame);
 		});
 		bt3.setOnAction(e->{
 			Stage window=(Stage)bt3.getScene().getWindow();
 			window.setTitle("Game started");
+			try {
+				TestClientFx.client.hostStartGame(5);
+			} catch (InterruptedException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			
 			window.setScene(duringGame);
 		});
 		return root;

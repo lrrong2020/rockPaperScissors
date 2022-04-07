@@ -1,5 +1,6 @@
 package rockPaperScissors.rockPaperScissors.DataBeans;
 
+import javafx.scene.image.Image;
 import rockPaperScissors.rockPaperScissors.Choice;
 
 public class ResultBean extends DataBean
@@ -46,4 +47,5 @@ public class ResultBean extends DataBean
 	{
 		return roundNoInt;
 	}
+	
 }
