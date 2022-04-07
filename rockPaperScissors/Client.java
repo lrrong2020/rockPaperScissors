@@ -35,7 +35,6 @@ public class Client
 	private boolean hasStopped = false;
 
 	public Semaphore initSemaphore = new Semaphore(1); //can be invoked outside to make sure initialization is done before the client is used
-	public Semaphore s=new Semaphore(1);
 	private Thread objectListener = null;//class-level thread to continuously listen to the server
 	private Thread countDownThread = null;//handle the count down timer
 	
@@ -364,9 +363,7 @@ public class Client
 				display("Received Bean is instanceof StartBean");
 				
 				this.setHasStarted(true);
-				s.release();
 				startGame(((StartBean) receivedBean).getMode());
-				System.out.println("Client release. The available is"+s.availablePermits());
 			}
 			else if (receivedBean instanceof ResultBean) 
 			{
