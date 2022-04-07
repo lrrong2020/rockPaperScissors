@@ -8,7 +8,7 @@ import java.util.concurrent.TimeUnit;
 import rockPaperScissors.rockPaperScissors.DataBeans.*;
 
 //logical client
-public class Client
+public class Client 
 {
 	//socket parameters to build connection
 	private String host = "localhost";//may use IPv4 address

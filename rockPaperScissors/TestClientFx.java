@@ -111,6 +111,15 @@ public class TestClientFx extends Application
 					window=(Stage)enter.getScene().getWindow();
 					window.setTitle("Welcome to the Rock Paper Scissors Game!");
 					window.setScene(startWelcomePage);
+					System.out.println("Acquiring lock at hostStartGame");
+					try
+					{
+						client.s.acquire();
+					} catch (InterruptedException e2)
+					{
+						// TODO Auto-generated catch block
+						e2.printStackTrace();
+					}
 				}
 				else {
 
@@ -122,17 +131,11 @@ public class TestClientFx extends Application
 					window.setTitle("Game will be started in several seconds");
 					
 					System.out.println("Acquiring lock at hostStartGame");
-					try
-					{
-						client.s.acquire();
-					} catch (InterruptedException e2)
-					{
-						// TODO Auto-generated catch block
-						e2.printStackTrace();
-					}
+					
 					
 					boolean b = false;
 					try {
+						System.out.print("The avalilabe is"+client.s.availablePermits());
 						System.out.println("TestClientFx acquiring ...");
 						client.s.acquire();
 						b=client.getHasStarted();
