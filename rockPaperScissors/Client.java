@@ -27,6 +27,7 @@ public class Client
 	private boolean isHost = false;//the same as player.getIsHost()
 	private boolean canChoose = false;
 
+	private boolean hasStarted=false;
 	//	private Thread countDownThread;
 
 	//boolean indicate states
@@ -34,7 +35,7 @@ public class Client
 	private boolean hasStopped = false;
 
 	public Semaphore initSemaphore = new Semaphore(1); //can be invoked outside to make sure initialization is done before the client is used
-
+	public Semaphore s=new Semaphore(1);
 	private Thread objectListener = null;//class-level thread to continuously listen to the server
 	private Thread countDownThread = null;//handle the count down timer
 	
@@ -115,6 +116,13 @@ public class Client
 	{
 		return hasStopped;
 	}
+	
+	public void setHasStarted(boolean hasStarted) {
+		this.hasStarted = hasStarted;
+	}
+	public boolean getHasStarted() {
+		return this.hasStarted;
+	}
 
 	//initialize the client
 	public void initialize() throws ClassNotFoundException, NullPointerException, IOException, InterruptedException
@@ -193,6 +201,10 @@ public class Client
 					{
 						display("[Warning]-IO Disconnect");
 						return;
+					} catch (InterruptedException e)
+					{
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
 				}
 			}
@@ -241,7 +253,7 @@ public class Client
 	}
 
 	//handle received data bean
-	private void handleGameOnObject(Object objFromServer) throws IOException, ClassNotFoundException, NullPointerException
+	private void handleGameOnObject(Object objFromServer) throws IOException, ClassNotFoundException, NullPointerException, InterruptedException
 	{
 		if(objFromServer == null) 
 		{
@@ -256,8 +268,13 @@ public class Client
 
 			{
 				//when the game starts
+
 				display("Received Bean is instanceof StartBean");
+				
+				this.setHasStarted(true);
+				s.release();
 				startGame(((StartBean) receivedBean).getMode());
+				System.out.println("Client release. The available is"+s.availablePermits());
 			}
 			else if (receivedBean instanceof ResultBean) 
 			{
@@ -332,11 +349,13 @@ public class Client
 	}
 
 	//the host click on start game button
-	public void hostStartGame(int mode) 
+	public void hostStartGame(int mode) throws InterruptedException 
 	{
 		display("Host starting game" + "\nBO"+mode);
+
 		sendDataBean(new StartBean(mode));
 	}
+	
 
 	//send the player instance to the server indicates that the game starts
 	private void startGame(int mode) 
