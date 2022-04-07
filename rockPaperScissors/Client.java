@@ -5,6 +5,7 @@ import java.net.*;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
+import javafx.stage.Stage;
 import rockPaperScissors.rockPaperScissors.DataBeans.*;
 
 //logical client
@@ -317,7 +318,6 @@ public class Client
 					display("Game over.");
 					this.stop();
 					this.setHasStopped(true);
-					
 					//cut off connection to the server
 					//display End page
 					//restart button? initialize again?

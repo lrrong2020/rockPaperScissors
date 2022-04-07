@@ -40,6 +40,9 @@ public class WelcomePage {
 		bt3.layoutXProperty().bind(bt1.layoutXProperty());
 		root.getChildren().addAll(label1,icon1,bt1,bt2,bt3);
 		
+		GameOverPage over = new GameOverPage();
+		Scene overGame = new Scene(over.CreateOverPage(), 600, 400);
+		overGame.getStylesheets().add(getClass().getResource("GamePageSettings.css").toExternalForm());
 		DuringTheGame during=new DuringTheGame();
 		Scene duringGame=new Scene(during.CreateGamePage(),600,400);
 		duringGame.getStylesheets().add(getClass().getResource("GamePageSettings.css").toExternalForm());

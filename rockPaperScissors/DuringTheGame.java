@@ -48,7 +48,6 @@ public class DuringTheGame{
 		scissors1.addEventHandler(MouseEvent.MOUSE_CLICKED, TestClientFx.getEvent().get(2));
 		root.getChildren().addAll(rock1,paper1,scissors1);
 		
-		
 		return root;
 		
 	}

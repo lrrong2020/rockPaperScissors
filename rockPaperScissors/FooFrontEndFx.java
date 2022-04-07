@@ -1,11 +1,15 @@
 package rockPaperScissors.rockPaperScissors;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
@@ -43,6 +47,8 @@ public class FooFrontEndFx extends Application
 			appendTextArea("Invalid Data from server!");
 		}
 	}	
+	
+
 
 	//similar syntax for rewriting append method of jTextArea of java.swing
 	//use it the same way as System.out.println(String string) !
@@ -182,6 +188,19 @@ public class FooFrontEndFx extends Application
 	@Override
 	public void start(Stage stage) throws Exception
 	{
+		Platform.setImplicitExit(false);
+		stage.setOnCloseRequest(event ->{
+			event.consume();
+			Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+			alert.setTitle("Exit");
+			alert.setHeaderText(null);
+			alert.setContentText("Do you want to exit?");
+			Optional<ButtonType> r = alert.showAndWait();
+			if(r.get() == ButtonType.OK) {
+				Platform.exit();
+			}
+		});
+		
 		appendTextArea("\nDisplaying Client");
 		showScene(stage);
 	}
