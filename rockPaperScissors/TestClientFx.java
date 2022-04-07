@@ -32,8 +32,10 @@ public class TestClientFx extends Application
 {
 	// Text area to display contents
 	private static TextArea ta = new TextArea();
+	
 	public static Client client = null;
 	public static boolean hasStarted = false;
+	public static boolean hasStopped = false;
 	
 	//private Scene findIPPage;
 	private Scene welcomePage;
@@ -325,13 +327,41 @@ public class TestClientFx extends Application
 				stop();
 			}
 		}
-
-		
 	}
+	
+	private class StartEndChecker extends AnimationTimer 
+	{
+		Stage window;
+
+		public StartEndChecker(Stage window)
+		{
+			this.window = window;
+		}
+
+		@Override
+		public void handle(long arg0)
+		{
+			if(!hasStarted) 
+			{
+				checkEndGame();
+			}
+			else 
+			{
+				//set scene here
+				stop();
+			}
+		}
+	}
+	
 	
 	public static void checkStartGame() 
 	{
 		hasStarted=client.getHasStarted();
+	}
+	
+	public static void checkEndGame() 
+	{
+		hasStopped = client.getHasStopped();
 	}
 	
 }
