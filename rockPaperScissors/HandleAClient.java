@@ -271,7 +271,18 @@ class HandleAClient implements Runnable
 				ConsoleServer.log("============\n============\n");
 				ConsoleServer.log("Client UUID:" + this.getUUID() + " quit\n============\n============");
 
-				ConsoleServer.clientExit(this.uuid);
+				try
+				{
+					ConsoleServer.log("acquiring");
+					ConsoleServer.exitSemaphore.acquire();
+					ConsoleServer.clientExit(this.uuid);
+					ConsoleServer.exitSemaphore.release();
+					ConsoleServer.log("releasing");
+				} catch (InterruptedException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 
 				ConsoleServer.checkAllUsers();
 

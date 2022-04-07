@@ -18,6 +18,8 @@ public class ConsoleServer
 
 	//class-level client lists to synchronize and store data
 	public static final List<HandleAClient> CLIENT_HANDLER_LIST = new ArrayList<HandleAClient>();//list of 
+	public static final List<HandleAClient> CLIENT_HANDLER_LIST_RM = new ArrayList<HandleAClient>();
+	
 	public static final List<Room> ROOM_LIST = new ArrayList<Room>();
 
 	protected static int roundNo = 1;
@@ -27,6 +29,8 @@ public class ConsoleServer
 	public static Semaphore semaphore = new Semaphore(1);
 	
 	private static HandleTheSocket socketHandler = HandleTheSocket.getInstance();
+	
+	public static Semaphore exitSemaphore = new Semaphore(1);
 
 	//constructor	
 	public ConsoleServer()
@@ -106,8 +110,6 @@ public class ConsoleServer
 					{
 						return;
 					}
-
-					
 				} 
 				catch (IOException e) 
 				{
@@ -181,15 +183,35 @@ public class ConsoleServer
 	public static void clientExit(UUID uuid)
 	{
 //		ROOM_LIST.remove(getClientHandler(CLIENT_HANDLER_LIST, ONLINE_USER_MAP.get(uuid)).getRoomNo());
-		getClientHandler(CLIENT_HANDLER_LIST, ONLINE_USER_MAP.get(uuid)).stop();
+//		getClientHandler(CLIENT_HANDLER_LIST, ONLINE_USER_MAP.get(uuid)).stop();
 		for (HandleAClient clientHandler : CLIENT_HANDLER_LIST) 
 		{
 			if(clientHandler.getUUID().equals(uuid)) 
 			{
-				CLIENT_HANDLER_LIST.remove(CLIENT_HANDLER_LIST.indexOf(clientHandler));
+//				CLIENT_HANDLER_LIST.remove(CLIENT_HANDLER_LIST.indexOf(clientHandler));
+				removeAHandler(clientHandler);
 			}
 		}
 		ONLINE_USER_MAP.remove(uuid);
+		checkAllUsers();
+	}
+	
+	public static void removeAHandler(HandleAClient h) 
+	{
+		for (HandleAClient clientHandler : CLIENT_HANDLER_LIST) 
+		{
+			for (HandleAClient cd : CLIENT_HANDLER_LIST_RM) 
+			{
+				if( clientHandler.getUUID().equals(cd.getUUID())) 
+				{
+					return;
+				}
+				else 
+				{
+					CLIENT_HANDLER_LIST.remove(CLIENT_HANDLER_LIST.indexOf(clientHandler));
+				}
+			}
+		}
 	}
 
 	public static void endGame() 
@@ -206,7 +228,6 @@ public class ConsoleServer
 		}
 		if(ConsoleServer.ONLINE_USER_MAP.entrySet().size() == 0) {
 			ConsoleServer.log("No User");
-			
 		}
 	}
 	
