@@ -26,7 +26,7 @@ public class FooFrontEndFx extends Application
 		appendTextArea("Client generated");
 		try 
 		{
-			client.initialize();
+			client.hostInitialize();
 			
 			appendTextArea("Client initialized");
 		}

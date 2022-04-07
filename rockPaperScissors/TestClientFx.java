@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Optional;
 import java.util.concurrent.Semaphore;
 
+import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
@@ -32,6 +33,7 @@ public class TestClientFx extends Application
 	// Text area to display contents
 	private static TextArea ta = new TextArea();
 	public static Client client = null;
+	public static boolean hasStarted = false;
 	
 	//private Scene findIPPage;
 	private Scene welcomePage;
@@ -122,40 +124,34 @@ public class TestClientFx extends Application
 					window.setTitle("Game will be started in several seconds");
 					
 					System.out.println("Acquiring lock at hostStartGame");
-					try
-					{
-						client.s.acquire();
-					} catch (InterruptedException e2)
-					{
-						// TODO Auto-generated catch block
-						e2.printStackTrace();
-					}
+//					try
+//					{
+//						client.s.acquire();
+//					} catch (InterruptedException e2)
+//					{
+//						// TODO Auto-generated catch block
+//						e2.printStackTrace();
+//					}
 					
-					boolean b = false;
-					try {
-						System.out.println("TestClientFx acquiring ...");
-						client.s.acquire();
-						b=client.getHasStarted();
+//					boolean b = false;
+//					try {
+//						System.out.println("TestClientFx acquiring ...");
+//						client.s.acquire();
+//						b=client.getHasStarted();
 						
-					} catch (InterruptedException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-					if(b) {
-						DuringTheGame during=new DuringTheGame();
-						Scene duringGame=new Scene(during.CreateGamePage(),600,400);
-						duringGame.getStylesheets().add(getClass().getResource("GamePageSettings.css").toExternalForm());
-						window.setScene(duringGame);
-						window.setTitle("Game started");
-						client.s.release();
-						System.out.println("TestClientFx released. The available is"+client.s.availablePermits());
-						}
+//					} catch (InterruptedException e1) {
+//						// TODO Auto-generated catch block
+//						e1.printStackTrace();
+//					}
+//					if(!hasStarted) {
+						AnimationTimer am = new StartGameChecker(window);
+						am.start();
+//						client.s.release();
+//						System.out.println("TestClientFx released. The available is"+client.s.availablePermits());
+//						}
 
-					}
-				
+					}	
 				client.initSemaphore.release();
-				
-				
 	});
 		
 		
@@ -301,4 +297,41 @@ public class TestClientFx extends Application
 	{
 		launch(args);
 	}
+	
+	
+	private class StartGameChecker extends AnimationTimer 
+	{
+		Stage window;
+
+		public StartGameChecker(Stage window)
+		{
+			this.window = window;
+		}
+
+		@Override
+		public void handle(long arg0)
+		{
+			if(!hasStarted) 
+			{
+				checkStartGame();
+			}
+			else 
+			{
+				DuringTheGame during=new DuringTheGame();
+				Scene duringGame=new Scene(during.CreateGamePage(),600,400);
+				duringGame.getStylesheets().add(getClass().getResource("GamePageSettings.css").toExternalForm());
+				window.setScene(duringGame);
+				window.setTitle("Game started");
+				stop();
+			}
+		}
+
+		
+	}
+	
+	public static void checkStartGame() 
+	{
+		hasStarted=client.getHasStarted();
+	}
+	
 }
