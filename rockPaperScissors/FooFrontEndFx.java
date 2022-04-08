@@ -47,6 +47,8 @@ public class FooFrontEndFx extends Application
 			appendTextArea("Invalid Data from server!");
 		}
 	}	
+	
+
 
 	//similar syntax for rewriting append method of jTextArea of java.swing
 	//use it the same way as System.out.println(String string) !
@@ -100,7 +102,12 @@ public class FooFrontEndFx extends Application
 			@Override 
 			public void handle (MouseEvent e)
 			{	
-				client.hostStartGame(5);
+				try {
+					client.hostStartGame(5);
+				} catch (InterruptedException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			}
 		};
 		start.addEventHandler(MouseEvent.MOUSE_CLICKED, startListener);
@@ -186,6 +193,19 @@ public class FooFrontEndFx extends Application
 	@Override
 	public void start(Stage stage) throws Exception
 	{
+		Platform.setImplicitExit(false);
+		stage.setOnCloseRequest(event ->{
+			event.consume();
+			Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+			alert.setTitle("Exit");
+			alert.setHeaderText(null);
+			alert.setContentText("Do you want to exit?");
+			Optional<ButtonType> r = alert.showAndWait();
+			if(r.get() == ButtonType.OK) {
+				Platform.exit();
+			}
+		});
+		
 		appendTextArea("\nDisplaying Client");
 		stage.setOnCloseRequest(event ->{
     		event.consume();

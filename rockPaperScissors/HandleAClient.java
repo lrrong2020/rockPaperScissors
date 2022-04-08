@@ -25,6 +25,7 @@ class HandleAClient implements Runnable
 	Semaphore initializationSemaphore = new Semaphore(1);
 	private static Semaphore resultSemaphore = new Semaphore(1);
 
+	private boolean sendStartBeanOrNot=false;
 	//construct a thread
 	public HandleAClient(Socket socket) 
 	{

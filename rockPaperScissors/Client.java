@@ -5,10 +5,11 @@ import java.net.*;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
+import javafx.stage.Stage;
 import rockPaperScissors.rockPaperScissors.DataBeans.*;
 
 //logical client
-public class Client
+public class Client 
 {
 	//socket parameters to build connection
 	private String host = "localhost";//may use IPv4 address
@@ -28,6 +29,7 @@ public class Client
 	private boolean canStart = false;
 	private boolean canChoose = false;
 
+	private boolean hasStarted=false;
 	//	private Thread countDownThread;
 
 	//boolean indicate states
@@ -36,7 +38,6 @@ public class Client
 	private boolean hasExceptionallyStopped = false;
 
 	public Semaphore initSemaphore = new Semaphore(1); //can be invoked outside to make sure initialization is done before the client is used
-
 	private Thread objectListener = null;//class-level thread to continuously listen to the server
 	private Thread countDownThread = null;//handle the count down timer
 
@@ -117,6 +118,14 @@ public class Client
 	{
 		return hasStopped;
 	}
+	
+	public void setHasStarted(boolean hasStarted) {
+		this.hasStarted = hasStarted;
+	}
+	public boolean getHasStarted() {
+		return this.hasStarted;
+	}
+
 
 	public boolean isHasExceptionallyStopped()
 	{
@@ -137,6 +146,7 @@ public class Client
 	{
 		this.canStart = canStart;
 	}
+
 
 	//initialize the client
 	public void initialize() throws ClassNotFoundException, NullPointerException, IOException, InterruptedException
@@ -225,6 +235,10 @@ public class Client
 					{
 						display("[Warning]-IO Disconnect");
 						return;
+					} catch (InterruptedException e)
+					{
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
 				}
 			}
@@ -273,7 +287,7 @@ public class Client
 	}
 
 	//handle received data bean
-	private void handleGameOnObject(Object objFromServer) throws IOException, ClassNotFoundException, NullPointerException
+	private void handleGameOnObject(Object objFromServer) throws IOException, ClassNotFoundException, NullPointerException, InterruptedException
 	{
 		if(objFromServer == null) 
 		{
@@ -288,7 +302,10 @@ public class Client
 
 			{
 				//when the game starts
+
 				display("Received Bean is instanceof StartBean");
+				
+				this.setHasStarted(true);
 				startGame(((StartBean) receivedBean).getMode());
 			}
 			else if (receivedBean instanceof ResultBean) 
@@ -364,8 +381,9 @@ public class Client
 	}
 
 	//the host click on start game button
-	public void hostStartGame(int mode) 
+	public void hostStartGame(int mode) throws InterruptedException 
 	{
+
 		if(isCanStart() && getIsHost()) 
 		{
 			setCanStart(false);
@@ -377,7 +395,9 @@ public class Client
 			display("2 people to start");
 			return;
 		}
+
 	}
+	
 
 	//send the player instance to the server indicates that the game starts
 	private void startGame(int mode) 
