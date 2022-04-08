@@ -97,11 +97,10 @@ public class ConsoleServer
 
 						// Start a new thread for each client
 						clientThread = new Thread(task);
-						clientThread.start();
+
 						
 //						CLIENT_HANDLER_LIST.add(task);//add
 						CLIENT_HANDLER_MAP.put(task.getUUID(), task);
-
 
 
 						//2 players have registered
@@ -111,8 +110,17 @@ public class ConsoleServer
 							log("\nHandleAClient: 2 users have registered\n");
 							
 							//can start game
-
+							Room room = new Room(ConsoleServer.ONLINE_USER_MAP, ConsoleServer.CLIENT_HANDLER_MAP);
+							room.setRoomNoInt(ROOM_LIST.size());
+							ConsoleServer.ROOM_LIST.add(room);	
+							for (Entry<UUID, HandleAClient> entry : room.getClientHandlers().entrySet()) 
+							{
+								ConsoleServer.ONLINE_USER_MAP.remove(entry.getKey());
+							}
+							
+							room.getHostHandler().sendPreparedBean();
 						}
+						clientThread.start();
 					}
 					else 
 					{
@@ -133,14 +141,13 @@ public class ConsoleServer
 	//end of inner class	
 
 	//class level start game
-	public static void startGame(int m) throws IOException 
+	public static void startGame(int m, Room room) throws IOException 
 	{
 		log("Starting game for all clients");
-		Room room = new Room(ConsoleServer.ONLINE_USER_MAP, ConsoleServer.CLIENT_HANDLER_MAP);
-		room.setRoomNoInt(ROOM_LIST.size());
-		ConsoleServer.ROOM_LIST.add(room);
 		
+
 		room.startGame(m);
+
 
 	}
 

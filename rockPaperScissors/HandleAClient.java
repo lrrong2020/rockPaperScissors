@@ -20,6 +20,7 @@ class HandleAClient implements Runnable
 
 	private UUID uuid = null;//uniquely identify the users
 	private int roomNo;
+	private boolean isHost = false;
 
 	//construct a thread
 	public HandleAClient(Socket socket) 
@@ -68,17 +69,32 @@ class HandleAClient implements Runnable
 		return roomNo;
 	}
 
+	public boolean isHost()
+	{
+		return isHost;
+	}
+
+	public void setHost(boolean isHost)
+	{
+		this.isHost = isHost;
+	}
+
 	public void setRoomNo(int roomNo)
 	{
 		this.roomNo = roomNo;
 	}
 
 	//send initial data to the client
-	public void sendInitBean() throws IOException 
-	{
-		DataBean idb = new InitBean(this.getUUID(),
-				ConsoleServer.ONLINE_USER_MAP.size() == 1 ? true:false);//indicates that if the user is the host (first registered user)
-
+	public void sendInitBean() throws IOException, InterruptedException 
+	{	
+		Room room = ConsoleServer.getRoom(getRoomNo());
+		room.hostSemaphore.acquire();
+		boolean isHost = room.getClientHandlers().size() == 1 ? true:false;
+		room.hostSemaphore.release();
+		
+		this.setHost(isHost);
+		DataBean idb = new InitBean(this.getUUID(), isHost);//indicates that if the user is the host (first registered user)
+		
 		//send the initial DataBean to the client
 		this.outputToClient.writeObject(idb);
 		this.outputToClient.flush();		
@@ -94,6 +110,15 @@ class HandleAClient implements Runnable
 		this.outputToClient.flush();		
 	}
 
+	public void sendPreparedBean() throws IOException
+	{
+		DataBean idb = new PreparedBean(getRoomNo());
+		
+		//send the start DataBean to the client
+		this.outputToClient.writeObject(idb);
+		this.outputToClient.flush();
+	}
+	
 	public void sendResultBean(Choice c1, Choice c2) throws IOException 
 	{
 		ConsoleServer.log("Sending result Bean");
@@ -141,7 +166,7 @@ class HandleAClient implements Runnable
 			//send StartBean to all users indicates that the game is on
 //			this.outputToClient.writeObject(new StartBean());//incomplete constructor
 			ConsoleServer.log("Starting game (HandleAClient)");
-			ConsoleServer.startGame(receivedSBean.getMode());
+			ConsoleServer.startGame(receivedSBean.getMode(), ConsoleServer.getRoom(getRoomNo()));
 		}
 
 
@@ -253,7 +278,7 @@ class HandleAClient implements Runnable
 		try {
 			initializeIOStreams();
 			sendInitBean();
-		} catch (IOException e) {
+		} catch (IOException | InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

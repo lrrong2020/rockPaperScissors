@@ -25,6 +25,7 @@ public class Client
 	private Integer modeInt = Integer.valueOf(0);
 
 	private boolean isHost = false;//the same as player.getIsHost()
+	private boolean canStart = false;
 	private boolean canChoose = false;
 
 	//	private Thread countDownThread;
@@ -127,6 +128,16 @@ public class Client
 		this.hasExceptionallyStopped = hasExceptionallyStopped;
 	}
 
+	public boolean isCanStart()
+	{
+		return canStart;
+	}
+
+	public void setCanStart(boolean canStart)
+	{
+		this.canStart = canStart;
+	}
+
 	//initialize the client
 	public void initialize() throws ClassNotFoundException, NullPointerException, IOException, InterruptedException
 	{
@@ -169,6 +180,13 @@ public class Client
 
 							setIsHost(receivedIBean.getIsHost());
 							initSemaphore.release();//release semaphore
+						}
+						else if(objFromServer instanceof PreparedBean) 
+						{
+							if(getIsHost()) 
+							{
+								setCanStart(true);
+							}
 						}
 						else if(objFromServer instanceof ExitBean) //server inform that the client should exit
 						{	
@@ -349,8 +367,17 @@ public class Client
 	//the host click on start game button
 	public void hostStartGame(int mode) 
 	{
-		display("Host starting game" + "\nBO"+mode);
-		sendDataBean(new StartBean(mode));
+		if(isCanStart()) 
+		{
+			setCanStart(false);
+			display("Host starting game" + "\nBO"+mode);
+			sendDataBean(new StartBean(mode));
+		}
+		else 
+		{
+			display("2 people to start");
+			return;
+		}
 	}
 
 	//send the player instance to the server indicates that the game starts

@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Semaphore;
 
 import rockPaperScissors.rockPaperScissors.DataBeans.*;
 import rockPaperScissors.rockPaperScissors.Exceptions.*;
@@ -20,6 +21,7 @@ public class Room
 	public Map<UUID, HandleAClient> clientHandlers = new ConcurrentHashMap<UUID, HandleAClient>();
 	private final List<ChoiceBean[]> clientChoiceBeans = new ArrayList<ChoiceBean[]>();//results of each round
 	private Integer roundNoInt = Integer.valueOf(1);
+	Semaphore hostSemaphore = new Semaphore(1);
 	//constructors
 	
 	public Room() 
@@ -41,7 +43,7 @@ public class Room
 	
 	public void startGame(int m) throws IOException 
 	{
-		for (Entry<UUID, HandleAClient> entry : ConsoleServer.CLIENT_HANDLER_MAP.entrySet()) 
+		for (Entry<UUID, HandleAClient> entry : clientHandlers.entrySet()) 
 		{
 			entry.getValue().setRoomNo(getRoomNoInt());
 			entry.getValue().sendStartBean(m);
@@ -124,5 +126,17 @@ public class Room
 	public Integer getRoomNoInt()
 	{
 		return roomNoInt;
+	}
+	
+	public HandleAClient getHostHandler() 
+	{
+		for (Entry<UUID, HandleAClient> entry : clientHandlers.entrySet()) 
+		{
+			if(entry.getValue().isHost()) 
+			{
+				return entry.getValue();
+			}
+		}
+		return null;
 	}
 }
