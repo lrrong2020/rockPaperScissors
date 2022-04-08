@@ -161,7 +161,7 @@ public class ConsoleServer
 							}
 
 							room.checkAllUsers();
-							
+							room.getHostHandler().sendPreparedBean();
 						}
 						else 
 						{

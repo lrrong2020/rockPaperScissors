@@ -117,10 +117,6 @@ class HandleAClient implements Runnable
 			e.printStackTrace();
 		}
 		this.setHasStarted(true);
-		if(isHost()) 
-		{
-			sendPreparedBean();
-		}
 	}
 
 	public void sendStartBean(int m) throws IOException 

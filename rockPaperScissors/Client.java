@@ -183,10 +183,9 @@ public class Client
 						}
 						else if(objFromServer instanceof PreparedBean) 
 						{
-							if(getIsHost()) 
-							{
+
 								setCanStart(true);
-							}
+
 						}
 						else if(objFromServer instanceof ExitBean) //server inform that the client should exit
 						{	
