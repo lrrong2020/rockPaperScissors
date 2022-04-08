@@ -48,7 +48,7 @@ class HandleAClient implements Runnable
 				+ "IP Address is " + inetAddress.getHostAddress() + "\n");
 
 		//display all UUIDs of users who has registered in the user map
-		ConsoleServer.checkAllUsers();
+//		ConsoleServer.checkAllUsers();
 	}
 
 	//setter and getters
@@ -300,18 +300,18 @@ class HandleAClient implements Runnable
 
 				try
 				{
-					ConsoleServer.log("acquiring");
+//					ConsoleServer.log("acquiring");
 					ConsoleServer.exitSemaphore.acquire();
-					ConsoleServer.clientExit(this.uuid);
+					ConsoleServer.clientExit(getRoomNo() ,this.uuid);
 					ConsoleServer.exitSemaphore.release();
-					ConsoleServer.log("releasing");
+//					ConsoleServer.log("releasing");
 				} catch (InterruptedException e)
 				{
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 
-				ConsoleServer.checkAllUsers();
+//				ConsoleServer.checkAllUsers();
 
 				//send ExceptionExitBean to clients
 				this.stop();

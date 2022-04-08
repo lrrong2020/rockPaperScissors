@@ -143,4 +143,16 @@ public class Room
 		}
 		return null;
 	}
+	
+	public void checkAllUsers() 
+	{
+		ConsoleServer.log("All users of Room [" + getRoomNoInt() + "]");
+		for (Entry<UUID, Socket> entry : users.entrySet()) 
+		{
+			ConsoleServer.log( "<"+entry.getKey() + ">");//display UUIDs
+		}
+		if(users.entrySet().size() == 0) {
+			ConsoleServer.log("No User");
+		}
+	}
 }
