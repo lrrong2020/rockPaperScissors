@@ -322,15 +322,17 @@ public class TestClientFx extends Application
 			}
 			else 
 			{
-				System.out.println("The situation is "+client.getHasStarted());
-				DuringTheGame during=new DuringTheGame();
-				Scene duringGame=new Scene(during.CreateGamePage(),600,400);
-				duringGame.getStylesheets().add(getClass().getResource("GamePageSettings.css").toExternalForm());
-				window.setScene(duringGame);
-				window.setTitle("Game started");
+				setDuringGameScene(window);
 				stop();
 			}
 		}
+	}
+	private void setDuringGameScene(Stage window) {
+		DuringTheGame during=new DuringTheGame();
+		Scene duringGame=new Scene(during.CreateGamePage(),600,400);
+		duringGame.getStylesheets().add(getClass().getResource("GamePageSettings.css").toExternalForm());
+		window.setScene(duringGame);
+		window.setTitle("Game started");
 	}
 	
 	private class StartEndChecker extends AnimationTimer 
