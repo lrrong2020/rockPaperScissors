@@ -112,6 +112,8 @@ public class ConsoleServer
 						if(ConsoleServer.CLIENT_HANDLER_MAP.size() == 1) 
 						{
 							Room room = new Room(ConsoleServer.ONLINE_USER_MAP, ConsoleServer.CLIENT_HANDLER_MAP);
+							
+							
 							room.setRoomNoInt(ROOM_LIST.size());
 							log("Setting roomNo ... " + ROOM_LIST.size());
 							ConsoleServer.ROOM_LIST.add(room);	
@@ -130,7 +132,7 @@ public class ConsoleServer
 							
 							for (Entry<UUID, HandleAClient> entry : room.getClientHandlers().entrySet()) 
 							{
-								ConsoleServer.ONLINE_USER_MAP.remove(entry.getKey());
+								ConsoleServer.CLIENT_HANDLER_MAP.remove(entry.getKey());
 							}
 							
 							room.checkAllUsers();
