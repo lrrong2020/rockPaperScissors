@@ -18,12 +18,12 @@ public class ConsoleServer
 
 
 	//class-level client lists to synchronize and store data
-//	public static final List<HandleAClient> CLIENT_HANDLER_LIST = new ArrayList<HandleAClient>();//list of 
-	
+	//	public static final List<HandleAClient> CLIENT_HANDLER_LIST = new ArrayList<HandleAClient>();//list of 
+
 	public static final Map<UUID, HandleAClient> CLIENT_HANDLER_MAP = new ConcurrentHashMap<UUID, HandleAClient>();
-	
+
 	public static final List<HandleAClient> CLIENT_HANDLER_LIST_RM = new ArrayList<HandleAClient>();
-	
+
 	public static final List<Room> ROOM_LIST = new ArrayList<Room>();
 
 	protected static int roundNo = 1;
@@ -31,11 +31,11 @@ public class ConsoleServer
 	private Thread socketThread = null;
 
 	public static Semaphore startAfterInitializeSemaphore = new Semaphore(1);
-	
+
 	private static HandleTheSocket socketHandler = HandleTheSocket.getInstance();
-	
+
 	public static Semaphore exitSemaphore = new Semaphore(1);
-	
+
 
 
 	//constructor	
@@ -48,7 +48,7 @@ public class ConsoleServer
 		socketThread.start();
 		log("Server initialized");
 	}
-	
+
 	//Inner Class
 	//handle ServerSocket singleton
 	static class HandleTheSocket implements Runnable
@@ -77,8 +77,8 @@ public class ConsoleServer
 		{
 			return HandleTheSocket.socketHandler;
 		}
-		
-		
+
+
 
 		@Override
 		public void run()
@@ -102,7 +102,7 @@ public class ConsoleServer
 						// Start a new thread for each client
 						clientThread = new Thread(task);
 
-						
+
 						//if it's a new client (i.e. has never registered or put in the user map)
 						UUID rdUUID = UUID.randomUUID();//generate a random UUID for each client
 						task.setUUID(rdUUID);
@@ -110,27 +110,29 @@ public class ConsoleServer
 
 						//registration
 
-//						CLIENT_HANDLER_LIST.add(task);//add
+						//						CLIENT_HANDLER_LIST.add(task);//add
 						CLIENT_HANDLER_MAP.put(task.getUUID(), task);
-						
-						
+
+
 						//semaphore.acquire
 						userMapSemaphore.acquire();
 						if(ConsoleServer.CLIENT_HANDLER_MAP.size() == 1) 
 						{
-							
+
 							Map<UUID, HandleAClient> clientHandlers = new ConcurrentHashMap<UUID, HandleAClient>();
-							
+
 
 							clientHandlers.putAll(CLIENT_HANDLER_MAP);
 							Room room = new Room(clientHandlers);
 							
-							
+
 							room.setRoomNoInt(ROOM_LIST.size());
 							task.setRoomNo(ROOM_LIST.size());
 							log("Setting roomNo ... " + ROOM_LIST.size());
 							ConsoleServer.ROOM_LIST.add(room);
 							room.checkAllUsers();
+							
+
 						}
 
 						//2 players have registered
@@ -139,25 +141,25 @@ public class ConsoleServer
 							Map<UUID, HandleAClient> clientHandlers = new ConcurrentHashMap<UUID, HandleAClient>();
 
 							clientHandlers.putAll(CLIENT_HANDLER_MAP);
-							
-							
+
+
 							//send startBean to all clients
 							log("\nHandleAClient: 2 users have registered\n");
-							
+
 							//can start game
 							log("ROOM_LIST.size()" + ROOM_LIST.size());
 							Room room = ConsoleServer.getRoom(ROOM_LIST.size() - 1);
-							
+
 							room.setClientHandlers(clientHandlers);
+							task.setRoomNo(room.getRoomNoInt());
 
 
-							
 							for (Entry<UUID, HandleAClient> entry : ConsoleServer.CLIENT_HANDLER_MAP.entrySet()) 
 							{
 								log("Clearing " + entry.getKey().toString() + "in user map");
 								ConsoleServer.CLIENT_HANDLER_MAP.remove(entry.getKey());
 							}
-							
+
 							room.checkAllUsers();
 							
 						}
@@ -167,7 +169,7 @@ public class ConsoleServer
 							log("[Error] - MAP size bigger than 2");
 						}
 						userMapSemaphore.release();
-						
+
 						clientThread.start();
 
 					}
@@ -193,7 +195,7 @@ public class ConsoleServer
 	public static void startGame(int m, Room room) throws IOException 
 	{
 		log("Starting game for all clients");
-		
+
 
 		room.startGame(m);
 
@@ -211,18 +213,18 @@ public class ConsoleServer
 		}
 	}
 
-//	public static HandleAClient getClientHandler(List<HandleAClient> clientHandlers, Socket socket) 
-//	{
-//		for (HandleAClient clientHandler: ConsoleServer.CLIENT_HANDLER_LIST) 
-//		{
-//			if(clientHandler.getSocket().equals(socket))
-//			{
-//				return clientHandler;
-//			}
-//		}
-//		return null;
-//	}
-	
+	//	public static HandleAClient getClientHandler(List<HandleAClient> clientHandlers, Socket socket) 
+	//	{
+	//		for (HandleAClient clientHandler: ConsoleServer.CLIENT_HANDLER_LIST) 
+	//		{
+	//			if(clientHandler.getSocket().equals(socket))
+	//			{
+	//				return clientHandler;
+	//			}
+	//		}
+	//		return null;
+	//	}
+
 	public static Room getRoom(Integer roomNoInt) 
 	{
 		for (Room room: ConsoleServer.ROOM_LIST) 
@@ -238,37 +240,37 @@ public class ConsoleServer
 
 	public static void clientExit(int roomNo, UUID uuid)
 	{
-//		ROOM_LIST.remove(getClientHandler(CLIENT_HANDLER_LIST, ONLINE_USER_MAP.get(uuid)).getRoomNo());
-//		getClientHandler(CLIENT_HANDLER_LIST, ONLINE_USER_MAP.get(uuid)).stop();
+		//		ROOM_LIST.remove(getClientHandler(CLIENT_HANDLER_LIST, ONLINE_USER_MAP.get(uuid)).getRoomNo());
+		//		getClientHandler(CLIENT_HANDLER_LIST, ONLINE_USER_MAP.get(uuid)).stop();
 
 		Room room = getRoom(roomNo);
 		//check if game is on and send ExitBean
-		
+
 		log("Removing: " + uuid.toString());
 		CLIENT_HANDLER_MAP.remove(uuid);
 
 		room.checkAllUsers();
-		
-		
+
+
 	}
-	
-//	public static void removeAHandler(HandleAClient h) 
-//	{
-//		for (HandleAClient clientHandler : CLIENT_HANDLER_LIST) 
-//		{
-//			for (HandleAClient cd : CLIENT_HANDLER_LIST_RM) 
-//			{
-//				if( clientHandler.getUUID().equals(cd.getUUID())) 
-//				{
-//					return;
-//				}
-//				else 
-//				{
-//					CLIENT_HANDLER_LIST.remove(CLIENT_HANDLER_LIST.indexOf(clientHandler));
-//				}
-//			}
-//		}
-//	}
+
+	//	public static void removeAHandler(HandleAClient h) 
+	//	{
+	//		for (HandleAClient clientHandler : CLIENT_HANDLER_LIST) 
+	//		{
+	//			for (HandleAClient cd : CLIENT_HANDLER_LIST_RM) 
+	//			{
+	//				if( clientHandler.getUUID().equals(cd.getUUID())) 
+	//				{
+	//					return;
+	//				}
+	//				else 
+	//				{
+	//					CLIENT_HANDLER_LIST.remove(CLIENT_HANDLER_LIST.indexOf(clientHandler));
+	//				}
+	//			}
+	//		}
+	//	}
 
 	public static void endGame() 
 	{
@@ -276,7 +278,7 @@ public class ConsoleServer
 	}
 
 
-	
+
 	public static void log(String string) 
 	{
 		System.out.println(string);

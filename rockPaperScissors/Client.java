@@ -39,9 +39,9 @@ public class Client
 
 	private Thread objectListener = null;//class-level thread to continuously listen to the server
 	private Thread countDownThread = null;//handle the count down timer
-	
+
 	public ResultDisplayBean rdp = new ResultDisplayBean();
-	
+
 
 	//constructors
 	public Client()
@@ -308,32 +308,32 @@ public class Client
 				{
 				case 0:
 					display("You Lose");
-					
+
 					break;
 				case 1:
 					display("Tie");
-					
+
 					break;
 				case 2:
 					display("You Win!");
-					
+
 					break;
 				}
 				display("==========");
 
 
-				
+
 				rdp.appendResult(resultBean.getYourChoice(), resultBean.getOpponentChoice(), winOrLose);
-				
-				
-				
-				
+
+
+
+
 				//during the game
 
 				if(resultBean.getRoundNoInt().compareTo(modeInt) < 0) 
 				{
 					//control the choice
-					
+
 					//get users some time
 					try
 					{
@@ -342,7 +342,7 @@ public class Client
 					{
 						e.printStackTrace();
 					}
-					
+
 					startRound();
 				}
 				else 
@@ -350,7 +350,7 @@ public class Client
 					display("Game over.");
 					this.stop();
 					this.setHasStopped(true);
-					
+
 					//cut off connection to the server
 					//display End page
 					//restart button? initialize again?
@@ -387,7 +387,7 @@ public class Client
 		display("The game is on!"+"\nBO"+mode);
 		this.setRoundNoInt(Integer.valueOf(1));
 		//		this.sendDataBean(new StartBean(player));
-		
+
 		//get users some time
 		try
 		{
@@ -441,7 +441,7 @@ public class Client
 						e.printStackTrace();
 					}
 				}
-				
+
 				setCanChoose(false);
 				return;
 			}
@@ -458,7 +458,7 @@ public class Client
 			this.countDownThread.interrupt();
 			this.setCanChoose(false);
 			ChoiceBean choiceBean = new ChoiceBean(choiceName, player, this.getRoundNoInt());
-//			display("Your choice:" + choiceBean.getChoice().getChoiseName());
+			//			display("Your choice:" + choiceBean.getChoice().getChoiseName());
 			this.sendDataBean(choiceBean);
 		}
 		else 
@@ -480,33 +480,33 @@ public class Client
 	//terminate the client
 	public void stop() 
 	{
-//		try
-//		{
-//			if(this.socket != null)
-//				this.socket.close();
-			if(this.objectListener != null) 
-			{
-				if(objectListener.isAlive())
-					objectListener.interrupt();
-				else
-					objectListener = null;
-			}
-				
-			
-			if(this.countDownThread != null) 
-			{
-				if(countDownThread.isAlive())
-					countDownThread.interrupt();
-				else
-					countDownThread = null;
-			}
-			
-			this.setHasExceptionallyStopped(true);
-//		} catch (IOException e)
-//		{
-//			display("[Warning]-Disconnection");
-//			e.printStackTrace();
-//		}
+		//		try
+		//		{
+		//			if(this.socket != null)
+		//				this.socket.close();
+		if(this.objectListener != null) 
+		{
+			if(objectListener.isAlive())
+				objectListener.interrupt();
+			else
+				objectListener = null;
+		}
+
+
+		if(this.countDownThread != null) 
+		{
+			if(countDownThread.isAlive())
+				countDownThread.interrupt();
+			else
+				countDownThread = null;
+		}
+
+		this.setHasExceptionallyStopped(true);
+		//		} catch (IOException e)
+		//		{
+		//			display("[Warning]-Disconnection");
+		//			e.printStackTrace();
+		//		}
 		display("The client stoped");
 	}
 }

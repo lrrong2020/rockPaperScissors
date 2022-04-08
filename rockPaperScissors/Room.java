@@ -22,29 +22,29 @@ public class Room
 	private Integer roundNoInt = Integer.valueOf(1);
 	Semaphore hostSemaphore = new Semaphore(1);
 	//constructors
-	
+
 	public Room() 
 	{
 		super();
 	}
-	
+
 	public Room(Map<UUID, HandleAClient> clientHandlers) 
 	{ 
 
 		this.setClientHandlers(clientHandlers);
-		
+
 		for (Entry<UUID, HandleAClient> entry : clientHandlers.entrySet()) 
 		{
 			entry.getValue().setRoomNo(getRoomNoInt());
 		}
 	}
-	
+
 	//setters and getters
 	public List<ChoiceBean[]> getClientChoiceBeans()
 	{
 		return clientChoiceBeans;
 	}
-	
+
 	public void startGame(int m) throws IOException 
 	{
 		for (Entry<UUID, HandleAClient> entry : clientHandlers.entrySet()) 
@@ -52,7 +52,7 @@ public class Room
 			entry.getValue().sendStartBean(m);
 		}
 	}
-	
+
 	public void sendResults(int rNoI0) throws ClassNotFoundException, IOException, ChoiceMoreThanOnceException 
 	{
 		ChoiceBean[] choiceBeanArr = this.clientChoiceBeans.get(rNoI0);//0
@@ -66,24 +66,24 @@ public class Room
 		}
 
 
-//		HandleAClient player0Handler = getClientHandler(clientHandlers, player0Socket);
+		//		HandleAClient player0Handler = getClientHandler(clientHandlers, player0Socket);
 		HandleAClient player0Handler = clientHandlers.get(player0ChoiceBean.getPlayer().getUUID());
 		HandleAClient player1Handler = clientHandlers.get(player1ChoiceBean.getPlayer().getUUID());
 
 		//find the HandleAClient instance that matches
 
 		//need to control access
-//		if(player0Socket.equals(getClientHandlers().get(0).getSocket())) 
-//		{
-//			player0Handler = getClientHandlers().get(0);
-//			player1Handler = getClientHandlers().get(1);//get another
-//		}
-//		else if(player0Socket.equals(getClientHandlers().get(1).getSocket())) 
-//		{
-//			player0Handler = getClientHandlers().get(1);
-//			player1Handler = getClientHandlers().get(0);//get another
-//		}
-//		else throw new ClassNotFoundException("Socket not found");
+		//		if(player0Socket.equals(getClientHandlers().get(0).getSocket())) 
+		//		{
+		//			player0Handler = getClientHandlers().get(0);
+		//			player1Handler = getClientHandlers().get(1);//get another
+		//		}
+		//		else if(player0Socket.equals(getClientHandlers().get(1).getSocket())) 
+		//		{
+		//			player0Handler = getClientHandlers().get(1);
+		//			player1Handler = getClientHandlers().get(0);//get another
+		//		}
+		//		else throw new ClassNotFoundException("Socket not found");
 
 
 		System.out.print(player0ChoiceBean.getChoice().toString());
@@ -96,17 +96,17 @@ public class Room
 	}
 
 
-	
+
 	public void setClientHandlers(Map<UUID, HandleAClient> clientHandlers) 
 	{
 		this.clientHandlers = clientHandlers;
 	}
-	
+
 	public Map<UUID, HandleAClient> getClientHandlers()
 	{
 		return this.clientHandlers;
 	}
-	
+
 	public void setRoundNoInt(Integer roundNoInt)
 	{
 		this.roundNoInt = roundNoInt;
@@ -123,7 +123,7 @@ public class Room
 	{
 		return roomNoInt;
 	}
-	
+
 	public HandleAClient getHostHandler() 
 	{
 		for (Entry<UUID, HandleAClient> entry : clientHandlers.entrySet()) 
@@ -136,7 +136,7 @@ public class Room
 		ConsoleServer.log("returning null in getHostHandler()");
 		return null;
 	}
-	
+
 	public void checkAllUsers() 
 	{
 		ConsoleServer.log("=========All users of Room [" + getRoomNoInt() + "]=========");
