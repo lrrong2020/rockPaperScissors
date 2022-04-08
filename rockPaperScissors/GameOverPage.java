@@ -43,7 +43,7 @@ public class GameOverPage {
 		vbox.setSpacing(20);
 		vbox.setAlignment(Pos.CENTER);
 		
-		Label score = new Label(youWinInt + "-" + opponentWinInt); //total score
+		Label score = new Label(youWinInt + "-" + opponentWinInt); //Total Score
 		score.setFont(Font.font("Amble CN", FontWeight.BOLD, 24));
 		vbox.getChildren().add(score);
 

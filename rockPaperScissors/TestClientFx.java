@@ -328,8 +328,6 @@ public class TestClientFx extends Application
 				duringGame.getStylesheets().add(getClass().getResource("GamePageSettings.css").toExternalForm());
 				window.setScene(duringGame);
 				window.setTitle("Game started");
-				AnimationTimer amend = new StartEndChecker(window);
-				amend.start();
 				stop();
 			}
 		}
