@@ -202,16 +202,6 @@ public class ConsoleServer
 
 	}
 
-	//exception occurs  
-	public static void sendExceptionExitBean() throws IOException
-	{
-		log("Inconsistency exit");
-
-		for (Entry<UUID, HandleAClient> entry : ConsoleServer.CLIENT_HANDLER_MAP.entrySet()) 
-		{
-			entry.getValue().sendExceptionExitBean(new DataInconsistentException("Inconsistent"));
-		}
-	}
 
 	//	public static HandleAClient getClientHandler(List<HandleAClient> clientHandlers, Socket socket) 
 	//	{
