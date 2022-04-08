@@ -12,12 +12,13 @@ import rockPaperScissors.rockPaperScissors.Exceptions.*;
 public class ConsoleServer
 {
 	protected static final int PORT = 8000;//for socket connection
+	private static final int MAX_USERS = 10;
 
 	//to store users and identify them with randomly generated universally unique identifier (UUID)
 	public static final Map<UUID, Socket> ONLINE_USER_MAP = new ConcurrentHashMap<UUID, Socket>();
 
 	//class-level client lists to synchronize and store data
-	public static final List<HandleAClient> CLIENT_HANDLER_LIST = new ArrayList<HandleAClient>();//list of 
+//	public static final List<HandleAClient> CLIENT_HANDLER_LIST = new ArrayList<HandleAClient>();//list of 
 	
 	public static final Map<UUID, HandleAClient> CLIENT_HANDLER_MAP = new ConcurrentHashMap<UUID, HandleAClient>();
 	
@@ -88,7 +89,7 @@ public class ConsoleServer
 				try 
 				{
 					log("Size: " +ConsoleServer.ONLINE_USER_MAP.size());
-					if(ConsoleServer.ONLINE_USER_MAP.size() < 2) 
+					if(ConsoleServer.ONLINE_USER_MAP.size() < MAX_USERS) 
 					{
 						socket = serverSocket.accept();
 						// Create a new thread for the connection
@@ -147,23 +148,24 @@ public class ConsoleServer
 	public static void sendExceptionExitBean() throws IOException
 	{
 		log("Inconsistency exit");
-		for(HandleAClient h : CLIENT_HANDLER_LIST) 
+
+		for (Entry<UUID, HandleAClient> entry : ConsoleServer.CLIENT_HANDLER_MAP.entrySet()) 
 		{
-			h.sendExceptionExitBean(new DataInconsistentException("Inconsistent"));
+			entry.getValue().sendExceptionExitBean(new DataInconsistentException("Inconsistent"));
 		}
 	}
 
-	public static HandleAClient getClientHandler(List<HandleAClient> clientHandlers, Socket socket) 
-	{
-		for (HandleAClient clientHandler: ConsoleServer.CLIENT_HANDLER_LIST) 
-		{
-			if(clientHandler.getSocket().equals(socket))
-			{
-				return clientHandler;
-			}
-		}
-		return null;
-	}
+//	public static HandleAClient getClientHandler(List<HandleAClient> clientHandlers, Socket socket) 
+//	{
+//		for (HandleAClient clientHandler: ConsoleServer.CLIENT_HANDLER_LIST) 
+//		{
+//			if(clientHandler.getSocket().equals(socket))
+//			{
+//				return clientHandler;
+//			}
+//		}
+//		return null;
+//	}
 	
 	public static Room getRoom(Integer roomNoInt) 
 	{
@@ -181,35 +183,29 @@ public class ConsoleServer
 	{
 //		ROOM_LIST.remove(getClientHandler(CLIENT_HANDLER_LIST, ONLINE_USER_MAP.get(uuid)).getRoomNo());
 //		getClientHandler(CLIENT_HANDLER_LIST, ONLINE_USER_MAP.get(uuid)).stop();
-		for (HandleAClient clientHandler : CLIENT_HANDLER_LIST) 
-		{
-			if(clientHandler.getUUID().equals(uuid)) 
-			{
-				CLIENT_HANDLER_LIST_RM.add(clientHandler);
-				removeAHandler(clientHandler);
-			}
-		}
+		CLIENT_HANDLER_MAP.remove(uuid);
+
 		ONLINE_USER_MAP.remove(uuid);
 		checkAllUsers();
 	}
 	
-	public static void removeAHandler(HandleAClient h) 
-	{
-		for (HandleAClient clientHandler : CLIENT_HANDLER_LIST) 
-		{
-			for (HandleAClient cd : CLIENT_HANDLER_LIST_RM) 
-			{
-				if( clientHandler.getUUID().equals(cd.getUUID())) 
-				{
-					return;
-				}
-				else 
-				{
-					CLIENT_HANDLER_LIST.remove(CLIENT_HANDLER_LIST.indexOf(clientHandler));
-				}
-			}
-		}
-	}
+//	public static void removeAHandler(HandleAClient h) 
+//	{
+//		for (HandleAClient clientHandler : CLIENT_HANDLER_LIST) 
+//		{
+//			for (HandleAClient cd : CLIENT_HANDLER_LIST_RM) 
+//			{
+//				if( clientHandler.getUUID().equals(cd.getUUID())) 
+//				{
+//					return;
+//				}
+//				else 
+//				{
+//					CLIENT_HANDLER_LIST.remove(CLIENT_HANDLER_LIST.indexOf(clientHandler));
+//				}
+//			}
+//		}
+//	}
 
 	public static void endGame() 
 	{
