@@ -32,6 +32,7 @@ public class Client
 	//boolean indicate states
 	private boolean hasInitialized = false;//determine whether the client has initialized or not
 	private boolean hasStopped = false;
+	private boolean hasExceptionallyStopped = false;
 
 	public Semaphore initSemaphore = new Semaphore(1); //can be invoked outside to make sure initialization is done before the client is used
 
@@ -116,6 +117,16 @@ public class Client
 		return hasStopped;
 	}
 
+	public boolean isHasExceptionallyStopped()
+	{
+		return hasExceptionallyStopped;
+	}
+
+	public void setHasExceptionallyStopped(boolean hasExceptionallyStopped)
+	{
+		this.hasExceptionallyStopped = hasExceptionallyStopped;
+	}
+
 	//initialize the client
 	public void initialize() throws ClassNotFoundException, NullPointerException, IOException, InterruptedException
 	{
@@ -134,6 +145,10 @@ public class Client
 				Object objFromServer = null;
 				while(true)
 				{
+					if(hasExceptionallyStopped) 
+					{
+						return;
+					}
 					try 
 					{
 						//read object from the server through ObjectInputStream
@@ -372,6 +387,10 @@ public class Client
 				setCanChoose(true);
 				for(int j = seconds;j > 0;j--) 
 				{
+					if(hasExceptionallyStopped) 
+					{
+						return;
+					}
 					//	display count down i s
 					display(j+"");
 					try 
@@ -434,19 +453,33 @@ public class Client
 	//terminate the client
 	public void stop() 
 	{
-		try
-		{
-			if(this.socket != null)
-				this.socket.close();
-			if(this.objectListener != null)
-				objectListener.interrupt();
-			if(this.countDownThread != null)
-				countDownThread.interrupt();
-		} catch (IOException e)
-		{
-			display("[Warning]-Disconnection");
-			e.printStackTrace();
-		}
+//		try
+//		{
+//			if(this.socket != null)
+//				this.socket.close();
+			if(this.objectListener != null) 
+			{
+				if(objectListener.isAlive())
+					objectListener.interrupt();
+				else
+					objectListener = null;
+			}
+				
+			
+			if(this.countDownThread != null) 
+			{
+				if(countDownThread.isAlive())
+					countDownThread.interrupt();
+				else
+					countDownThread = null;
+			}
+			
+			this.setHasExceptionallyStopped(true);
+//		} catch (IOException e)
+//		{
+//			display("[Warning]-Disconnection");
+//			e.printStackTrace();
+//		}
 		display("The client stoped");
 	}
 }

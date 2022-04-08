@@ -18,6 +18,9 @@ public class ConsoleServer
 
 	//class-level client lists to synchronize and store data
 	public static final List<HandleAClient> CLIENT_HANDLER_LIST = new ArrayList<HandleAClient>();//list of 
+	
+	public static final Map<UUID, HandleAClient> CLIENT_HANDLER_MAP = new ConcurrentHashMap<UUID, HandleAClient>();
+	
 	public static final List<HandleAClient> CLIENT_HANDLER_LIST_RM = new ArrayList<HandleAClient>();
 	
 	public static final List<Room> ROOM_LIST = new ArrayList<Room>();
@@ -84,20 +87,24 @@ public class ConsoleServer
 				Thread clientThread = null;
 				try 
 				{
-					if(ConsoleServer.ONLINE_USER_MAP.size() <= 2) 
+					log("Size: " +ConsoleServer.ONLINE_USER_MAP.size());
+					if(ConsoleServer.ONLINE_USER_MAP.size() < 2) 
 					{
 						socket = serverSocket.accept();
 						// Create a new thread for the connection
 						HandleAClient task = new HandleAClient(socket);
 
-						CLIENT_HANDLER_LIST.add(task);//add
-
 						// Start a new thread for each client
 						clientThread = new Thread(task);
 						clientThread.start();
+						
+//						CLIENT_HANDLER_LIST.add(task);//add
+						CLIENT_HANDLER_MAP.put(task.getUUID(), task);
+
+
 
 						//2 players have registered
-						if(ConsoleServer.CLIENT_HANDLER_LIST.size() == 2) //check
+						if(ConsoleServer.CLIENT_HANDLER_MAP.size() == 2) //check
 						{
 							//send startBean to all clients
 							log("\nHandleAClient: 2 users have registered\n");
@@ -125,25 +132,15 @@ public class ConsoleServer
 	//end of inner class	
 
 	//class level start game
-	public static void startGame(int m) 
+	public static void startGame(int m) throws IOException 
 	{
 		log("Starting game for all clients");
-		Room room = new Room(ConsoleServer.ONLINE_USER_MAP, ConsoleServer.CLIENT_HANDLER_LIST);
+		Room room = new Room(ConsoleServer.ONLINE_USER_MAP, ConsoleServer.CLIENT_HANDLER_MAP);
 		room.setRoomNoInt(ROOM_LIST.size());
 		ConsoleServer.ROOM_LIST.add(room);
+		
+		room.startGame(m);
 
-		for(HandleAClient h : CLIENT_HANDLER_LIST) 
-		{
-			try 
-			{
-				h.setRoomNo(room.getRoomNoInt());
-				h.sendStartBean(m);
-			}
-			catch (IOException e) 
-			{
-				e.printStackTrace();
-			}
-		}
 	}
 
 	//exception occurs  
@@ -188,7 +185,7 @@ public class ConsoleServer
 		{
 			if(clientHandler.getUUID().equals(uuid)) 
 			{
-//				CLIENT_HANDLER_LIST.remove(CLIENT_HANDLER_LIST.indexOf(clientHandler));
+				CLIENT_HANDLER_LIST_RM.add(clientHandler);
 				removeAHandler(clientHandler);
 			}
 		}
