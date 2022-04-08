@@ -56,7 +56,7 @@ public class ConsoleServer
 		private volatile boolean exit;
 		ServerSocket serverSocket = null;
 		private static HandleTheSocket socketHandler = new HandleTheSocket();
-		private static Semaphore userMapSemaphore = new Semaphore(1);
+
 
 		private HandleTheSocket()
 		{			
@@ -89,13 +89,14 @@ public class ConsoleServer
 				// Listen for a new connection request
 				Socket socket;
 				Thread clientThread = null;
+				Semaphore userMapSemaphore = new Semaphore(1);
 				try 
 				{
 					log("Size: " +ConsoleServer.ONLINE_USER_MAP.size());
 					
 					if(ConsoleServer.ONLINE_USER_MAP.size() < MAX_USERS) 
 					{
-						startAfterInitializeSemaphore.acquire();
+
 						socket = serverSocket.accept();
 						// Create a new thread for the connection
 						HandleAClient task = new HandleAClient(socket);
@@ -119,13 +120,18 @@ public class ConsoleServer
 						if(ConsoleServer.CLIENT_HANDLER_MAP.size() == 1) 
 						{
 
+							Map<UUID, Socket> users = new ConcurrentHashMap<UUID, Socket>();
+							Map<UUID, HandleAClient> clientHandlers = new ConcurrentHashMap<UUID, HandleAClient>();
 							
-							Room room = new Room();
+							users.putAll(ONLINE_USER_MAP);
+							clientHandlers.putAll(CLIENT_HANDLER_MAP);
+							Room room = new Room(users, clientHandlers);
 							
 							
 							room.setRoomNoInt(ROOM_LIST.size());
 							log("Setting roomNo ... " + ROOM_LIST.size());
-							ConsoleServer.ROOM_LIST.add(room);	
+							ConsoleServer.ROOM_LIST.add(room);
+							room.checkAllUsers();
 						}
 
 						//2 players have registered
@@ -169,14 +175,9 @@ public class ConsoleServer
 							log("[Error] - MAP size bigger than 2");
 						}
 						userMapSemaphore.release();
-						startAfterInitializeSemaphore.release();
 						
-						
-						log(".start() acquiring semaphore");
-						startAfterInitializeSemaphore.acquire();
 						clientThread.start();
-						startAfterInitializeSemaphore.release();
-						log(".start() released semaphore");
+
 					}
 					else 
 					{
