@@ -26,6 +26,7 @@ public class Client
 	private Integer modeInt = Integer.valueOf(0);
 
 	private boolean isHost = false;//the same as player.getIsHost()
+	private boolean canStart = false;
 	private boolean canChoose = false;
 
 	private boolean hasStarted=false;
@@ -34,13 +35,14 @@ public class Client
 	//boolean indicate states
 	private boolean hasInitialized = false;//determine whether the client has initialized or not
 	private boolean hasStopped = false;
+	private boolean hasExceptionallyStopped = false;
 
 	public Semaphore initSemaphore = new Semaphore(1); //can be invoked outside to make sure initialization is done before the client is used
 	private Thread objectListener = null;//class-level thread to continuously listen to the server
 	private Thread countDownThread = null;//handle the count down timer
-	
+
 	public ResultDisplayBean rdp = new ResultDisplayBean();
-	
+
 
 	//constructors
 	public Client()
@@ -124,98 +126,28 @@ public class Client
 		return this.hasStarted;
 	}
 
-	
-	public void hostInitialize() throws ClassNotFoundException, NullPointerException, IOException, InterruptedException
+
+	public boolean isHasExceptionallyStopped()
 	{
-		new ConsoleServer();
-		
-		initSemaphore.acquire();//acquire semaphore
-
-		//handle object read from the server
-		//initialize IOStreams
-		this.initializeConnection();
-
-		//start a new thread to continuously listen to the server
-
-		//need to be closed after client terminated
-		objectListener = new Thread() {
-			public void run() 
-			{
-				Object objFromServer = null;
-				while(true)
-				{
-					try 
-					{
-						//read object from the server through ObjectInputStream
-						objFromServer = fromServer.readObject();
-
-						if(objFromServer instanceof InitBean)
-						{
-							InitBean receivedIBean = (InitBean)objFromServer;//cast to subclass
-
-							//display initial information
-							display("Status: " + receivedIBean.getClass());
-							display("Your UUID: " + receivedIBean.getUUID().toString());
-							display("You are" + (receivedIBean.getIsHost()?" the ":" not the ") + "host.");
-
-							//set UUID and isHost to the Player instance
-							player.setUUID(receivedIBean.getUUID());
-							player.setIsHost(receivedIBean.getIsHost());
-
-							setIsHost(receivedIBean.getIsHost());
-							initSemaphore.release();//release semaphore
-						}
-						else if(objFromServer instanceof ExitBean) //server inform that the client should exit
-						{	
-							if(objFromServer instanceof ExceptionExitBean) 
-							{
-								((ExitBean) objFromServer).getException().printStackTrace();
-								display("Exception Occurs");
-							}
-							else 
-							{
-								//other exit beans send by the server
-								//may be end bean to determine the results
-							}
-							display("Exit");
-							objectListener.interrupt();//terminates the listener
-						}
-						else 
-						{
-							//gameOn objects
-							display("Successfully get an object!");
-							handleGameOnObject(objFromServer);
-						}
-					}
-					catch(ClassNotFoundException e) 
-					{
-						display("[Error]-ClassNotFound Please restart.");
-						e.printStackTrace();
-					}
-					catch (NullPointerException e) 
-					{
-						e.printStackTrace();
-						display("[Error]-Null Please restart.");
-						display(e.toString());
-						return;
-					}
-					catch (IOException e) 
-					{
-						display("[Warning]-IO Disconnect");
-						return;
-					} catch (InterruptedException e)
-					{
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
-			}
-		};
-
-		objectListener.start();
+		return hasExceptionallyStopped;
 	}
 
-	
+	public void setHasExceptionallyStopped(boolean hasExceptionallyStopped)
+	{
+		this.hasExceptionallyStopped = hasExceptionallyStopped;
+	}
+
+	public boolean isCanStart()
+	{
+		return canStart;
+	}
+
+	public void setCanStart(boolean canStart)
+	{
+		this.canStart = canStart;
+	}
+
+
 	//initialize the client
 	public void initialize() throws ClassNotFoundException, NullPointerException, IOException, InterruptedException
 	{
@@ -234,6 +166,10 @@ public class Client
 				Object objFromServer = null;
 				while(true)
 				{
+					if(hasExceptionallyStopped) 
+					{
+						return;
+					}
 					try 
 					{
 						//read object from the server through ObjectInputStream
@@ -254,6 +190,13 @@ public class Client
 
 							setIsHost(receivedIBean.getIsHost());
 							initSemaphore.release();//release semaphore
+						}
+						else if(objFromServer instanceof PreparedBean) 
+						{
+							if(getIsHost()) 
+							{
+								setCanStart(true);
+							}
 						}
 						else if(objFromServer instanceof ExitBean) //server inform that the client should exit
 						{	
@@ -382,32 +325,32 @@ public class Client
 				{
 				case 0:
 					display("You Lose");
-					
+
 					break;
 				case 1:
 					display("Tie");
-					
+
 					break;
 				case 2:
 					display("You Win!");
-					
+
 					break;
 				}
 				display("==========");
 
 
-				
+
 				rdp.appendResult(resultBean.getYourChoice(), resultBean.getOpponentChoice(), winOrLose);
-				
-				
-				
-				
+
+
+
+
 				//during the game
 
 				if(resultBean.getRoundNoInt().compareTo(modeInt) < 0) 
 				{
 					//control the choice
-					
+
 					//get users some time
 					try
 					{
@@ -416,7 +359,7 @@ public class Client
 					{
 						e.printStackTrace();
 					}
-					
+
 					startRound();
 				}
 				else 
@@ -424,6 +367,7 @@ public class Client
 					display("Game over.");
 					this.stop();
 					this.setHasStopped(true);
+
 					//cut off connection to the server
 					//display End page
 					//restart button? initialize again?
@@ -440,9 +384,19 @@ public class Client
 	//the host click on start game button
 	public void hostStartGame(int mode) throws InterruptedException 
 	{
-		display("Host starting game" + "\nBO"+mode);
 
-		sendDataBean(new StartBean(mode));
+		if(isCanStart() && getIsHost()) 
+		{
+			setCanStart(false);
+			display("Host starting game" + "\nBO"+mode);
+			sendDataBean(new StartBean(mode));
+		}
+		else 
+		{
+			display("2 people to start");
+			return;
+		}
+
 	}
 	
 
@@ -453,7 +407,7 @@ public class Client
 		display("The game is on!"+"\nBO"+mode);
 		this.setRoundNoInt(Integer.valueOf(1));
 		//		this.sendDataBean(new StartBean(player));
-		
+
 		//get users some time
 		try
 		{
@@ -480,6 +434,10 @@ public class Client
 				setCanChoose(true);
 				for(int j = seconds;j > 0;j--) 
 				{
+					if(hasExceptionallyStopped) 
+					{
+						return;
+					}
 					//	display count down i s
 					display(j+"");
 					try 
@@ -503,7 +461,7 @@ public class Client
 						e.printStackTrace();
 					}
 				}
-				
+
 				setCanChoose(false);
 				return;
 			}
@@ -520,7 +478,7 @@ public class Client
 			this.countDownThread.interrupt();
 			this.setCanChoose(false);
 			ChoiceBean choiceBean = new ChoiceBean(choiceName, player, this.getRoundNoInt());
-//			display("Your choice:" + choiceBean.getChoice().getChoiseName());
+			//			display("Your choice:" + choiceBean.getChoice().getChoiseName());
 			this.sendDataBean(choiceBean);
 		}
 		else 
@@ -542,19 +500,33 @@ public class Client
 	//terminate the client
 	public void stop() 
 	{
-		try
+		//		try
+		//		{
+		//			if(this.socket != null)
+		//				this.socket.close();
+		if(this.objectListener != null) 
 		{
-			if(this.socket != null)
-				this.socket.close();
-			if(this.objectListener != null)
+			if(objectListener.isAlive())
 				objectListener.interrupt();
-			if(this.countDownThread != null)
-				countDownThread.interrupt();
-		} catch (IOException e)
-		{
-			display("[Warning]-Disconnection");
-			e.printStackTrace();
+			else
+				objectListener = null;
 		}
+
+
+		if(this.countDownThread != null) 
+		{
+			if(countDownThread.isAlive())
+				countDownThread.interrupt();
+			else
+				countDownThread = null;
+		}
+
+		this.setHasExceptionallyStopped(true);
+		//		} catch (IOException e)
+		//		{
+		//			display("[Warning]-Disconnection");
+		//			e.printStackTrace();
+		//		}
 		display("The client stoped");
 	}
 }

@@ -12,21 +12,31 @@ import rockPaperScissors.rockPaperScissors.Exceptions.*;
 public class ConsoleServer
 {
 	protected static final int PORT = 8000;//for socket connection
+	private static final int MAX_USERS = 10;
 
 	//to store users and identify them with randomly generated universally unique identifier (UUID)
-	public static final Map<UUID, Socket> ONLINE_USER_MAP = new ConcurrentHashMap<UUID, Socket>();
+
 
 	//class-level client lists to synchronize and store data
-	public static final List<HandleAClient> CLIENT_HANDLER_LIST = new ArrayList<HandleAClient>();//list of 
+	//	public static final List<HandleAClient> CLIENT_HANDLER_LIST = new ArrayList<HandleAClient>();//list of 
+
+	public static final Map<UUID, HandleAClient> CLIENT_HANDLER_MAP = new ConcurrentHashMap<UUID, HandleAClient>();
+
+	public static final List<HandleAClient> CLIENT_HANDLER_LIST_RM = new ArrayList<HandleAClient>();
+
 	public static final List<Room> ROOM_LIST = new ArrayList<Room>();
 
 	protected static int roundNo = 1;
 
 	private Thread socketThread = null;
 
-	public static Semaphore semaphore = new Semaphore(1);
-	
+	public static Semaphore startAfterInitializeSemaphore = new Semaphore(1);
+
 	private static HandleTheSocket socketHandler = HandleTheSocket.getInstance();
+
+	public static Semaphore exitSemaphore = new Semaphore(1);
+
+
 
 	//constructor	
 	public ConsoleServer()
@@ -38,7 +48,7 @@ public class ConsoleServer
 		socketThread.start();
 		log("Server initialized");
 	}
-	
+
 	//Inner Class
 	//handle ServerSocket singleton
 	static class HandleTheSocket implements Runnable
@@ -46,6 +56,7 @@ public class ConsoleServer
 		private volatile boolean exit;
 		ServerSocket serverSocket = null;
 		private static HandleTheSocket socketHandler = new HandleTheSocket();
+
 
 		private HandleTheSocket()
 		{			
@@ -66,8 +77,8 @@ public class ConsoleServer
 		{
 			return HandleTheSocket.socketHandler;
 		}
-		
-		
+
+
 
 		@Override
 		public void run()
@@ -78,38 +89,96 @@ public class ConsoleServer
 				// Listen for a new connection request
 				Socket socket;
 				Thread clientThread = null;
+				Semaphore userMapSemaphore = new Semaphore(1);
 				try 
 				{
-					if(ConsoleServer.ONLINE_USER_MAP.size() <= 2) 
+					if(ConsoleServer.CLIENT_HANDLER_MAP.size() < MAX_USERS) 
 					{
+
 						socket = serverSocket.accept();
 						// Create a new thread for the connection
 						HandleAClient task = new HandleAClient(socket);
 
-						CLIENT_HANDLER_LIST.add(task);//add
-
 						// Start a new thread for each client
 						clientThread = new Thread(task);
-						clientThread.start();
 
-						//2 players have registered
-						if(ConsoleServer.CLIENT_HANDLER_LIST.size() == 2) //check
+
+						//if it's a new client (i.e. has never registered or put in the user map)
+						UUID rdUUID = UUID.randomUUID();//generate a random UUID for each client
+						task.setUUID(rdUUID);
+
+
+						//registration
+
+						//						CLIENT_HANDLER_LIST.add(task);//add
+						CLIENT_HANDLER_MAP.put(task.getUUID(), task);
+
+
+						//semaphore.acquire
+						userMapSemaphore.acquire();
+						if(ConsoleServer.CLIENT_HANDLER_MAP.size() == 1) 
 						{
-							//send startBean to all clients
-							log("\nHandleAClient: 2 users have registered\n");
+
+							Map<UUID, HandleAClient> clientHandlers = new ConcurrentHashMap<UUID, HandleAClient>();
+
+
+							clientHandlers.putAll(CLIENT_HANDLER_MAP);
+							Room room = new Room(clientHandlers);
 							
-							//can start game
+
+							room.setRoomNoInt(ROOM_LIST.size());
+							task.setRoomNo(ROOM_LIST.size());
+							log("Setting roomNo ... " + ROOM_LIST.size());
+							ConsoleServer.ROOM_LIST.add(room);
+							room.checkAllUsers();
+							
 
 						}
+
+						//2 players have registered
+						else if(ConsoleServer.CLIENT_HANDLER_MAP.size() == 2) //check
+						{
+							Map<UUID, HandleAClient> clientHandlers = new ConcurrentHashMap<UUID, HandleAClient>();
+
+							clientHandlers.putAll(CLIENT_HANDLER_MAP);
+
+
+							//send startBean to all clients
+							log("\nHandleAClient: 2 users have registered\n");
+
+							//can start game
+							log("ROOM_LIST.size()" + ROOM_LIST.size());
+							Room room = ConsoleServer.getRoom(ROOM_LIST.size() - 1);
+
+							room.setClientHandlers(clientHandlers);
+							task.setRoomNo(room.getRoomNoInt());
+
+
+							for (Entry<UUID, HandleAClient> entry : ConsoleServer.CLIENT_HANDLER_MAP.entrySet()) 
+							{
+								log("Clearing " + entry.getKey().toString() + "in user map");
+								ConsoleServer.CLIENT_HANDLER_MAP.remove(entry.getKey());
+							}
+
+							room.checkAllUsers();
+							
+						}
+						else 
+						{
+							//error
+							log("[Error] - MAP size bigger than 2");
+						}
+						userMapSemaphore.release();
+
+						clientThread.start();
+
 					}
 					else 
 					{
 						return;
 					}
-
-					
 				} 
-				catch (IOException e) 
+				catch (IOException | InterruptedException e) 
 				{
 					e.printStackTrace();
 				}
@@ -123,49 +192,39 @@ public class ConsoleServer
 	//end of inner class	
 
 	//class level start game
-	public static void startGame(int m) 
+	public static void startGame(int m, Room room) throws IOException 
 	{
 		log("Starting game for all clients");
-		Room room = new Room(ConsoleServer.ONLINE_USER_MAP, ConsoleServer.CLIENT_HANDLER_LIST);
-		room.setRoomNoInt(ROOM_LIST.size());
-		ConsoleServer.ROOM_LIST.add(room);
 
-		for(HandleAClient h : CLIENT_HANDLER_LIST) 
-		{
-			try 
-			{
-				h.setRoomNo(room.getRoomNoInt());
-				h.sendStartBean(m);
-			}
-			catch (IOException e) 
-			{
-				e.printStackTrace();
-			}
-		}
+
+		room.startGame(m);
+
+
 	}
 
 	//exception occurs  
 	public static void sendExceptionExitBean() throws IOException
 	{
 		log("Inconsistency exit");
-		for(HandleAClient h : CLIENT_HANDLER_LIST) 
+
+		for (Entry<UUID, HandleAClient> entry : ConsoleServer.CLIENT_HANDLER_MAP.entrySet()) 
 		{
-			h.sendExceptionExitBean(new DataInconsistentException("Inconsistent"));
+			entry.getValue().sendExceptionExitBean(new DataInconsistentException("Inconsistent"));
 		}
 	}
 
-	public static HandleAClient getClientHandler(List<HandleAClient> clientHandlers, Socket socket) 
-	{
-		for (HandleAClient clientHandler: ConsoleServer.CLIENT_HANDLER_LIST) 
-		{
-			if(clientHandler.getSocket().equals(socket))
-			{
-				return clientHandler;
-			}
-		}
-		return null;
-	}
-	
+	//	public static HandleAClient getClientHandler(List<HandleAClient> clientHandlers, Socket socket) 
+	//	{
+	//		for (HandleAClient clientHandler: ConsoleServer.CLIENT_HANDLER_LIST) 
+	//		{
+	//			if(clientHandler.getSocket().equals(socket))
+	//			{
+	//				return clientHandler;
+	//			}
+	//		}
+	//		return null;
+	//	}
+
 	public static Room getRoom(Integer roomNoInt) 
 	{
 		for (Room room: ConsoleServer.ROOM_LIST) 
@@ -175,41 +234,51 @@ public class ConsoleServer
 				return room;
 			}
 		}
+		log("Returning null in getRoom");
 		return null;
 	}
 
-	public static void clientExit(UUID uuid)
+	public static void clientExit(int roomNo, UUID uuid)
 	{
-//		ROOM_LIST.remove(getClientHandler(CLIENT_HANDLER_LIST, ONLINE_USER_MAP.get(uuid)).getRoomNo());
-		getClientHandler(CLIENT_HANDLER_LIST, ONLINE_USER_MAP.get(uuid)).stop();
-		for (HandleAClient clientHandler : CLIENT_HANDLER_LIST) 
-		{
-			if(clientHandler.getUUID().equals(uuid)) 
-			{
-				CLIENT_HANDLER_LIST.remove(CLIENT_HANDLER_LIST.indexOf(clientHandler));
-			}
-		}
-		ONLINE_USER_MAP.remove(uuid);
+		//		ROOM_LIST.remove(getClientHandler(CLIENT_HANDLER_LIST, ONLINE_USER_MAP.get(uuid)).getRoomNo());
+		//		getClientHandler(CLIENT_HANDLER_LIST, ONLINE_USER_MAP.get(uuid)).stop();
+
+		Room room = getRoom(roomNo);
+		//check if game is on and send ExitBean
+
+		log("Removing: " + uuid.toString());
+		CLIENT_HANDLER_MAP.remove(uuid);
+
+		room.checkAllUsers();
+
+
 	}
+
+	//	public static void removeAHandler(HandleAClient h) 
+	//	{
+	//		for (HandleAClient clientHandler : CLIENT_HANDLER_LIST) 
+	//		{
+	//			for (HandleAClient cd : CLIENT_HANDLER_LIST_RM) 
+	//			{
+	//				if( clientHandler.getUUID().equals(cd.getUUID())) 
+	//				{
+	//					return;
+	//				}
+	//				else 
+	//				{
+	//					CLIENT_HANDLER_LIST.remove(CLIENT_HANDLER_LIST.indexOf(clientHandler));
+	//				}
+	//			}
+	//		}
+	//	}
 
 	public static void endGame() 
 	{
 		//send end bean
 	}
 
-	public static void checkAllUsers() 
-	{
-		ConsoleServer.log("All users:");
-		for (Entry<UUID, Socket> entry : ConsoleServer.ONLINE_USER_MAP.entrySet()) 
-		{
-			ConsoleServer.log( "<"+entry.getKey() + ">");//display UUIDs
-		}
-		if(ConsoleServer.ONLINE_USER_MAP.entrySet().size() == 0) {
-			ConsoleServer.log("No User");
-			
-		}
-	}
-	
+
+
 	public static void log(String string) 
 	{
 		System.out.println(string);

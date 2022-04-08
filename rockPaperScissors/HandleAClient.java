@@ -3,7 +3,7 @@ package rockPaperScissors.rockPaperScissors;
 import java.io.*;
 import java.net.*;
 import java.util.*;
-
+import java.util.concurrent.Semaphore;
 
 import rockPaperScissors.rockPaperScissors.DataBeans.*;
 import rockPaperScissors.rockPaperScissors.Exceptions.*;
@@ -20,6 +20,10 @@ class HandleAClient implements Runnable
 
 	private UUID uuid = null;//uniquely identify the users
 	private int roomNo;
+	private boolean isHost = false;
+	private boolean hasStarted = false;
+	Semaphore initializationSemaphore = new Semaphore(1);
+	private static Semaphore resultSemaphore = new Semaphore(1);
 
 	private boolean sendStartBeanOrNot=false;
 	//construct a thread
@@ -31,12 +35,7 @@ class HandleAClient implements Runnable
 		/** To be implemented
 			check if the socket has already been put in the user map **/
 
-		//if it's a new client (i.e. has never registered or put in the user map)
-		UUID rdUUID = UUID.randomUUID();//generate a random UUID for each client
-		this.setUUID(rdUUID);
 
-		//registration
-		ConsoleServer.ONLINE_USER_MAP.put(rdUUID , socket);//register a user
 
 		/* Display connection results */
 		// Display the time
@@ -44,11 +43,11 @@ class HandleAClient implements Runnable
 
 		// Find the client's host name, and IP address
 		InetAddress inetAddress = socket.getInetAddress();
-		ConsoleServer.log("Client [" + ConsoleServer.ONLINE_USER_MAP.size() + "] 's host name is " + inetAddress.getHostName() + "\n"
+		ConsoleServer.log("Client [" + ConsoleServer.CLIENT_HANDLER_MAP.size() + "] 's host name is " + inetAddress.getHostName() + "\n"
 				+ "IP Address is " + inetAddress.getHostAddress() + "\n");
 
 		//display all UUIDs of users who has registered in the user map
-		ConsoleServer.checkAllUsers();
+		//		ConsoleServer.checkAllUsers();
 	}
 
 	//setter and getters
@@ -69,20 +68,60 @@ class HandleAClient implements Runnable
 		return roomNo;
 	}
 
+	public boolean isHost()
+	{
+		return isHost;
+	}
+
+	public void setHost(boolean isHost)
+	{
+		this.isHost = isHost;
+	}
+
+	public boolean isHasStarted()
+	{
+		return hasStarted;
+	}
+
+	public void setHasStarted(boolean hasStarted)
+	{
+		this.hasStarted = hasStarted;
+	}
+
 	public void setRoomNo(int roomNo)
 	{
 		this.roomNo = roomNo;
 	}
 
 	//send initial data to the client
-	public void sendInitBean() throws IOException 
-	{
-		DataBean idb = new InitBean(this.getUUID(),
-				ConsoleServer.ONLINE_USER_MAP.size() == 1 ? true:false);//indicates that if the user is the host (first registered user)
+	public void sendInitBean() throws InterruptedException, IOException 
+	{	
+		ConsoleServer.log("RoomNo: " + getRoomNo());
+		Room room = ConsoleServer.getRoom(getRoomNo());
+
+		room.hostSemaphore.acquire();
+		boolean isHost = room.getClientHandlers().size() == 1 ? true:false;
+		ConsoleServer.log("room.getClientHandlers().size() : " + room.getClientHandlers().size());
+		room.hostSemaphore.release();
+
+		this.setHost(isHost);
+		DataBean idb = new InitBean(this.getUUID(), isHost);//indicates that if the user is the host (first registered user)
 
 		//send the initial DataBean to the client
-		this.outputToClient.writeObject(idb);
-		this.outputToClient.flush();		
+		try
+		{
+			this.outputToClient.writeObject(idb);
+			this.outputToClient.flush();
+		} catch (IOException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		this.setHasStarted(true);
+		if(isHost()) 
+		{
+			sendPreparedBean();
+		}
 	}
 
 	public void sendStartBean(int m) throws IOException 
@@ -93,6 +132,15 @@ class HandleAClient implements Runnable
 		//send the start DataBean to the client
 		this.outputToClient.writeObject(idb);
 		this.outputToClient.flush();		
+	}
+
+	public void sendPreparedBean() throws IOException
+	{
+		DataBean idb = new PreparedBean(getRoomNo());
+
+		//send the start DataBean to the client
+		this.outputToClient.writeObject(idb);
+		this.outputToClient.flush();
 	}
 
 	public void sendResultBean(Choice c1, Choice c2) throws IOException 
@@ -128,40 +176,40 @@ class HandleAClient implements Runnable
 			/** only host can start the game
 				StartGame operation should not open to non-host player
 				which is to be implemented in the front end or View part **/
-//
-//			if(receivedSBean.getPlayer().getIsHost()) 
-//			{
-//				//starts the game
-//				ConsoleServer.startGame(receivedSBean.getMode());
-//			}
-//			else 
-//			{
-//				//do nothing
-//			}
+			//
+			//			if(receivedSBean.getPlayer().getIsHost()) 
+			//			{
+			//				//starts the game
+			//				ConsoleServer.startGame(receivedSBean.getMode());
+			//			}
+			//			else 
+			//			{
+			//				//do nothing
+			//			}
 
 			//send StartBean to all users indicates that the game is on
-//			this.outputToClient.writeObject(new StartBean());//incomplete constructor
+			//			this.outputToClient.writeObject(new StartBean());//incomplete constructor
 			ConsoleServer.log("Starting game (HandleAClient)");
-			ConsoleServer.startGame(receivedSBean.getMode());
+			ConsoleServer.startGame(receivedSBean.getMode(), ConsoleServer.getRoom(getRoomNo()));
 		}
 
 
 		//atomic!!!
 		else if(receivedBean instanceof ChoiceBean)
 		{
-			
+
 			ConsoleServer.log("Received Bean: " + receivedBean.toString() + "\n");
-			
+
 			if(((ChoiceBean) receivedBean).getRoundNoInt().equals(Integer.valueOf(0))) 
 			{
 				sendExceptionExitBean(new ChoiceBeforeGameStartException("Not started yet"));
 				return;
 			}
-			
+
 			try
 			{
-				ConsoleServer.log("Acquiring lock");
-				ConsoleServer.semaphore.acquire();
+
+				resultSemaphore.acquire();
 
 
 				//put the (ChoiceBean) in class-level Choice list
@@ -226,9 +274,8 @@ class HandleAClient implements Runnable
 			finally 
 			{
 				ConsoleServer.log("releasing lock...");
-				ConsoleServer.semaphore.release();
-				ConsoleServer.log("available Semaphore permits now: "
-							+ ConsoleServer.semaphore.availablePermits());
+				resultSemaphore.release();
+
 			}
 		}
 		else 
@@ -254,7 +301,7 @@ class HandleAClient implements Runnable
 		try {
 			initializeIOStreams();
 			sendInitBean();
-		} catch (IOException e) {
+		} catch (IOException | InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -268,13 +315,24 @@ class HandleAClient implements Runnable
 			}
 			catch(IOException | ClassNotFoundException ex) 
 			{
-//				ex.printStackTrace();//debug
+				//				ex.printStackTrace();//debug
 				ConsoleServer.log("============\n============\n");
 				ConsoleServer.log("Client UUID:" + this.getUUID() + " quit\n============\n============");
 
-				ConsoleServer.clientExit(this.uuid);
+				try
+				{
+					//					ConsoleServer.log("acquiring");
+					ConsoleServer.exitSemaphore.acquire();
+					ConsoleServer.clientExit(getRoomNo() ,this.uuid);
+					ConsoleServer.exitSemaphore.release();
+					//					ConsoleServer.log("releasing");
+				} catch (InterruptedException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 
-				ConsoleServer.checkAllUsers();
+				//				ConsoleServer.checkAllUsers();
 
 				//send ExceptionExitBean to clients
 				this.stop();
@@ -285,14 +343,15 @@ class HandleAClient implements Runnable
 	//terminate the thread handling a client
 	public void stop()
 	{
-//		try
-//		{	
-//			this.getSocket().close();
-//		} catch (IOException e)
-//		{
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+		//		try
+		//		{	
+		//			this.getSocket().close();
+		//		} catch (IOException e)
+		//		{
+		//			// TODO Auto-generated catch block
+		//			e.printStackTrace();
+		//		}
+		setHasStarted(false);
 		exit = true;
 	}
 }

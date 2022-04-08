@@ -179,7 +179,7 @@ public class FooFrontEndFx extends Application
 		Scene scene = new Scene(getRoot(), 600, 300); 
 
 		//Setting title to the scene 
-		stage.setTitle("Client"); 
+		stage.setTitle(client.getIsHost()?"Host":"Non-host"); 
 
 		//Adding the scene to the stage 
 		stage.setScene(scene); 
@@ -207,6 +207,19 @@ public class FooFrontEndFx extends Application
 		});
 		
 		appendTextArea("\nDisplaying Client");
+		stage.setOnCloseRequest(event ->{
+    		event.consume();
+    		Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+    		alert.setTitle("Exit");
+    		alert.setHeaderText(null);
+    		alert.setContentText("Do you want to exit?");
+    		Optional<ButtonType> result = alert.showAndWait();
+    		if(result.get() == ButtonType.OK) {
+    			if(client != null)
+    			client.stop();
+    			Platform.exit();
+    		}
+    	});
 		showScene(stage);
 	}
 

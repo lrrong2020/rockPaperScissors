@@ -6,7 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Semaphore;
 
 import rockPaperScissors.rockPaperScissors.DataBeans.*;
 import rockPaperScissors.rockPaperScissors.Exceptions.*;
@@ -15,29 +17,42 @@ import rockPaperScissors.rockPaperScissors.Exceptions.*;
 public class Room
 {
 	private Integer roomNoInt = Integer.valueOf(0);
-	private Map<UUID, Socket> users = new ConcurrentHashMap<UUID, Socket>();
-	private List<HandleAClient> clientHandlers = new ArrayList<HandleAClient>();//list of 
+	public Map<UUID, HandleAClient> clientHandlers = new ConcurrentHashMap<UUID, HandleAClient>();
 	private final List<ChoiceBean[]> clientChoiceBeans = new ArrayList<ChoiceBean[]>();//results of each round
 	private Integer roundNoInt = Integer.valueOf(1);
+	Semaphore hostSemaphore = new Semaphore(1);
 	//constructors
-	
+
 	public Room() 
 	{
 		super();
 	}
-	
-	public Room(Map<UUID, Socket> users, List<HandleAClient> clientHandlers) 
+
+	public Room(Map<UUID, HandleAClient> clientHandlers) 
 	{ 
-		this.setUsers(users);
+
 		this.setClientHandlers(clientHandlers);
+
+		for (Entry<UUID, HandleAClient> entry : clientHandlers.entrySet()) 
+		{
+			entry.getValue().setRoomNo(getRoomNoInt());
+		}
 	}
-	
+
 	//setters and getters
 	public List<ChoiceBean[]> getClientChoiceBeans()
 	{
 		return clientChoiceBeans;
 	}
-	
+
+	public void startGame(int m) throws IOException 
+	{
+		for (Entry<UUID, HandleAClient> entry : clientHandlers.entrySet()) 
+		{
+			entry.getValue().sendStartBean(m);
+		}
+	}
+
 	public void sendResults(int rNoI0) throws ClassNotFoundException, IOException, ChoiceMoreThanOnceException 
 	{
 		ChoiceBean[] choiceBeanArr = this.clientChoiceBeans.get(rNoI0);//0
@@ -50,25 +65,25 @@ public class Room
 			throw new ChoiceMoreThanOnceException("Write 2 times");
 		}
 
-		Socket player0Socket = users.get(player0ChoiceBean.getPlayer().getUUID());
 
-		HandleAClient player0Handler = ConsoleServer.getClientHandler(clientHandlers, player0Socket);
-		HandleAClient player1Handler = null;
+		//		HandleAClient player0Handler = getClientHandler(clientHandlers, player0Socket);
+		HandleAClient player0Handler = clientHandlers.get(player0ChoiceBean.getPlayer().getUUID());
+		HandleAClient player1Handler = clientHandlers.get(player1ChoiceBean.getPlayer().getUUID());
 
 		//find the HandleAClient instance that matches
 
 		//need to control access
-		if(player0Socket.equals(getClientHandlers().get(0).getSocket())) 
-		{
-			player0Handler = getClientHandlers().get(0);
-			player1Handler = getClientHandlers().get(1);//get another
-		}
-		else if(player0Socket.equals(getClientHandlers().get(1).getSocket())) 
-		{
-			player0Handler = getClientHandlers().get(1);
-			player1Handler = getClientHandlers().get(0);//get another
-		}
-		else throw new ClassNotFoundException("Socket not found");
+		//		if(player0Socket.equals(getClientHandlers().get(0).getSocket())) 
+		//		{
+		//			player0Handler = getClientHandlers().get(0);
+		//			player1Handler = getClientHandlers().get(1);//get another
+		//		}
+		//		else if(player0Socket.equals(getClientHandlers().get(1).getSocket())) 
+		//		{
+		//			player0Handler = getClientHandlers().get(1);
+		//			player1Handler = getClientHandlers().get(0);//get another
+		//		}
+		//		else throw new ClassNotFoundException("Socket not found");
 
 
 		System.out.print(player0ChoiceBean.getChoice().toString());
@@ -80,24 +95,18 @@ public class Room
 		setRoundNoInt(Integer.valueOf(getRoundNoInt().intValue() + 1));
 	}
 
-	public void setUsers(Map<UUID, Socket> users) 
-	{
-		this.users = users;
-	}
-	public Map<UUID, Socket> getUsers()
-	{
-		return this.users;
-	}
 
-	public void setClientHandlers(List<HandleAClient> clientHandlers)
+
+	public void setClientHandlers(Map<UUID, HandleAClient> clientHandlers) 
 	{
 		this.clientHandlers = clientHandlers;
 	}
-	public List<HandleAClient> getClientHandlers()
+
+	public Map<UUID, HandleAClient> getClientHandlers()
 	{
-		return clientHandlers;
+		return this.clientHandlers;
 	}
-	
+
 	public void setRoundNoInt(Integer roundNoInt)
 	{
 		this.roundNoInt = roundNoInt;
@@ -113,5 +122,31 @@ public class Room
 	public Integer getRoomNoInt()
 	{
 		return roomNoInt;
+	}
+
+	public HandleAClient getHostHandler() 
+	{
+		for (Entry<UUID, HandleAClient> entry : clientHandlers.entrySet()) 
+		{
+			if(entry.getValue().isHost()) 
+			{
+				return entry.getValue();
+			}
+		}
+		ConsoleServer.log("returning null in getHostHandler()");
+		return null;
+	}
+
+	public void checkAllUsers() 
+	{
+		ConsoleServer.log("=========All users of Room [" + getRoomNoInt() + "]=========");
+		for (Entry<UUID, HandleAClient> entry :  clientHandlers.entrySet()) 
+		{
+			ConsoleServer.log( "<"+entry.getKey() + ">");//display UUIDs
+		}
+		if(clientHandlers.entrySet().size() == 0) {
+			ConsoleServer.log("No User");
+		}
+		ConsoleServer.log("==================");
 	}
 }
