@@ -172,7 +172,7 @@ public class FooFrontEndFx extends Application
 		Scene scene = new Scene(getRoot(), 600, 300); 
 
 		//Setting title to the scene 
-		stage.setTitle("Client"); 
+		stage.setTitle(client.getIsHost()?"Host":"Non-host"); 
 
 		//Adding the scene to the stage 
 		stage.setScene(scene); 

@@ -3,7 +3,7 @@ package rockPaperScissors.rockPaperScissors;
 import java.io.*;
 import java.net.*;
 import java.util.*;
-
+import java.util.concurrent.Semaphore;
 
 import rockPaperScissors.rockPaperScissors.DataBeans.*;
 import rockPaperScissors.rockPaperScissors.Exceptions.*;
@@ -21,6 +21,9 @@ class HandleAClient implements Runnable
 	private UUID uuid = null;//uniquely identify the users
 	private int roomNo;
 	private boolean isHost = false;
+	private boolean hasStarted = false;
+	Semaphore initializationSemaphore = new Semaphore(1);
+	private static Semaphore resultSemaphore = new Semaphore(1);
 
 	//construct a thread
 	public HandleAClient(Socket socket) 
@@ -31,12 +34,7 @@ class HandleAClient implements Runnable
 		/** To be implemented
 			check if the socket has already been put in the user map **/
 
-		//if it's a new client (i.e. has never registered or put in the user map)
-		UUID rdUUID = UUID.randomUUID();//generate a random UUID for each client
-		this.setUUID(rdUUID);
 
-		//registration
-		ConsoleServer.ONLINE_USER_MAP.put(rdUUID , socket);//register a user
 
 		/* Display connection results */
 		// Display the time
@@ -79,27 +77,50 @@ class HandleAClient implements Runnable
 		this.isHost = isHost;
 	}
 
+	public boolean isHasStarted()
+	{
+		return hasStarted;
+	}
+
+	public void setHasStarted(boolean hasStarted)
+	{
+		this.hasStarted = hasStarted;
+	}
+
 	public void setRoomNo(int roomNo)
 	{
 		this.roomNo = roomNo;
 	}
 
 	//send initial data to the client
-	public void sendInitBean() throws IOException, InterruptedException 
+	public void sendInitBean() throws InterruptedException, IOException 
 	{	
 		ConsoleServer.log("RoomNo: " + getRoomNo());
 		Room room = ConsoleServer.getRoom(getRoomNo());
 		
 		room.hostSemaphore.acquire();
 		boolean isHost = room.getClientHandlers().size() == 1 ? true:false;
+		ConsoleServer.log("room.getClientHandlers().size() : " + room.getClientHandlers().size());
 		room.hostSemaphore.release();
 		
 		this.setHost(isHost);
 		DataBean idb = new InitBean(this.getUUID(), isHost);//indicates that if the user is the host (first registered user)
 		
 		//send the initial DataBean to the client
-		this.outputToClient.writeObject(idb);
-		this.outputToClient.flush();		
+		try
+		{
+			this.outputToClient.writeObject(idb);
+			this.outputToClient.flush();
+		} catch (IOException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		this.setHasStarted(true);
+		if(isHost()) 
+		{
+			sendPreparedBean();
+		}
 	}
 
 	public void sendStartBean(int m) throws IOException 
@@ -186,8 +207,8 @@ class HandleAClient implements Runnable
 			
 			try
 			{
-				ConsoleServer.log("Acquiring lock");
-				ConsoleServer.semaphore.acquire();
+				
+				resultSemaphore.acquire();
 
 
 				//put the (ChoiceBean) in class-level Choice list
@@ -252,9 +273,8 @@ class HandleAClient implements Runnable
 			finally 
 			{
 				ConsoleServer.log("releasing lock...");
-				ConsoleServer.semaphore.release();
-				ConsoleServer.log("available Semaphore permits now: "
-							+ ConsoleServer.semaphore.availablePermits());
+				resultSemaphore.release();
+
 			}
 		}
 		else 
@@ -330,6 +350,7 @@ class HandleAClient implements Runnable
 //			// TODO Auto-generated catch block
 //			e.printStackTrace();
 //		}
+		setHasStarted(false);
 		exit = true;
 	}
 }

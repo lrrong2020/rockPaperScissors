@@ -141,6 +141,7 @@ public class Room
 				return entry.getValue();
 			}
 		}
+		ConsoleServer.log("returning null in getHostHandler()");
 		return null;
 	}
 	

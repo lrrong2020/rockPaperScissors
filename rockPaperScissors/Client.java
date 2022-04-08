@@ -367,7 +367,7 @@ public class Client
 	//the host click on start game button
 	public void hostStartGame(int mode) 
 	{
-		if(isCanStart()) 
+		if(isCanStart() && getIsHost()) 
 		{
 			setCanStart(false);
 			display("Host starting game" + "\nBO"+mode);
