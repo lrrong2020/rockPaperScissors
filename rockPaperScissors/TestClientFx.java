@@ -328,6 +328,8 @@ public class TestClientFx extends Application
 				duringGame.getStylesheets().add(getClass().getResource("GamePageSettings.css").toExternalForm());
 				window.setScene(duringGame);
 				window.setTitle("Game started");
+				AnimationTimer amend = new StartEndChecker(window);
+				amend.start();
 				stop();
 			}
 		}
@@ -335,12 +337,12 @@ public class TestClientFx extends Application
 	
 	private class StartEndChecker extends AnimationTimer 
 	{
-		/*Stage window;
+		Stage window;
 		public StartEndChecker(Stage window)
 		{
 			this.window = window;
 		}
-			*/
+			
 		@Override
 		public void handle(long arg0)
 		{
@@ -350,7 +352,11 @@ public class TestClientFx extends Application
 			}
 			else 
 			{
-				//set scene here
+				GameOverPage over = new GameOverPage(client);
+				Scene overGame = new Scene(over.CreateOverPage(), 600, 400);
+				overGame.getStylesheets().add(getClass().getResource("GamePageSettings.css").toExternalForm());
+				window.setScene(overGame);
+				window.setTitle("Game over");
 				stop();
 			}
 		}
