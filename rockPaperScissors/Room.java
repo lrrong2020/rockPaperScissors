@@ -33,6 +33,11 @@ public class Room
 	{ 
 		this.setUsers(users);
 		this.setClientHandlers(clientHandlers);
+		
+		for (Entry<UUID, HandleAClient> entry : clientHandlers.entrySet()) 
+		{
+			entry.getValue().setRoomNo(getRoomNoInt());
+		}
 	}
 	
 	//setters and getters
@@ -45,7 +50,6 @@ public class Room
 	{
 		for (Entry<UUID, HandleAClient> entry : clientHandlers.entrySet()) 
 		{
-			entry.getValue().setRoomNo(getRoomNoInt());
 			entry.getValue().sendStartBean(m);
 		}
 	}

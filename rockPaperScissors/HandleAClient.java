@@ -87,7 +87,9 @@ class HandleAClient implements Runnable
 	//send initial data to the client
 	public void sendInitBean() throws IOException, InterruptedException 
 	{	
+		ConsoleServer.log("RoomNo: " + getRoomNo());
 		Room room = ConsoleServer.getRoom(getRoomNo());
+		
 		room.hostSemaphore.acquire();
 		boolean isHost = room.getClientHandlers().size() == 1 ? true:false;
 		room.hostSemaphore.release();

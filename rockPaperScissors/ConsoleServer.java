@@ -89,6 +89,7 @@ public class ConsoleServer
 				try 
 				{
 					log("Size: " +ConsoleServer.ONLINE_USER_MAP.size());
+					
 					if(ConsoleServer.ONLINE_USER_MAP.size() < MAX_USERS) 
 					{
 						socket = serverSocket.accept();
@@ -101,7 +102,16 @@ public class ConsoleServer
 						
 //						CLIENT_HANDLER_LIST.add(task);//add
 						CLIENT_HANDLER_MAP.put(task.getUUID(), task);
-
+						
+						
+						//semaphore.acquire
+						if(ConsoleServer.CLIENT_HANDLER_MAP.size() == 1) 
+						{
+							Room room = new Room(ConsoleServer.ONLINE_USER_MAP, ConsoleServer.CLIENT_HANDLER_MAP);
+							room.setRoomNoInt(ROOM_LIST.size());
+							log("Setting roomNo ... " + ROOM_LIST.size());
+							ConsoleServer.ROOM_LIST.add(room);	
+						}
 
 						//2 players have registered
 						if(ConsoleServer.CLIENT_HANDLER_MAP.size() == 2) //check
@@ -110,9 +120,10 @@ public class ConsoleServer
 							log("\nHandleAClient: 2 users have registered\n");
 							
 							//can start game
-							Room room = new Room(ConsoleServer.ONLINE_USER_MAP, ConsoleServer.CLIENT_HANDLER_MAP);
-							room.setRoomNoInt(ROOM_LIST.size());
-							ConsoleServer.ROOM_LIST.add(room);	
+							
+							Room room = ConsoleServer.getRoom(ROOM_LIST.size() - 1);
+							
+							
 							for (Entry<UUID, HandleAClient> entry : room.getClientHandlers().entrySet()) 
 							{
 								ConsoleServer.ONLINE_USER_MAP.remove(entry.getKey());
@@ -120,6 +131,8 @@ public class ConsoleServer
 							
 							room.getHostHandler().sendPreparedBean();
 						}
+						
+						
 						clientThread.start();
 					}
 					else 
@@ -183,6 +196,7 @@ public class ConsoleServer
 				return room;
 			}
 		}
+		log("Returning null in getRoom");
 		return null;
 	}
 
