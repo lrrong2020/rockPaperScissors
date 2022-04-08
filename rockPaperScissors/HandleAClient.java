@@ -42,7 +42,7 @@ class HandleAClient implements Runnable
 
 		// Find the client's host name, and IP address
 		InetAddress inetAddress = socket.getInetAddress();
-		ConsoleServer.log("Client [" + ConsoleServer.ONLINE_USER_MAP.size() + "] 's host name is " + inetAddress.getHostName() + "\n"
+		ConsoleServer.log("Client [" + ConsoleServer.CLIENT_HANDLER_MAP.size() + "] 's host name is " + inetAddress.getHostName() + "\n"
 				+ "IP Address is " + inetAddress.getHostAddress() + "\n");
 
 		//display all UUIDs of users who has registered in the user map

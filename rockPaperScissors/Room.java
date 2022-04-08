@@ -17,7 +17,6 @@ import rockPaperScissors.rockPaperScissors.Exceptions.*;
 public class Room
 {
 	private Integer roomNoInt = Integer.valueOf(0);
-	private Map<UUID, Socket> users = new ConcurrentHashMap<UUID, Socket>();
 	public Map<UUID, HandleAClient> clientHandlers = new ConcurrentHashMap<UUID, HandleAClient>();
 	private final List<ChoiceBean[]> clientChoiceBeans = new ArrayList<ChoiceBean[]>();//results of each round
 	private Integer roundNoInt = Integer.valueOf(1);
@@ -29,9 +28,9 @@ public class Room
 		super();
 	}
 	
-	public Room(Map<UUID, Socket> users, Map<UUID, HandleAClient> clientHandlers) 
+	public Room(Map<UUID, HandleAClient> clientHandlers) 
 	{ 
-		this.setUsers(users);
+
 		this.setClientHandlers(clientHandlers);
 		
 		for (Entry<UUID, HandleAClient> entry : clientHandlers.entrySet()) 
@@ -96,14 +95,7 @@ public class Room
 		setRoundNoInt(Integer.valueOf(getRoundNoInt().intValue() + 1));
 	}
 
-	public void setUsers(Map<UUID, Socket> users) 
-	{
-		this.users = users;
-	}
-	public Map<UUID, Socket> getUsers()
-	{
-		return this.users;
-	}
+
 	
 	public void setClientHandlers(Map<UUID, HandleAClient> clientHandlers) 
 	{
@@ -148,11 +140,11 @@ public class Room
 	public void checkAllUsers() 
 	{
 		ConsoleServer.log("=========All users of Room [" + getRoomNoInt() + "]=========");
-		for (Entry<UUID, Socket> entry : users.entrySet()) 
+		for (Entry<UUID, HandleAClient> entry :  clientHandlers.entrySet()) 
 		{
 			ConsoleServer.log( "<"+entry.getKey() + ">");//display UUIDs
 		}
-		if(users.entrySet().size() == 0) {
+		if(clientHandlers.entrySet().size() == 0) {
 			ConsoleServer.log("No User");
 		}
 		ConsoleServer.log("==================");

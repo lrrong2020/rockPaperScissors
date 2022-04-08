@@ -15,7 +15,7 @@ public class ConsoleServer
 	private static final int MAX_USERS = 10;
 
 	//to store users and identify them with randomly generated universally unique identifier (UUID)
-	public static final Map<UUID, Socket> ONLINE_USER_MAP = new ConcurrentHashMap<UUID, Socket>();
+
 
 	//class-level client lists to synchronize and store data
 //	public static final List<HandleAClient> CLIENT_HANDLER_LIST = new ArrayList<HandleAClient>();//list of 
@@ -92,9 +92,7 @@ public class ConsoleServer
 				Semaphore userMapSemaphore = new Semaphore(1);
 				try 
 				{
-					log("Size: " +ConsoleServer.ONLINE_USER_MAP.size());
-					
-					if(ConsoleServer.ONLINE_USER_MAP.size() < MAX_USERS) 
+					if(ConsoleServer.CLIENT_HANDLER_MAP.size() < MAX_USERS) 
 					{
 
 						socket = serverSocket.accept();
@@ -109,8 +107,9 @@ public class ConsoleServer
 						UUID rdUUID = UUID.randomUUID();//generate a random UUID for each client
 						task.setUUID(rdUUID);
 
+
 						//registration
-						ConsoleServer.ONLINE_USER_MAP.put(rdUUID , socket);//register a user
+
 //						CLIENT_HANDLER_LIST.add(task);//add
 						CLIENT_HANDLER_MAP.put(task.getUUID(), task);
 						
@@ -119,16 +118,16 @@ public class ConsoleServer
 						userMapSemaphore.acquire();
 						if(ConsoleServer.CLIENT_HANDLER_MAP.size() == 1) 
 						{
-
-							Map<UUID, Socket> users = new ConcurrentHashMap<UUID, Socket>();
+							
 							Map<UUID, HandleAClient> clientHandlers = new ConcurrentHashMap<UUID, HandleAClient>();
 							
-							users.putAll(ONLINE_USER_MAP);
+
 							clientHandlers.putAll(CLIENT_HANDLER_MAP);
-							Room room = new Room(users, clientHandlers);
+							Room room = new Room(clientHandlers);
 							
 							
 							room.setRoomNoInt(ROOM_LIST.size());
+							task.setRoomNo(ROOM_LIST.size());
 							log("Setting roomNo ... " + ROOM_LIST.size());
 							ConsoleServer.ROOM_LIST.add(room);
 							room.checkAllUsers();
@@ -137,10 +136,8 @@ public class ConsoleServer
 						//2 players have registered
 						else if(ConsoleServer.CLIENT_HANDLER_MAP.size() == 2) //check
 						{
-							Map<UUID, Socket> users = new ConcurrentHashMap<UUID, Socket>();
 							Map<UUID, HandleAClient> clientHandlers = new ConcurrentHashMap<UUID, HandleAClient>();
-							
-							users.putAll(ONLINE_USER_MAP);
+
 							clientHandlers.putAll(CLIENT_HANDLER_MAP);
 							
 							
@@ -148,22 +145,17 @@ public class ConsoleServer
 							log("\nHandleAClient: 2 users have registered\n");
 							
 							//can start game
-							
+							log("ROOM_LIST.size()" + ROOM_LIST.size());
 							Room room = ConsoleServer.getRoom(ROOM_LIST.size() - 1);
 							
 							room.setClientHandlers(clientHandlers);
-							room.setUsers(users);
-							
-							for (Entry<UUID, Socket> entry : ConsoleServer.ONLINE_USER_MAP.entrySet()) 
-							{
-								log("Clearing " + entry.getKey().toString() + "in handler map");
-								ConsoleServer.CLIENT_HANDLER_MAP.remove(entry.getKey());
-							}
+
+
 							
 							for (Entry<UUID, HandleAClient> entry : ConsoleServer.CLIENT_HANDLER_MAP.entrySet()) 
 							{
 								log("Clearing " + entry.getKey().toString() + "in user map");
-								ConsoleServer.ONLINE_USER_MAP.remove(entry.getKey());
+								ConsoleServer.CLIENT_HANDLER_MAP.remove(entry.getKey());
 							}
 							
 							room.checkAllUsers();
@@ -255,7 +247,6 @@ public class ConsoleServer
 		log("Removing: " + uuid.toString());
 		CLIENT_HANDLER_MAP.remove(uuid);
 
-		ONLINE_USER_MAP.remove(uuid);
 		room.checkAllUsers();
 		
 		
