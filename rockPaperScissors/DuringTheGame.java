@@ -32,7 +32,16 @@ public class DuringTheGame{
 		Button paper1= new Button("Paper",paper);//create new button instance
 		Button scissors1 = new Button("Scissors",scissors);
 		
+		ImageView whiteboard=new ImageView(new Image("/rockPaperScissors/rockPaperScissors/media/whiteboard.png"));
 		
+		ImageView clock=new ImageView(new Image("/rockPaperScissors/rockPaperScissors/media/clock.png"));
+		clock.setFitHeight(50);
+		clock.setFitWidth(50);
+		clock.setLayoutX(510);
+		clock.setLayoutY(15);
+		whiteboard.setFitHeight(280);
+		whiteboard.setFitWidth(560);
+		whiteboard.setLayoutX(20);
 		rock1.setLayoutX(50);
 		rock1.setLayoutY(300);
 		paper1.setLayoutX(250);
@@ -46,7 +55,7 @@ public class DuringTheGame{
 		rock1.addEventHandler(MouseEvent.MOUSE_CLICKED, TestClientFx.getEvent().get(0));
 		paper1.addEventHandler(MouseEvent.MOUSE_CLICKED, TestClientFx.getEvent().get(1));
 		scissors1.addEventHandler(MouseEvent.MOUSE_CLICKED, TestClientFx.getEvent().get(2));
-		root.getChildren().addAll(rock1,paper1,scissors1);
+		root.getChildren().addAll(rock1,paper1,scissors1,whiteboard,clock);
 		
 		return root;
 		
