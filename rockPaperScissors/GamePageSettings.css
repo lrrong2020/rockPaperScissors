@@ -17,3 +17,52 @@
 .scissor{
 	-fx-graphic: url(/rockPaperScissors/rockPaperScissors/media/scissor.png);
 }
+.score{
+	-fx-text-fill:#FF0086;
+	-fx-font-family:'Amble CN';
+	-fx-font-weight:bold;
+	-fx-font-size:28px;
+}
+.green{
+	-fx-text-fill:#84FE00;
+	-fx-font-family:'Amble CN';
+	-fx-font-weight:bold;
+	-fx-font-size:28px;
+}
+.red{
+	-fx-text-fill:#FF1300;
+	-fx-font-family:'Amble CN';
+	-fx-font-weight:bold;
+	-fx-font-size:28px;
+}
+.tie{
+	-fx-text-fill:#A809FF;
+	-fx-font-family:'Amble CN';
+	-fx-font-weight:bold;
+	-fx-font-size:28px;
+}
+.buttonHome{
+	-fx-font-family:'Arial';
+	-fx-font-size:16px;
+	-fx-effect: dropshadow( three-pass-box, FFFC58, 0, 0, 0, 0);
+}
+.blue{
+	-fx-text-fill:#0D7FFF;
+	-fx-font-family:'Arial';
+	-fx-font-size:12px;
+}
+.roundGreen{
+	-fx-text-fill:#84FE00;
+	-fx-font-family:'Arial';
+	-fx-font-size:12px;
+}
+.roundRed{
+	-fx-text-fill:#FF1300;
+	-fx-font-family:'Arial';
+	-fx-font-size:12px;
+}
+.roundTie{
+	-fx-text-fill:#A809FF;
+	-fx-font-family:'Arial';
+	-fx-font-size:12px;
+}

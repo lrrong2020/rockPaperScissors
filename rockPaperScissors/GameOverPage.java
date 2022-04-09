@@ -2,20 +2,21 @@ package rockPaperScissors.rockPaperScissors;
 
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
+import javafx.stage.Stage;
 import rockPaperScissors.rockPaperScissors.Choice.GESTURES;
 
 public class GameOverPage {
-	public static Client client = TestClientFx.client;
-	Image rock=new Image("/rockPaperScissors/rockPaperScissors/media/rock.png", 20, 20, false, false);
-	Image paper=new Image("/rockPaperScissors/rockPaperScissors/media/paper.png", 20, 20, false, false);
-	Image scissors=new Image("/rockPaperScissors/rockPaperScissors/media/scissor.png", 20, 20, false, false);
+	public static Client client = TestClientFx.client;;
+	Image rock=new Image("/rockPaperScissors/rockPaperScissors/media/rock.png", 22, 22, false, false);
+	Image paper=new Image("/rockPaperScissors/rockPaperScissors/media/paper.png", 22, 22, false, false);
+	Image scissors=new Image("/rockPaperScissors/rockPaperScissors/media/scissor.png", 22, 22, false, false);
 	private VBox vbox;
 	private String result1 = null;
 	private int youWinInt = 0;
@@ -26,8 +27,8 @@ public class GameOverPage {
 	private Image OpponentImage;
 	private String yourChoice = null;
 	private String opponentChoice = null;
-	
-	
+	private int winOrNot = 0;
+	private Scene startWelcomePageAgain;
 	
 	public GameOverPage() 
 	{
@@ -43,17 +44,26 @@ public class GameOverPage {
 		result1 = client.rdp.getGameResultText();
 		youWinInt = client.rdp.getRoundsYouWinInt();
 		opponentWinInt=client.rdp.getRoundsOpponentWinInt();
+		startWelcomePageAgain = TestClientFx.getStartWelcomePage();
 		
 		vbox = new VBox();
 		vbox.setSpacing(20);
 		vbox.setAlignment(Pos.CENTER);
 		
 		Label score = new Label(youWinInt + "-" + opponentWinInt); //Total Score
-		score.setFont(Font.font("Amble CN", FontWeight.BOLD, 24));
+		score.getStyleClass().add("score");
 		vbox.getChildren().add(score);
 
-		Label result = new Label(result1); //result: YOU WIN, YOU LOSE, TIE 
-		result.setFont(Font.font("Amble CN", FontWeight.BOLD, 24));
+		Label result = new Label(result1);//result: YOU WIN, YOU LOSE, TIE 
+		if (result1.equals("YOU WIN")) {
+			result.getStyleClass().add("green");
+		}
+		else if (result1.equals("YOU LOSE")) {
+			result.getStyleClass().add("red");
+		}
+		else {
+			result.getStyleClass().add("tie");
+		}
 		vbox.getChildren().add(result);
 		
 		HBox hbox = new HBox(); // Score table for each round
@@ -61,14 +71,26 @@ public class GameOverPage {
 		hbox.setSpacing(20);
 		vbox.getChildren().add(hbox);
 		
+		Button home = new Button("Return to Start Page");// Return to the Start Page Button
+		home.getStyleClass().add("buttonHome");
+		vbox.getChildren().add(home);
+		home.setOnAction(e->{
+			Stage window=(Stage)home.getScene().getWindow();
+			window.setTitle("Game started");
+			window.setScene(startWelcomePageAgain);
+		});
+		
 
 		  VBox v0 = new VBox();
 		  v0.setSpacing(15);
 		  Label player = new Label("Player");
+		  player.getStyleClass().add("blue");
 		  v0.getChildren().add(player);
 		  Label yourChoice = new Label("Your Choice");
+		  yourChoice.getStyleClass().add("blue");
 		  v0.getChildren().add(yourChoice);
 		  Label opponentChoice = new Label("Opponent Choice");
+		  opponentChoice.getStyleClass().add("blue");
 		  v0.getChildren().add(opponentChoice);
 		hbox.getChildren().add(v0);
 	 
@@ -88,8 +110,19 @@ public class GameOverPage {
 		  setOpponentImage(OpponentImage);
 		  opponentChoice1.setGraphic(new ImageView(OpponentImage));
 		  v.getChildren().add(opponentChoice1);
+		  WinOrNot();
+		  if (winOrNot == 1) {
+			  round.getStyleClass().add("roundGreen");
+		  }
+		  if (winOrNot == -1) {
+			  round.getStyleClass().add("roundRed");
+		  }
+		  if (winOrNot == 0) {
+			  round.getStyleClass().add("roundTie");
+		  }
 		  hbox.getChildren().add(v);
 	}
+	
 		return vbox;
 	}
 	public void setYourImage(Image YourImage) {
@@ -117,5 +150,24 @@ public class GameOverPage {
 		}
 		this.OpponentImage = OpponentImage;
 	}
+	public void WinOrNot() {
+		if ((yourChoice.equals(GESTURES.PAPER) && opponentChoice.equals(GESTURES.ROCK)) ||
+			(yourChoice.equals(GESTURES.ROCK) && opponentChoice.equals(GESTURES.SCISSORS)) ||
+			(yourChoice.equals(GESTURES.SCISSORS) && opponentChoice.equals(GESTURES.PAPER))) 
+		{
+			this.winOrNot = 1;
+		}
+		else if ((yourChoice.equals(GESTURES.PAPER) && opponentChoice.equals(GESTURES.SCISSORS)) ||
+				 (yourChoice.equals(GESTURES.ROCK) && opponentChoice.equals(GESTURES.PAPER)) ||
+				 (yourChoice.equals(GESTURES.SCISSORS) && opponentChoice.equals(GESTURES.ROCK)))
+		{
+			this.winOrNot = -1;
+		}
+		else 
+		{
+			this.winOrNot = 0;
+		}
+	}
+	
 }
 
