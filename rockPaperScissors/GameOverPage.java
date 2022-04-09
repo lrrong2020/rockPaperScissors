@@ -21,7 +21,7 @@ public class GameOverPage {
 	private int youWinInt = 0;
 	private int opponentWinInt = 0;
 	private int i = 1;
-	private int roundNum = client.getRoundNoInt();
+	private int roundNum = client.getRoundNoInt()-1;
 	private Image YourImage;
 	private Image OpponentImage;
 	private String yourChoice = null;
