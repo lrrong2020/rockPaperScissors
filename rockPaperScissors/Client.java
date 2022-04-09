@@ -2,10 +2,13 @@ package rockPaperScissors.rockPaperScissors;
 
 import java.io.*;
 import java.net.*;
+import java.util.TreeMap;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
 import javafx.animation.AnimationTimer;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import rockPaperScissors.rockPaperScissors.DataBeans.*;
@@ -46,6 +49,7 @@ public class Client
 
 	//encapsulated results
 	public ResultDisplayBean rdp = new ResultDisplayBean();
+	private CountDown countdown=new CountDown();
 
 
 	//constructors
@@ -128,8 +132,10 @@ public class Client
 	public boolean getHasStarted() {
 		return this.hasStarted;
 	}
-
-
+	
+	public CountDown getCountDown() {
+		return countdown;
+	}
 	public boolean isHasExceptionallyStopped()
 	{
 		return hasExceptionallyStopped;
@@ -520,6 +526,34 @@ public class Client
 		//			e.printStackTrace();
 		//		}
 		display("The client stoped");
+	}
+	public class CountDown extends Thread {
+		private IntegerProperty intProperty;
+
+		public CountDown() {
+			intProperty = new SimpleIntegerProperty(this, "int", 10);
+			setDaemon(true);
+		}
+
+		public int getInt() {
+			return intProperty.get();
+		}
+
+		public IntegerProperty intProperty() {
+			return intProperty;
+		}
+
+		@Override
+		public void run() {
+			if(intProperty.get()>0) {
+				while (true) {
+					intProperty.set(intProperty.get() - 1);
+				}
+			}
+			else
+				stop();
+			
+		}
 	}
 }
 

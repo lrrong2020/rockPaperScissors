@@ -57,9 +57,6 @@ public class TestClientFx extends Application
 		Button enter = new Button("OK");
 		grid.add(enter, 0, 3);
 		welcomePage=new Scene(grid,600,400);
-		WelcomePage start=new WelcomePage();
-		Scene startWelcomePage=new Scene(start.getWelcomePage(),600,400);
-		startWelcomePage.getStylesheets().add(getClass().getResource("PagesSettings.css").toExternalForm());
 
 		enter.setOnAction(e->{
 			System.out.println(IP.getText().toString().trim());
@@ -96,6 +93,9 @@ public class TestClientFx extends Application
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
+			WelcomePage start=new WelcomePage();
+			Scene startWelcomePage=new Scene(start.getWelcomePage(),600,400);
+			startWelcomePage.getStylesheets().add(getClass().getResource("PagesSettings.css").toExternalForm());
 
 			Stage window;
 			if(client.getIsHost()) {
@@ -139,6 +139,7 @@ public class TestClientFx extends Application
 				//					if(!hasStarted) {
 				AnimationTimer am = new StartGameChecker(window);
 				am.start();
+				
 				//						client.s.release();
 
 				//						System.out.println("TestClientFx released. The available is"+client.s.availablePermits());

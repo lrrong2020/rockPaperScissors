@@ -1,14 +1,22 @@
 package rockPaperScissors.rockPaperScissors;
+import java.text.NumberFormat;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.scene.*;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import rockPaperScissors.rockPaperScissors.ConcurrentModel.Model;
 public class DuringTheGame{
 	
 	private Pane root;
@@ -37,10 +45,10 @@ public class DuringTheGame{
 		
 		ImageView clock=new ImageView(new Image("/rockPaperScissors/rockPaperScissors/media/clock.png"));
 		
-		Text text=new Text("lalala");
 		
-		StackPane stack=new StackPane(text);
-		stack.setLayoutX(100);
+		
+		
+		
 		clock.setFitHeight(50);
 		clock.setFitWidth(50);
 		clock.setLayoutX(510);
@@ -61,12 +69,15 @@ public class DuringTheGame{
 		rock1.addEventHandler(MouseEvent.MOUSE_CLICKED, TestClientFx.getEvent().get(0));
 		paper1.addEventHandler(MouseEvent.MOUSE_CLICKED, TestClientFx.getEvent().get(1));
 		scissors1.addEventHandler(MouseEvent.MOUSE_CLICKED, TestClientFx.getEvent().get(2));
-		root.getChildren().addAll(rock1,paper1,scissors1,whiteboard,clock,stack);
+		root.getChildren().addAll(rock1,paper1,scissors1,whiteboard,clock);
 		
 		return root;
 		
 	}
-	
-
-
 }
+		
+	
+			
+
+
+
