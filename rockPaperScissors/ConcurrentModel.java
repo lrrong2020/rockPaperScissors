@@ -71,7 +71,7 @@ public class ConcurrentModel extends Application {
 		private IntegerProperty intProperty;
 
 		public Model() {
-			intProperty = new SimpleIntegerProperty(this, "int", 0);
+			intProperty = new SimpleIntegerProperty(this, "int", 10);
 			setDaemon(true);
 		}
 
@@ -85,8 +85,16 @@ public class ConcurrentModel extends Application {
 
 		@Override
 		public void run() {
-			while (true) {
-				intProperty.set(intProperty.get() + 1);
+			while (intProperty.get() > 0) {
+				try
+				{
+					sleep(1000);
+					intProperty.set(intProperty.get() - 1);
+				} catch (InterruptedException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
 	}
