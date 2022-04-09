@@ -312,7 +312,7 @@ public class Client
 			{
 				ResultBean resultBean = (ResultBean)receivedBean;
 
-				this.setRoundNoInt(Integer.valueOf(resultBean.getRoundNoInt().intValue() + 1));//auto boxing?
+				this.setRoundNoInt(Integer.valueOf(resultBean.getRoundNoInt().intValue()));//auto boxing?
 
 
 				display("Your choice: " + resultBean.getYourChoice().getChoiseName());

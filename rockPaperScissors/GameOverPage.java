@@ -17,15 +17,17 @@ public class GameOverPage {
 	Image paper=new Image("/rockPaperScissors/rockPaperScissors/media/paper.png", 20, 20, false, false);
 	Image scissors=new Image("/rockPaperScissors/rockPaperScissors/media/scissor.png", 20, 20, false, false);
 	private VBox vbox;
-	private String result1 = client.rdp.getGameResultText();
-	private int youWinInt = client.rdp.getRoundsYouWinInt();
-	private int opponentWinInt = client.rdp.getRoundsOpponentWinInt();
+	private String result1 = null;
+	private int youWinInt = 0;
+	private int opponentWinInt = 0;
 	private int i = 1;
 	private int roundNum = client.getRoundNoInt();
 	private Image YourImage;
 	private Image OpponentImage;
-	private String yourChoice = client.rdp.getResultList().get(0).getYourChoice().getChoiseName();
-	private String opponentChoice = client.rdp.getResultList().get(1).getOpponentChoice().getChoiseName();
+	private String yourChoice = null;
+	private String opponentChoice = null;
+	
+	
 	
 	public GameOverPage() 
 	{
@@ -38,6 +40,9 @@ public class GameOverPage {
 	
 	
 	public Parent CreateOverPage() {
+		result1 = client.rdp.getGameResultText();
+		youWinInt = client.rdp.getRoundsYouWinInt();
+		opponentWinInt=client.rdp.getRoundsOpponentWinInt();
 		
 		vbox = new VBox();
 		vbox.setSpacing(20);
@@ -69,19 +74,21 @@ public class GameOverPage {
 	 
 	for (i = 1; i <= roundNum; i++) {
 		
-		VBox v = new VBox();
+		  VBox v = new VBox();
 		  v.setSpacing(10);
 		  Label round = new Label("Round" + i); //Round number
 		  v.getChildren().add(round);
 		  Label yourChoice1 = new Label("");//Your choice each round
+		  this.yourChoice=client.rdp.getResultList().get(i-1).getYourChoice().getChoiseName();
 		  setYourImage(YourImage);
 		  yourChoice1.setGraphic(new ImageView(YourImage));
 		  v.getChildren().add(yourChoice1);
 		  Label opponentChoice1 = new Label(""); //Opponent choice each round
+		  this.opponentChoice=client.rdp.getResultList().get(i-1).getOpponentChoice().getChoiseName();
 		  setOpponentImage(OpponentImage);
 		  opponentChoice1.setGraphic(new ImageView(OpponentImage));
 		  v.getChildren().add(opponentChoice1);
-		hbox.getChildren().add(v);
+		  hbox.getChildren().add(v);
 	}
 		return vbox;
 	}

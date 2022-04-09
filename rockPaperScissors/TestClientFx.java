@@ -115,6 +115,8 @@ public class TestClientFx extends Application
 					window=(Stage)enter.getScene().getWindow();
 					window.setTitle("Welcome to the Rock Paper Scissors Game!");
 					window.setScene(startWelcomePage);
+					AnimationTimer am1=new StartEndChecker(window);
+					am1.start();
 					}
 				else {
 
@@ -154,37 +156,12 @@ public class TestClientFx extends Application
 						
 //						System.out.println("TestClientFx released. The available is"+client.s.availablePermits());
 //						}
+						AnimationTimer am1=new StartEndChecker(window);
+						am1.start();
 
 					}	
 				client.initSemaphore.release();
 	});
-		
-		
-			
-			
-		
-		/*DuringTheGame during=new DuringTheGame();
-		Scene duringGame=new Scene(during.CreateGamePage(),600,400);
-		duringGame.getStylesheets().add(getClass().getResource("GamePageSettings.css").toExternalForm());
-		bt1.setOnAction(e->{
-			Stage window=(Stage)bt1.getScene().getWindow();
-			window.setTitle("Game started");
-			//during.CreateGamePage().getChildrenUnmodifiable()
-			window.setScene(duringGame);
-			
-		});
-		bt2.setOnAction(e->{
-			Stage window=(Stage)bt2.getScene().getWindow();
-			window.setTitle("Game started");
-			window.setScene(duringGame);
-		});
-		bt3.setOnAction(e->{
-			Stage window=(Stage)bt3.getScene().getWindow();
-			window.setTitle("Game started");
-			window.setScene(duringGame);
-		});
-		
-		root.getChildren().addAll(icon1,label1,bt1,bt2,bt3);*/
 		
 	}
 
@@ -348,7 +325,7 @@ public class TestClientFx extends Application
 		@Override
 		public void handle(long arg0)
 		{
-			if(!hasStarted) 
+			if(!hasStopped) 
 			{
 				checkEndGame();
 			}
