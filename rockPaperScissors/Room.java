@@ -45,58 +45,6 @@ public class Room
 		return clientChoiceBeans;
 	}
 
-	public void startGame(int m) throws IOException 
-	{
-		for (Entry<UUID, HandleAClient> entry : clientHandlers.entrySet()) 
-		{
-			entry.getValue().sendStartBean(m);
-		}
-	}
-
-	public void sendResults(int rNoI0) throws ClassNotFoundException, IOException, ChoiceMoreThanOnceException 
-	{
-		ChoiceBean[] choiceBeanArr = this.clientChoiceBeans.get(rNoI0);//0
-
-		ChoiceBean player0ChoiceBean = choiceBeanArr[0];
-		ChoiceBean player1ChoiceBean = choiceBeanArr[1];
-
-		if(player0ChoiceBean.equals(player1ChoiceBean)) 
-		{
-			throw new ChoiceMoreThanOnceException("Write 2 times");
-		}
-
-
-		//		HandleAClient player0Handler = getClientHandler(clientHandlers, player0Socket);
-		HandleAClient player0Handler = clientHandlers.get(player0ChoiceBean.getPlayer().getUUID());
-		HandleAClient player1Handler = clientHandlers.get(player1ChoiceBean.getPlayer().getUUID());
-
-		//find the HandleAClient instance that matches
-
-		//need to control access
-		//		if(player0Socket.equals(getClientHandlers().get(0).getSocket())) 
-		//		{
-		//			player0Handler = getClientHandlers().get(0);
-		//			player1Handler = getClientHandlers().get(1);//get another
-		//		}
-		//		else if(player0Socket.equals(getClientHandlers().get(1).getSocket())) 
-		//		{
-		//			player0Handler = getClientHandlers().get(1);
-		//			player1Handler = getClientHandlers().get(0);//get another
-		//		}
-		//		else throw new ClassNotFoundException("Socket not found");
-
-
-		System.out.print(player0ChoiceBean.getChoice().toString());
-		System.out.print(player1ChoiceBean.getChoice().toString());
-
-		player0Handler.sendResultBean(player0ChoiceBean.getChoice(), player1ChoiceBean.getChoice());
-		player1Handler.sendResultBean(player1ChoiceBean.getChoice(), player0ChoiceBean.getChoice());
-
-		setRoundNoInt(Integer.valueOf(getRoundNoInt().intValue() + 1));
-	}
-
-
-
 	public void setClientHandlers(Map<UUID, HandleAClient> clientHandlers) 
 	{
 		this.clientHandlers = clientHandlers;
@@ -123,7 +71,7 @@ public class Room
 	{
 		return roomNoInt;
 	}
-
+	
 	public HandleAClient getHostHandler() 
 	{
 		for (Entry<UUID, HandleAClient> entry : clientHandlers.entrySet()) 
@@ -135,6 +83,42 @@ public class Room
 		}
 		ConsoleServer.log("returning null in getHostHandler()");
 		return null;
+	}
+	
+	
+	//game on methods
+	public void startGame(int m) throws IOException 
+	{
+		for (Entry<UUID, HandleAClient> entry : clientHandlers.entrySet()) 
+		{
+			entry.getValue().sendStartBean(m);
+		}
+	}
+
+	public void sendResults(int rNoI0) throws ClassNotFoundException, IOException, ChoiceMoreThanOnceException 
+	{
+		ChoiceBean[] choiceBeanArr = this.clientChoiceBeans.get(rNoI0);//0
+
+		ChoiceBean player0ChoiceBean = choiceBeanArr[0];
+		ChoiceBean player1ChoiceBean = choiceBeanArr[1];
+
+		if(player0ChoiceBean.equals(player1ChoiceBean)) 
+		{
+			throw new ChoiceMoreThanOnceException("Write 2 times");
+		}
+
+
+		//		HandleAClient player0Handler = getClientHandler(clientHandlers, player0Socket);
+		HandleAClient player0Handler = clientHandlers.get(player0ChoiceBean.getPlayer().getUUID());
+		HandleAClient player1Handler = clientHandlers.get(player1ChoiceBean.getPlayer().getUUID());
+
+		ConsoleServer.log(player0ChoiceBean.getChoice().toString());
+		ConsoleServer.log(player1ChoiceBean.getChoice().toString());
+
+		player0Handler.sendResultBean(player0ChoiceBean.getChoice(), player1ChoiceBean.getChoice());
+		player1Handler.sendResultBean(player1ChoiceBean.getChoice(), player0ChoiceBean.getChoice());
+
+		setRoundNoInt(Integer.valueOf(getRoundNoInt().intValue() + 1));
 	}
 
 	public void checkAllUsers() 

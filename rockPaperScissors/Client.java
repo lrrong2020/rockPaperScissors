@@ -37,10 +37,12 @@ public class Client
 	private boolean hasStopped = false;
 	private boolean hasExceptionallyStopped = false;
 
+	//multithreading related
 	public Semaphore initSemaphore = new Semaphore(1); //can be invoked outside to make sure initialization is done before the client is used
 	private Thread objectListener = null;//class-level thread to continuously listen to the server
 	private Thread countDownThread = null;//handle the count down timer
 
+	//encapsulated results
 	public ResultDisplayBean rdp = new ResultDisplayBean();
 
 
@@ -109,7 +111,6 @@ public class Client
 		return isHost;
 	}
 
-
 	public void setHasStopped(boolean hasStopped)
 	{
 		this.hasStopped = hasStopped;
@@ -118,7 +119,7 @@ public class Client
 	{
 		return hasStopped;
 	}
-	
+
 	public void setHasStarted(boolean hasStarted) {
 		this.hasStarted = hasStarted;
 	}
@@ -194,7 +195,7 @@ public class Client
 						else if(objFromServer instanceof PreparedBean) 
 						{
 
-								setCanStart(true);
+							setCanStart(true);
 
 						}
 						else if(objFromServer instanceof ExitBean) //server inform that the client should exit
@@ -298,13 +299,12 @@ public class Client
 			DataBean receivedBean = (DataBean)objFromServer;
 
 			//polymorphism style of handling handling different events or status
-			if (receivedBean instanceof StartBean) 
-
+			if (receivedBean instanceof StartBean)
 			{
 				//when the game starts
 
 				display("Received Bean is instanceof StartBean");
-				
+
 				this.setHasStarted(true);
 				startGame(((StartBean) receivedBean).getMode());
 			}
@@ -337,15 +337,10 @@ public class Client
 				}
 				display("==========");
 
-
-
+				//append result for display
 				rdp.appendResult(resultBean.getYourChoice(), resultBean.getOpponentChoice(), winOrLose);
 
-
-
-
 				//during the game
-
 				if(resultBean.getRoundNoInt().compareTo(modeInt) < 0) 
 				{
 					//control the choice
@@ -383,7 +378,6 @@ public class Client
 	//the host click on start game button
 	public void hostStartGame(int mode) throws InterruptedException 
 	{
-
 		if(isCanStart() && getIsHost()) 
 		{
 			setCanStart(false);
@@ -397,7 +391,6 @@ public class Client
 		}
 
 	}
-	
 
 	//send the player instance to the server indicates that the game starts
 	private void startGame(int mode) 
@@ -466,7 +459,6 @@ public class Client
 			}
 		};
 		countDownThread.start();
-
 	}
 
 	//the client made his/her choice
@@ -510,7 +502,6 @@ public class Client
 			else
 				objectListener = null;
 		}
-
 
 		if(this.countDownThread != null) 
 		{
