@@ -5,6 +5,8 @@ import java.net.*;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
+import javafx.animation.AnimationTimer;
+import javafx.scene.Scene;
 import javafx.stage.Stage;
 import rockPaperScissors.rockPaperScissors.DataBeans.*;
 
@@ -529,3 +531,4 @@ public class Client
 		display("The client stoped");
 	}
 }
+

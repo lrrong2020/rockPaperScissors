@@ -7,6 +7,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 public class DuringTheGame{
 	
@@ -35,6 +36,11 @@ public class DuringTheGame{
 		ImageView whiteboard=new ImageView(new Image("/rockPaperScissors/rockPaperScissors/media/whiteboard.png"));
 		
 		ImageView clock=new ImageView(new Image("/rockPaperScissors/rockPaperScissors/media/clock.png"));
+		
+		Text text=new Text("lalala");
+		
+		StackPane stack=new StackPane(text);
+		stack.setLayoutX(100);
 		clock.setFitHeight(50);
 		clock.setFitWidth(50);
 		clock.setLayoutX(510);
@@ -55,7 +61,7 @@ public class DuringTheGame{
 		rock1.addEventHandler(MouseEvent.MOUSE_CLICKED, TestClientFx.getEvent().get(0));
 		paper1.addEventHandler(MouseEvent.MOUSE_CLICKED, TestClientFx.getEvent().get(1));
 		scissors1.addEventHandler(MouseEvent.MOUSE_CLICKED, TestClientFx.getEvent().get(2));
-		root.getChildren().addAll(rock1,paper1,scissors1,whiteboard,clock);
+		root.getChildren().addAll(rock1,paper1,scissors1,whiteboard,clock,stack);
 		
 		return root;
 		
