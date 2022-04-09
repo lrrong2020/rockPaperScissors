@@ -37,7 +37,6 @@ public class ConsoleServer
 	public static Semaphore exitSemaphore = new Semaphore(1);
 
 
-
 	//constructor	
 	public ConsoleServer()
 	{
@@ -124,14 +123,14 @@ public class ConsoleServer
 
 							clientHandlers.putAll(CLIENT_HANDLER_MAP);
 							Room room = new Room(clientHandlers);
-							
+
 
 							room.setRoomNoInt(ROOM_LIST.size());
 							task.setRoomNo(ROOM_LIST.size());
 							log("Setting roomNo ... " + ROOM_LIST.size());
 							ConsoleServer.ROOM_LIST.add(room);
 							room.checkAllUsers();
-							
+
 
 						}
 
@@ -266,7 +265,6 @@ public class ConsoleServer
 	{
 		//send end bean
 	}
-
 
 
 	public static void log(String string) 

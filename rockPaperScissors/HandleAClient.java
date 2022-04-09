@@ -25,7 +25,6 @@ class HandleAClient implements Runnable
 	Semaphore initializationSemaphore = new Semaphore(1);
 	private static Semaphore resultSemaphore = new Semaphore(1);
 
-	private boolean sendStartBeanOrNot=false;
 	//construct a thread
 	public HandleAClient(Socket socket) 
 	{
@@ -34,8 +33,6 @@ class HandleAClient implements Runnable
 
 		/** To be implemented
 			check if the socket has already been put in the user map **/
-
-
 
 		/* Display connection results */
 		// Display the time
@@ -204,9 +201,7 @@ class HandleAClient implements Runnable
 
 			try
 			{
-
 				resultSemaphore.acquire();
-
 
 				//put the (ChoiceBean) in class-level Choice list
 				ConsoleServer.getRoom(roomNo).getClientChoiceBeans().add(new ChoiceBean[2]);
@@ -271,7 +266,6 @@ class HandleAClient implements Runnable
 			{
 				ConsoleServer.log("releasing lock...");
 				resultSemaphore.release();
-
 			}
 		}
 		else 
