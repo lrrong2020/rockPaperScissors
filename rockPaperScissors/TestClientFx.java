@@ -85,6 +85,9 @@ public class TestClientFx extends Application
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
+			WelcomePage start=new WelcomePage();
+			Scene startWelcomePage=new Scene(start.getWelcomePage(),600,400);
+			startWelcomePage.getStylesheets().add(getClass().getResource("PagesSettings.css").toExternalForm());
 
 			try {
 				client.initSemaphore.acquire();
@@ -93,10 +96,6 @@ public class TestClientFx extends Application
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-			WelcomePage start=new WelcomePage();
-			Scene startWelcomePage=new Scene(start.getWelcomePage(),600,400);
-			startWelcomePage.getStylesheets().add(getClass().getResource("PagesSettings.css").toExternalForm());
-
 			Stage window;
 			if(client.getIsHost()) {
 				window=(Stage)enter.getScene().getWindow();
@@ -104,6 +103,7 @@ public class TestClientFx extends Application
 				window.setScene(startWelcomePage);
 				AnimationTimer am1=new StartEndChecker(window);
 				am1.start();
+				client.getCountDown().start();
 			}
 			else {
 
@@ -139,7 +139,7 @@ public class TestClientFx extends Application
 				//					if(!hasStarted) {
 				AnimationTimer am = new StartGameChecker(window);
 				am.start();
-				
+				client.getCountDown().start();
 				//						client.s.release();
 
 				//						System.out.println("TestClientFx released. The available is"+client.s.availablePermits());

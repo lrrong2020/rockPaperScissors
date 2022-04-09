@@ -8,12 +8,8 @@
 .bt{
 	 -fx-content-display: top;
 }
-
-.paper{
-	-fx-graphic: url(/rockPaperScissors/rockPaperScissors/media/paper.png);
-	-fx-content-display:top;
-	-fx-graphic-fitHeight:50;
-}
-.scissor{
-	-fx-graphic: url(/rockPaperScissors/rockPaperScissors/media/scissor.png);
+.labelContent{
+	-fx-font-family:"Times New Roman";
+	-fx-font-weight:bolder;
+	-fx-font-size:25.0 pt;
 }

@@ -545,15 +545,17 @@ public class Client
 
 		@Override
 		public void run() {
-			if(intProperty.get()>0) {
-				while (true) {
+			while (intProperty.get() > 0) {
+				try
+				{
+					sleep(1000);
 					intProperty.set(intProperty.get() - 1);
+				} catch (InterruptedException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 			}
-			else
-				stop();
-			
 		}
-	}
 }
-
+}
