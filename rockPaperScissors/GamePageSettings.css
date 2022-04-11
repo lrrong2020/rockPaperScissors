@@ -66,3 +66,9 @@
 	-fx-font-family:'Arial';
 	-fx-font-size:12px;
 }
+
+.labelContent{
+	-fx-font-family:"Times New Roman";
+	-fx-font-weight:bolder;
+	-fx-font-size:25.0 pt;
+}

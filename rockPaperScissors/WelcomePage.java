@@ -1,5 +1,7 @@
 package rockPaperScissors.rockPaperScissors;
 
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -55,6 +57,12 @@ public class WelcomePage {
 				e1.printStackTrace();
 			}
 			window.setScene(duringGame);
+			new EventHandler<ActionEvent>() {
+				@Override
+				public void handle(ActionEvent event) {
+					TestClientFx.client.getCountDown().start();
+				}
+			};
 			
 		});
 		bt2.setOnAction(e->{
@@ -68,6 +76,12 @@ public class WelcomePage {
 			}
 			
 			window.setScene(duringGame);
+			new EventHandler<ActionEvent>() {
+				@Override
+				public void handle(ActionEvent event) {
+					TestClientFx.client.getCountDown().start();
+				}
+			};
 		});
 		bt3.setOnAction(e->{
 			Stage window=(Stage)bt3.getScene().getWindow();
@@ -80,6 +94,12 @@ public class WelcomePage {
 			}
 			
 			window.setScene(duringGame);
+			new EventHandler<ActionEvent>() {
+				@Override
+				public void handle(ActionEvent event) {
+					TestClientFx.client.getCountDown().start();
+				}
+			};
 		});
 		return root;
 	
