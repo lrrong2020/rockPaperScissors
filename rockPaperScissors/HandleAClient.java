@@ -3,6 +3,7 @@ package rockPaperScissors.rockPaperScissors;
 import java.io.*;
 import java.net.*;
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.concurrent.Semaphore;
 
 import rockPaperScissors.rockPaperScissors.DataBeans.*;
@@ -314,9 +315,20 @@ class HandleAClient implements Runnable
 					//					ConsoleServer.log("acquiring");
 					ConsoleServer.exitSemaphore.acquire();
 					ConsoleServer.clientExit(getRoomNo() ,this.uuid);
+					if(ConsoleServer.getRoom(getRoomNo()).getClientHandlers().size() == 1) 
+					{
+						for (Entry<UUID, HandleAClient> entry : ConsoleServer.getRoom(getRoomNo()).getClientHandlers().entrySet()) 
+						{
+							entry.getValue().sendExceptionExitBean(new OpponentExitException("opponent exit"));
+						}
+					}
 					ConsoleServer.exitSemaphore.release();
 					//					ConsoleServer.log("releasing");
 				} catch (InterruptedException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e)
 				{
 					// TODO Auto-generated catch block
 					e.printStackTrace();

@@ -2,15 +2,13 @@ package rockPaperScissors.rockPaperScissors;
 
 import java.io.*;
 import java.net.*;
-import java.util.TreeMap;
+
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
-import javafx.animation.AnimationTimer;
+
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
 import rockPaperScissors.rockPaperScissors.DataBeans.*;
 
 
@@ -51,6 +49,8 @@ public class Client
 	//encapsulated results
 	public ResultDisplayBean rdp = new ResultDisplayBean();
 	private CountDown countdown=new CountDown();
+	
+	private boolean exit = false;
 	
 
 
@@ -175,7 +175,7 @@ public class Client
 			public void run() 
 			{
 				Object objFromServer = null;
-				while(true)
+				while(!exit)
 				{
 					if(hasExceptionallyStopped) 
 					{
@@ -212,15 +212,17 @@ public class Client
 						{	
 							if(objFromServer instanceof ExceptionExitBean) 
 							{
-								((ExitBean) objFromServer).getException().printStackTrace();
+								System.out.println("Exception from server: "+ ((ExitBean) objFromServer).getException().getMessage());
 								display("Exception Occurs");
+								setHasExceptionallyStopped(true);
 							}
-							else 
+							else
 							{
 								//other exit beans send by the server
 								//may be end bean to determine the results
 							}
 							display("Exit");
+							exit=true;
 							objectListener.interrupt();//terminates the listener
 						}
 						else 
@@ -235,6 +237,7 @@ public class Client
 						display("[Error]-ClassNotFound Please restart.");
 						e.printStackTrace();
 						setHasExceptionallyStopped(true);
+						exit=true;
 						return;
 					}
 					catch (NullPointerException e) 
@@ -243,12 +246,14 @@ public class Client
 						display("[Error]-Null Please restart.");
 						display(e.toString());
 						setHasExceptionallyStopped(true);
+						exit=true;
 						return;
 					}
 					catch (IOException e) 
 					{
 						display("[Warning]-IO Disconnect");
 						setHasExceptionallyStopped(true);
+						exit=true;
 						return;
 					} catch (InterruptedException e)
 					{
@@ -512,6 +517,7 @@ public class Client
 		//		{
 		//			if(this.socket != null)
 		//				this.socket.close();
+
 		if(this.objectListener != null) 
 		{
 			if(objectListener.isAlive())
@@ -534,6 +540,7 @@ public class Client
 		//			display("[Warning]-Disconnection");
 		//			e.printStackTrace();
 		//		}
+		exit=true;
 		display("The client stoped");
 		
 		

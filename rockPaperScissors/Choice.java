@@ -2,7 +2,6 @@ package rockPaperScissors.rockPaperScissors;
 
 import java.io.Serializable;
 
-import javafx.scene.image.Image;
 
 public class Choice implements Serializable
 {
