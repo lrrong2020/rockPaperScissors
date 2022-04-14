@@ -10,6 +10,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
@@ -18,6 +19,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 public class TestClientFx extends Application
 {
@@ -27,12 +29,14 @@ public class TestClientFx extends Application
 	public static Client client = null;
 	public static boolean hasStarted = false;
 	public static boolean hasStopped = false;
+	public static boolean exceptionallyStopped = false;
 
 	//private Scene findIPPage;
 	private Scene welcomePage;
 	public static Scene startWelcomePage;
 
 	private static ArrayList<EventHandler<MouseEvent>>listeners=new ArrayList<>();
+	
 	public TestClientFx() {
 
 
@@ -108,6 +112,8 @@ public class TestClientFx extends Application
 				AnimationTimer am1=new StartEndChecker(window);
 				am1.start();
 				client.getCountDown().start();
+				AnimationTimer am2 = new ExceptionallyStopped(window);
+				am2.start();
 			}
 			else {
 
@@ -117,9 +123,9 @@ public class TestClientFx extends Application
 				window=(Stage)enter.getScene().getWindow();
 				window.setScene(waitingRes);
 				window.setTitle("Game will be started in several seconds");
-
-
-
+				AnimationTimer am2 = new ExceptionallyStopped(window);
+				am2.start();
+				
 				//					try
 				//					{
 				//						client.s.acquire();
@@ -204,6 +210,8 @@ public class TestClientFx extends Application
 						AnimationTimer am1=new StartEndChecker(window);
 						am1.start();
 						client.getCountDown().start();
+						AnimationTimer am2 = new ExceptionallyStopped(window);
+						am2.start();
 					}
 					else {
 
@@ -213,8 +221,8 @@ public class TestClientFx extends Application
 						window=(Stage)enter.getScene().getWindow();
 						window.setScene(waitingRes);
 						window.setTitle("Game will be started in several seconds");
-
-
+						AnimationTimer am2 = new ExceptionallyStopped(window);
+						am2.start();
 
 						//					try
 						//					{
@@ -240,6 +248,8 @@ public class TestClientFx extends Application
 						AnimationTimer am = new StartGameChecker(window);
 						am.start();
 						client.getCountDown().start();
+						
+
 						//						client.s.release();
 
 						//						System.out.println("TestClientFx released. The available is"+client.s.availablePermits());
@@ -343,6 +353,7 @@ public class TestClientFx extends Application
 	@Override
 	public void start(Stage stage) throws Exception
 	{	
+		
 		stage.setTitle("Welcome to the Rock Paper Scissors Game!");
 
 		CreateWelcomePage();
@@ -362,6 +373,7 @@ public class TestClientFx extends Application
 				Platform.exit();
 			}
 		});
+		
 		stage.show();
 	}
 
@@ -431,6 +443,36 @@ public class TestClientFx extends Application
 			}
 		}
 	}
+	
+	private class ExceptionallyStopped extends AnimationTimer{
+		Stage window;
+		public ExceptionallyStopped(Stage window) {
+			this.window = window;
+		}
+		public void handle(long arg0)
+		{
+			if(exceptionallyStopped = false) {
+				checkStop();
+			}
+			else {
+				window.setOnCloseRequest(new EventHandler<WindowEvent>() {
+					public void handle(WindowEvent event) {
+						event.consume();
+						Alert alert = new Alert(AlertType.WARNING);
+						alert.setTitle("Warning!");
+						alert.setHeaderText("Your opponent quits the game");
+						alert.setContentText("Click OK to exit the game.");
+						Optional<ButtonType> result = alert.showAndWait();
+						if (result.get() == ButtonType.OK) {
+							window.close();
+						}
+					
+					}
+				});
+				stop();
+			}
+		}
+	}
 
 
 	public static void checkStartGame() 
@@ -442,11 +484,15 @@ public class TestClientFx extends Application
 	{
 		hasStopped = client.getHasStopped();
 	}
-
-
+	
 	public static Scene getStartWelcomePage() {
 		return startWelcomePage;
 	}
+	public static void checkStop() 
+	{
+		exceptionallyStopped = client.isHasExceptionallyStopped();
+	}
+
 
 	
 }
