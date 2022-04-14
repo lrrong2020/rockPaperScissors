@@ -13,6 +13,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import rockPaperScissors.rockPaperScissors.DataBeans.*;
 
+
 //logical client
 public class Client 
 {
@@ -50,6 +51,7 @@ public class Client
 	//encapsulated results
 	public ResultDisplayBean rdp = new ResultDisplayBean();
 	private CountDown countdown=new CountDown();
+	
 
 
 	//constructors
@@ -255,6 +257,7 @@ public class Client
 
 		objectListener.start();
 	}
+	
 
 	public void setHasInitialized(boolean hasInitialized)
 	{
@@ -526,6 +529,8 @@ public class Client
 		//			e.printStackTrace();
 		//		}
 		display("The client stoped");
+		
+		
 	}
 	public class CountDown extends Thread {
 		private IntegerProperty intProperty;
