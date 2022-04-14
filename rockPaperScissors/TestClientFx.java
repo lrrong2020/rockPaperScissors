@@ -472,7 +472,6 @@ public class TestClientFx extends Application
 						if (result.get() == ButtonType.OK) {
 							window.close();
 						}
-					
 					}
 				});
 				stop();

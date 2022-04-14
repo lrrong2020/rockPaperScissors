@@ -234,17 +234,21 @@ public class Client
 					{
 						display("[Error]-ClassNotFound Please restart.");
 						e.printStackTrace();
+						setHasExceptionallyStopped(true);
+						return;
 					}
 					catch (NullPointerException e) 
 					{
 						e.printStackTrace();
 						display("[Error]-Null Please restart.");
 						display(e.toString());
+						setHasExceptionallyStopped(true);
 						return;
 					}
 					catch (IOException e) 
 					{
 						display("[Warning]-IO Disconnect");
+						setHasExceptionallyStopped(true);
 						return;
 					} catch (InterruptedException e)
 					{
@@ -295,6 +299,7 @@ public class Client
 		catch (IOException e) 
 		{
 			e.printStackTrace();
+			setHasExceptionallyStopped(true);
 		}
 	}
 
@@ -461,6 +466,7 @@ public class Client
 					}
 					catch (ClassNotFoundException e)
 					{
+						setHasExceptionallyStopped(true);
 						e.printStackTrace();
 					}
 				}
@@ -522,7 +528,7 @@ public class Client
 				countDownThread = null;
 		}
 
-		this.setHasExceptionallyStopped(true);
+
 		//		} catch (IOException e)
 		//		{
 		//			display("[Warning]-Disconnection");
