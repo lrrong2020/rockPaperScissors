@@ -369,7 +369,13 @@ public class TestClientFx extends Application
 			Optional<ButtonType> result = alert.showAndWait();
 			if(result.get() == ButtonType.OK) {
 				if(client != null)
+				{
 					client.stop();
+				}
+				else 
+				{
+					
+				}
 				Platform.exit();
 			}
 		});
@@ -451,7 +457,7 @@ public class TestClientFx extends Application
 		}
 		public void handle(long arg0)
 		{
-			if(exceptionallyStopped = false) {
+			if(exceptionallyStopped == false) {
 				checkStop();
 			}
 			else {
