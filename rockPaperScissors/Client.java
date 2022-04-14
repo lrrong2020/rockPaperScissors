@@ -49,9 +49,9 @@ public class Client
 	//encapsulated results
 	public ResultDisplayBean rdp = new ResultDisplayBean();
 	private CountDown countdown=new CountDown();
-	
+
 	private boolean exit = false;
-	
+
 
 
 	//constructors
@@ -134,7 +134,7 @@ public class Client
 	public boolean getHasStarted() {
 		return this.hasStarted;
 	}
-	
+
 	public CountDown getCountDown() {
 		return countdown;
 	}
@@ -214,7 +214,7 @@ public class Client
 							{
 								System.out.println("Exception from server: "+ ((ExitBean) objFromServer).getException().getMessage());
 								display("Exception Occurs");
-								setHasExceptionallyStopped(true);
+								
 							}
 							else
 							{
@@ -222,6 +222,7 @@ public class Client
 								//may be end bean to determine the results
 							}
 							display("Exit");
+							setHasExceptionallyStopped(true);
 							exit=true;
 							objectListener.interrupt();//terminates the listener
 						}
@@ -266,7 +267,7 @@ public class Client
 
 		objectListener.start();
 	}
-	
+
 
 	public void setHasInitialized(boolean hasInitialized)
 	{
@@ -515,8 +516,11 @@ public class Client
 	{
 		//		try
 		//		{
-		//			if(this.socket != null)
-		//				this.socket.close();
+		if(this.socket != null)
+		{
+			this.sendDataBean(new ExitBean());
+		}
+
 
 		if(this.objectListener != null) 
 		{
@@ -542,8 +546,8 @@ public class Client
 		//		}
 		exit=true;
 		display("The client stoped");
-		
-		
+
+
 	}
 	public class CountDown extends Thread {
 		private IntegerProperty intProperty;
@@ -575,5 +579,5 @@ public class Client
 				}
 			}
 		}
-}
+	}
 }

@@ -147,10 +147,20 @@ class HandleAClient implements Runnable
 		this.outputToClient.flush();	
 	}
 
+	public void sendExitBean() throws IOException
+	{
+		ConsoleServer.log("Sending exception exit bean");
+		DataBean idb = new ExitBean();
+
+		//send the start DataBean to the client
+		this.outputToClient.writeObject(idb);
+		this.outputToClient.flush();	
+	}
+	
 	public void sendExceptionExitBean(Exception exception) throws IOException
 	{
 		ConsoleServer.log("Sending exception exit bean");
-		DataBean idb = new ExceptionExitBean(exception);//default constructor to indicates server-sent startBean
+		DataBean idb = new ExceptionExitBean(exception);
 
 		//send the start DataBean to the client
 		this.outputToClient.writeObject(idb);
@@ -269,6 +279,14 @@ class HandleAClient implements Runnable
 				resultSemaphore.release();
 			}
 		}
+		else if (receivedBean instanceof ExitBean) 
+		{
+			for (Entry<UUID, HandleAClient> entry : ConsoleServer.getRoom(getRoomNo()).getClientHandlers().entrySet()) 
+			{
+				entry.getValue().sendExitBean();
+			}
+		}		
+				
 		else 
 		{
 			ConsoleServer.log("WHat bean?");
