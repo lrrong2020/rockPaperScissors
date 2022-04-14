@@ -30,6 +30,9 @@ public class TestClientFx extends Application
 	public static boolean hasStarted = false;
 	public static boolean hasStopped = false;
 	public static boolean exceptionallyStopped = false;
+	public static AnimationTimer am;
+	public static AnimationTimer am1;
+	public static AnimationTimer am2;
 
 	//private Scene findIPPage;
 	private Scene welcomePage;
@@ -44,6 +47,7 @@ public class TestClientFx extends Application
 
 	//Create the Welcome Page to show
 	public void CreateWelcomePage() {
+		
 
 		GridPane grid = new GridPane();
 		grid.setAlignment(Pos.CENTER);
@@ -109,10 +113,10 @@ public class TestClientFx extends Application
 				window=(Stage)enter.getScene().getWindow();
 				window.setTitle("Welcome to the Rock Paper Scissors Game!");
 				window.setScene(startWelcomePage);
-				AnimationTimer am1=new StartEndChecker(window);
+				TestClientFx.am1=new StartEndChecker(window);
 				am1.start();
 				client.getCountDown().start();
-				AnimationTimer am2 = new ExceptionallyStopped(window);
+				TestClientFx.am2 = new ExceptionallyStopped(window);
 				am2.start();
 			}
 			else {
@@ -123,7 +127,7 @@ public class TestClientFx extends Application
 				window=(Stage)enter.getScene().getWindow();
 				window.setScene(waitingRes);
 				window.setTitle("Game will be started in several seconds");
-				AnimationTimer am2 = new ExceptionallyStopped(window);
+				TestClientFx.am2 = new ExceptionallyStopped(window);
 				am2.start();
 				
 				//					try
@@ -147,14 +151,15 @@ public class TestClientFx extends Application
 				//						e1.printStackTrace();
 				//					}
 				//					if(!hasStarted) {
-				AnimationTimer am = new StartGameChecker(window);
+				TestClientFx.am = new StartGameChecker(window);
 				am.start();
+				
 				client.getCountDown().start();
 				//						client.s.release();
 
 				//						System.out.println("TestClientFx released. The available is"+client.s.availablePermits());
 				//						}
-				AnimationTimer am1=new StartEndChecker(window);
+				TestClientFx.am1=new StartEndChecker(window);
 				am1.start();
 
 			}	
@@ -162,7 +167,9 @@ public class TestClientFx extends Application
 		});
 		
 		IP.setOnKeyPressed(new EventHandler<KeyEvent>() {
-		    @Override
+		    
+
+			@Override
 		    public void handle(KeyEvent ke) {
 		        if (ke.getCode().equals(KeyCode.ENTER)) {
 		        	System.out.println(IP.getText().toString().trim());
@@ -207,10 +214,10 @@ public class TestClientFx extends Application
 						window=(Stage)enter.getScene().getWindow();
 						window.setTitle("Welcome to the Rock Paper Scissors Game!");
 						window.setScene(startWelcomePage);
-						AnimationTimer am1=new StartEndChecker(window);
+						TestClientFx.am1=new StartEndChecker(window);
 						am1.start();
 						client.getCountDown().start();
-						AnimationTimer am2 = new ExceptionallyStopped(window);
+						TestClientFx.am2 = new ExceptionallyStopped(window);
 						am2.start();
 					}
 					else {
@@ -221,7 +228,7 @@ public class TestClientFx extends Application
 						window=(Stage)enter.getScene().getWindow();
 						window.setScene(waitingRes);
 						window.setTitle("Game will be started in several seconds");
-						AnimationTimer am2 = new ExceptionallyStopped(window);
+						TestClientFx.am2 = new ExceptionallyStopped(window);
 						am2.start();
 
 						//					try
@@ -245,7 +252,7 @@ public class TestClientFx extends Application
 						//						e1.printStackTrace();
 						//					}
 						//					if(!hasStarted) {
-						AnimationTimer am = new StartGameChecker(window);
+						TestClientFx.am = new StartGameChecker(window);
 						am.start();
 						client.getCountDown().start();
 						
@@ -254,7 +261,7 @@ public class TestClientFx extends Application
 
 						//						System.out.println("TestClientFx released. The available is"+client.s.availablePermits());
 						//						}
-						AnimationTimer am1=new StartEndChecker(window);
+						TestClientFx.am1=new StartEndChecker(window);
 						am1.start();
 
 					}
@@ -372,9 +379,17 @@ public class TestClientFx extends Application
 				{
 					client.stop();
 				}
-				else 
+				if(am != null)
 				{
-					
+					am.stop();
+				}
+				if(am1 != null)
+				{
+					am1.stop();
+				}
+				if(am2 != null)
+				{
+					am2.stop();
 				}
 				Platform.exit();
 			}
