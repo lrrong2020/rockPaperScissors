@@ -6,7 +6,6 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
-import rockPaperScissors.rockPaperScissors.Exceptions.*;
 
 
 public class ConsoleServer
@@ -239,7 +238,7 @@ public class ConsoleServer
 		//check if game is on and send ExitBean
 
 		log("Removing: " + uuid.toString());
-		CLIENT_HANDLER_MAP.remove(uuid);
+		getRoom(roomNo).getClientHandlers().remove(uuid);
 
 		room.checkAllUsers();
 

@@ -2,15 +2,13 @@ package rockPaperScissors.rockPaperScissors;
 
 import java.io.*;
 import java.net.*;
-import java.util.TreeMap;
+
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
-import javafx.animation.AnimationTimer;
+
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
 import rockPaperScissors.rockPaperScissors.DataBeans.*;
 
 
@@ -51,7 +49,9 @@ public class Client
 	//encapsulated results
 	public ResultDisplayBean rdp = new ResultDisplayBean();
 	private CountDown countdown=new CountDown();
-	
+
+	private boolean exit = false;
+
 
 
 	//constructors
@@ -134,7 +134,7 @@ public class Client
 	public boolean getHasStarted() {
 		return this.hasStarted;
 	}
-	
+
 	public CountDown getCountDown() {
 		return countdown;
 	}
@@ -175,7 +175,7 @@ public class Client
 			public void run() 
 			{
 				Object objFromServer = null;
-				while(true)
+				while(!exit)
 				{
 					if(hasExceptionallyStopped) 
 					{
@@ -212,16 +212,20 @@ public class Client
 						{	
 							if(objFromServer instanceof ExceptionExitBean) 
 							{
-								((ExitBean) objFromServer).getException().printStackTrace();
+								System.out.println("Exception from server: "+ ((ExitBean) objFromServer).getException().getMessage());
 								display("Exception Occurs");
+								
 							}
-							else 
+							else
 							{
 								//other exit beans send by the server
 								//may be end bean to determine the results
 							}
 							display("Exit");
+							setHasExceptionallyStopped(true);
+							exit=true;
 							objectListener.interrupt();//terminates the listener
+							
 						}
 						else 
 						{
@@ -235,6 +239,7 @@ public class Client
 						display("[Error]-ClassNotFound Please restart.");
 						e.printStackTrace();
 						setHasExceptionallyStopped(true);
+						exit=true;
 						return;
 					}
 					catch (NullPointerException e) 
@@ -243,12 +248,14 @@ public class Client
 						display("[Error]-Null Please restart.");
 						display(e.toString());
 						setHasExceptionallyStopped(true);
+						exit=true;
 						return;
 					}
 					catch (IOException e) 
 					{
 						display("[Warning]-IO Disconnect");
 						setHasExceptionallyStopped(true);
+						exit=true;
 						return;
 					} catch (InterruptedException e)
 					{
@@ -256,12 +263,13 @@ public class Client
 						e.printStackTrace();
 					}
 				}
+				
 			}
 		};
 
 		objectListener.start();
 	}
-	
+
 
 	public void setHasInitialized(boolean hasInitialized)
 	{
@@ -375,7 +383,7 @@ public class Client
 				else 
 				{
 					display("Game over.");
-					this.stop();
+//					clientStop();
 					this.setHasStopped(true);
 
 					//cut off connection to the server
@@ -506,12 +514,16 @@ public class Client
 
 
 	//terminate the client
-	public void stop() 
+	public void clientStop() 
 	{
 		//		try
 		//		{
-		//			if(this.socket != null)
-		//				this.socket.close();
+		if(this.socket != null)
+		{
+			this.sendDataBean(new ExitBean());
+		}
+
+
 		if(this.objectListener != null) 
 		{
 			if(objectListener.isAlive())
@@ -527,16 +539,17 @@ public class Client
 			else
 				countDownThread = null;
 		}
-
+		System.exit(0);
 
 		//		} catch (IOException e)
 		//		{
 		//			display("[Warning]-Disconnection");
 		//			e.printStackTrace();
 		//		}
+		exit=true;
 		display("The client stoped");
-		
-		
+
+
 	}
 	public class CountDown extends Thread {
 		private IntegerProperty intProperty;
@@ -568,5 +581,5 @@ public class Client
 				}
 			}
 		}
-}
+	}
 }
