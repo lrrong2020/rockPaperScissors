@@ -392,6 +392,7 @@ public class TestClientFx extends Application
 					am2.stop();
 				}
 				Platform.exit();
+				System.exit(0);
 			}
 		});
 		
