@@ -1,5 +1,9 @@
 package rockPaperScissors.rockPaperScissors;
 
+import java.awt.event.ActionEvent;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -12,7 +16,9 @@ import rockPaperScissors.rockPaperScissors.DataBeans.StartBean;
 
 public class WelcomePage {
 	private Pane root; 
-	
+	public Button bt1=new Button("One round");
+	public Button bt2=new Button("Best two out of three");
+	public Button bt3=new Button("Best three out of five");
 	public Parent getWelcomePage() {
 		root=new Pane();
 		
@@ -27,9 +33,9 @@ public class WelcomePage {
 		label1.getStyleClass().add("labelContent");
 	
 		label1.setLayoutX(150);
-		Button bt1=new Button("One round");
-		Button bt2=new Button("Best two out of three");
-		Button bt3=new Button("Best three out of five");
+		//Button bt1=new Button("One round");
+		//Button bt2=new Button("Best two out of three");
+		//Button bt3=new Button("Best three out of five");
 		
 		bt1.setLayoutX(400);
 		bt1.setLayoutY(150);
@@ -41,10 +47,11 @@ public class WelcomePage {
 		bt3.layoutXProperty().bind(bt1.layoutXProperty());
 		root.getChildren().addAll(label1,icon1,bt1,bt2,bt3);
 		
-		DuringTheGame during=new DuringTheGame();
-		Scene duringGame=new Scene(during.CreateGamePage(),600,400);
-		duringGame.getStylesheets().add(getClass().getResource("GamePageSettings.css").toExternalForm());
-		bt1.setOnAction(e->{
+		//DuringTheGame during=new DuringTheGame();
+		//Scene duringGame=new Scene(during.CreateGamePage(),600,400);
+		
+		//duringGame.getStylesheets().add(getClass().getResource("GamePageSettings.css").toExternalForm());
+		/*bt1.setOnAction(e->{
 			
 			Stage window=(Stage)bt1.getScene().getWindow();
 			window.setTitle("Game started");
@@ -55,6 +62,7 @@ public class WelcomePage {
 				e1.printStackTrace();
 			}
 			window.setScene(duringGame);
+			
 			
 		});
 		bt2.setOnAction(e->{
@@ -80,8 +88,9 @@ public class WelcomePage {
 			}
 			
 			window.setScene(duringGame);
-		});
+		});*/
 		return root;
 	
 	}
+	
 }

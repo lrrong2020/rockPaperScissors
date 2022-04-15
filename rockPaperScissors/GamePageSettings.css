@@ -8,7 +8,12 @@
 .bt{
 	 -fx-content-display: top;
 }
-
+.labelContent{
+	-fx-font-family:"Times New Roman";
+	-fx-font-weight:bolder;
+	-fx-font-size:25.0 pt;
+	-fx-text-alignment:center;
+}
 .paper{
 	-fx-graphic: url(/rockPaperScissors/rockPaperScissors/media/paper.png);
 	-fx-content-display:top;

@@ -1,17 +1,25 @@
 package rockPaperScissors.rockPaperScissors;
 
+import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
+
+import javax.swing.SwingUtilities;
+
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
@@ -28,7 +36,10 @@ public class TestClientFx extends Application
 
 	//private Scene findIPPage;
 	private Scene welcomePage;
-	private static ArrayList<EventHandler<MouseEvent>>listeners=new ArrayList<>();
+	public static DuringTheGame during=new DuringTheGame();
+	public static Parent nodes=during.CreateGamePage();
+	private WelcomePage start=new WelcomePage();
+	private static ArrayList<EventHandler<MouseEvent>>listeners=null;
 	public TestClientFx() {
 
 
@@ -57,7 +68,6 @@ public class TestClientFx extends Application
 		Button enter = new Button("OK");
 		grid.add(enter, 0, 3);
 		welcomePage=new Scene(grid,600,400);
-		WelcomePage start=new WelcomePage();
 		Scene startWelcomePage=new Scene(start.getWelcomePage(),600,400);
 		startWelcomePage.getStylesheets().add(getClass().getResource("PagesSettings.css").toExternalForm());
 
@@ -102,6 +112,51 @@ public class TestClientFx extends Application
 				window=(Stage)enter.getScene().getWindow();
 				window.setTitle("Welcome to the Rock Paper Scissors Game!");
 				window.setScene(startWelcomePage);
+				start.bt1.setOnAction(m->{
+					
+					Stage window1=(Stage)start.bt1.getScene().getWindow();
+					window1.setTitle("Game started");
+					try {
+						client.hostStartGame(1);
+					} catch (InterruptedException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					setDuringGameScene(window1);
+					
+					
+				});
+				start.bt2.setOnAction(m->{
+					
+					Stage window1=(Stage)start.bt2.getScene().getWindow();
+					window1.setTitle("Game started");
+					try {
+						client.hostStartGame(3);
+					} catch (InterruptedException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					setDuringGameScene(window1);
+					
+					
+				});
+				start.bt3.setOnAction(m->{
+					
+					Stage window1=(Stage)start.bt3.getScene().getWindow();
+					window1.setTitle("Game started");
+					try {
+						client.hostStartGame(5);
+					} catch (InterruptedException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					setDuringGameScene(window1);
+					
+					
+				});
+					
+					//window.setScene(duringGame);
+				//});
 				AnimationTimer am1=new StartEndChecker(window);
 				am1.start();
 			}
@@ -113,7 +168,7 @@ public class TestClientFx extends Application
 				window=(Stage)enter.getScene().getWindow();
 				window.setScene(waitingRes);
 				window.setTitle("Game will be started in several seconds");
-
+				
 
 
 				//					try
@@ -172,7 +227,7 @@ public class TestClientFx extends Application
 	public static ArrayList<EventHandler<MouseEvent>> getEvent()
 	{
 
-
+		listeners=new ArrayList<>();
 		//listen the mouse event and handle the event
 		EventHandler<MouseEvent> rockListener = new EventHandler<MouseEvent>() 
 		{ 
@@ -292,8 +347,9 @@ public class TestClientFx extends Application
 		}
 	}
 	private void setDuringGameScene(Stage window) {
-		DuringTheGame during=new DuringTheGame();
-		Scene duringGame=new Scene(during.CreateGamePage(),600,400);
+		Parent root=during.CreateGamePage();
+		labelActionPerformed(new ActionEvent(root, 0, null));
+		Scene duringGame=new Scene(root,600,400);
 		duringGame.getStylesheets().add(getClass().getResource("GamePageSettings.css").toExternalForm());
 		window.setScene(duringGame);
 		window.setTitle("Game started");
@@ -327,6 +383,44 @@ public class TestClientFx extends Application
 			}
 		}
 	}
+	private int i = 10;
+	public void labelActionPerformed(java.awt.event.ActionEvent evt) {
+	    Timer timer = new Timer();
+	    timer.scheduleAtFixedRate(new TimerTask() {
+	    	int k=1;
+	        @Override
+	        public void run() {
+	        	javafx.application.Platform.runLater(new Runnable() {
+	                @Override
+	                public void run() {
+	                		if(i==0) {
+	                			during.label.setText(Integer.toString(i));
+	                			k++;
+	                			if(k>scheduledExecutionTime()) {
+		                			cancel();
+		                		}
+	                			try {
+									TimeUnit.SECONDS.sleep(3);
+								} catch (InterruptedException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+	                			i=12;
+	                		}
+	                		else {
+	                			during.label.setText(Integer.toString(i--));
+	                		}
+	                		
+	                		
+	                }
+	                
+	            });
+	        }
+	        public long scheduledExecutionTime() {
+	        	return client.getModeInt();
+	        }
+	    }, 3000, 1000);
+	    }
 
 
 	public static void checkStartGame() 
