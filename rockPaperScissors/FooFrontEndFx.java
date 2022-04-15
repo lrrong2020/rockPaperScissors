@@ -216,7 +216,7 @@ public class FooFrontEndFx extends Application
     		Optional<ButtonType> result = alert.showAndWait();
     		if(result.get() == ButtonType.OK) {
     			if(client != null)
-    			client.stop();
+    			client.clientStop();
     			Platform.exit();
     		}
     	});
