@@ -1,6 +1,12 @@
 package rockPaperScissors.rockPaperScissors;
+
 import java.util.Timer;
 import java.util.TimerTask;
+
+
+import java.util.concurrent.TimeUnit;
+
+import javafx.animation.AnimationTimer;
 
 import javafx.application.Application;
 import javafx.event.EventHandler;
@@ -17,6 +23,10 @@ public class DuringTheGame{
 	private Pane root;
 	public Label label=new Label();
 	private int i = 10;
+
+	
+	
+
 	public Parent CreateGamePage() {
 		root=new Pane();
 		ImageView rock=new ImageView(new Image("/rockPaperScissors/rockPaperScissors/media/rock.png"));
@@ -47,6 +57,9 @@ public class DuringTheGame{
 		clock.setFitWidth(50);
 		clock.setLayoutX(510);
 		clock.setLayoutY(15);
+		label.setLayoutX(530);
+		label.setLayoutY(25);
+		label.getStyleClass().add("labelContent");
 		whiteboard.setFitHeight(280);
 		whiteboard.setFitWidth(560);
 		whiteboard.setLayoutX(20);
@@ -64,6 +77,7 @@ public class DuringTheGame{
 		paper1.addEventHandler(MouseEvent.MOUSE_CLICKED, TestClientFx.getEvent().get(1));
 		scissors1.addEventHandler(MouseEvent.MOUSE_CLICKED, TestClientFx.getEvent().get(2));
 		root.getChildren().addAll(rock1,paper1,scissors1,whiteboard,clock,label);
+
 		
 		return root;
 		

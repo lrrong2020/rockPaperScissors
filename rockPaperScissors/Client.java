@@ -44,6 +44,7 @@ public class Client
 
 	//encapsulated results
 	public ResultDisplayBean rdp = new ResultDisplayBean();
+	private boolean makeChoice=false;
 
 
 	//constructors
@@ -110,7 +111,13 @@ public class Client
 	{
 		return isHost;
 	}
-
+	public void setMakeChoice(boolean b) {
+		this.makeChoice=b;
+	}
+	
+	public boolean getMakeChoice() {
+		return makeChoice;
+	}
 	public void setHasStopped(boolean hasStopped)
 	{
 		this.hasStopped = hasStopped;
@@ -467,6 +474,7 @@ public class Client
 		if(this.getCanChoose()) 
 		{
 			this.countDownThread.interrupt();
+			this.setMakeChoice(true);
 			this.setCanChoose(false);
 			ChoiceBean choiceBean = new ChoiceBean(choiceName, player, this.getRoundNoInt());
 			//			display("Your choice:" + choiceBean.getChoice().getChoiseName());

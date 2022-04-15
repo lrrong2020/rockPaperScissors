@@ -68,8 +68,10 @@ public class TestClientFx extends Application
 		Button enter = new Button("OK");
 		grid.add(enter, 0, 3);
 		welcomePage=new Scene(grid,600,400);
+
 		Scene startWelcomePage=new Scene(start.getWelcomePage(),600,400);
 		startWelcomePage.getStylesheets().add(getClass().getResource("PagesSettings.css").toExternalForm());
+
 
 		enter.setOnAction(e->{
 			System.out.println(IP.getText().toString().trim());
@@ -106,12 +108,13 @@ public class TestClientFx extends Application
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-
+			
 			Stage window;
 			if(client.getIsHost()) {
 				window=(Stage)enter.getScene().getWindow();
 				window.setTitle("Welcome to the Rock Paper Scissors Game!");
 				window.setScene(startWelcomePage);
+
 				start.bt1.setOnAction(m->{
 					
 					Stage window1=(Stage)start.bt1.getScene().getWindow();
@@ -157,6 +160,7 @@ public class TestClientFx extends Application
 					
 					//window.setScene(duringGame);
 				//});
+
 				AnimationTimer am1=new StartEndChecker(window);
 				am1.start();
 			}
