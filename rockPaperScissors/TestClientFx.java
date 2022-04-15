@@ -477,33 +477,29 @@ public class TestClientFx extends Application
 				checkStop();
 			}
 			else {
-				window.setOnCloseRequest(new EventHandler<WindowEvent>() {
-					public void handle(WindowEvent event) {
-						event.consume();
+				
+						
 						Alert alert = new Alert(AlertType.WARNING);
 						alert.setTitle("Warning!");
 						alert.setHeaderText("Exception Occurs");
 						alert.setContentText("Click OK to exit the game.");
-						Optional<ButtonType> result = alert.showAndWait();
-						if (result.get() == ButtonType.OK) {
+						alert.show();
+						alert.setOnCloseRequest(e -> {
+						if (alert.getResult() == ButtonType.OK) {
 							window.close();
-							Platform.exit();
 							System.exit(0);
 						}
-						else if (result.get() == ButtonType.CANCEL) 
+						else if (alert.getResult() == ButtonType.CANCEL) 
 						{
 							window.close();
-							Platform.exit();
 							System.exit(0);
 						}
 						else 
 						{
 							window.close();
-							Platform.exit();
 							System.exit(0);
 						}
-					}
-				});
+					});
 				stop();
 			}
 		}
