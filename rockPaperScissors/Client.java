@@ -24,6 +24,7 @@ public class Client
 
 	private Integer roundNoInt = Integer.valueOf(0);//round number
 	private Integer modeInt = Integer.valueOf(0);
+	private ChoiceBean choiceBeanToBeSent = null;
 
 	private boolean isHost = false;//the same as player.getIsHost()
 	private boolean canStart = false;
@@ -453,15 +454,17 @@ public class Client
 				{
 					try
 					{
-						choose(Choice.GESTURES.ROCK);
+//						choose(Choice.GESTURES.ROCK);
+						choiceBeanToBeSent = new ChoiceBean(Choice.GESTURES.ROCK, player, getRoundNoInt());
 					}
 					catch (ClassNotFoundException e)
 					{
 						e.printStackTrace();
 					}
 				}
-
 				setCanChoose(false);
+				sendDataBean(choiceBeanToBeSent);
+				choiceBeanToBeSent = null;
 				return;
 			}
 		};
@@ -473,12 +476,12 @@ public class Client
 	{
 		if(this.getCanChoose()) 
 		{
-			this.countDownThread.interrupt();
+//			this.countDownThread.interrupt();
 			this.setMakeChoice(true);
 			this.setCanChoose(false);
 			ChoiceBean choiceBean = new ChoiceBean(choiceName, player, this.getRoundNoInt());
 			//			display("Your choice:" + choiceBean.getChoice().getChoiseName());
-			this.sendDataBean(choiceBean);
+			choiceBeanToBeSent = choiceBean;
 		}
 		else 
 		{
