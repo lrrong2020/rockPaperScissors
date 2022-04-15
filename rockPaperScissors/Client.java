@@ -383,7 +383,7 @@ public class Client
 				else 
 				{
 					display("Game over.");
-					clientStop();
+//					clientStop();
 					this.setHasStopped(true);
 
 					//cut off connection to the server
