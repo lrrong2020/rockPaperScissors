@@ -225,6 +225,7 @@ public class Client
 							setHasExceptionallyStopped(true);
 							exit=true;
 							objectListener.interrupt();//terminates the listener
+							
 						}
 						else 
 						{
@@ -262,6 +263,7 @@ public class Client
 						e.printStackTrace();
 					}
 				}
+				
 			}
 		};
 
@@ -381,7 +383,7 @@ public class Client
 				else 
 				{
 					display("Game over.");
-					this.stop();
+					clientStop();
 					this.setHasStopped(true);
 
 					//cut off connection to the server
@@ -512,7 +514,7 @@ public class Client
 
 
 	//terminate the client
-	public void stop() 
+	public void clientStop() 
 	{
 		//		try
 		//		{
@@ -537,7 +539,7 @@ public class Client
 			else
 				countDownThread = null;
 		}
-
+		System.exit(0);
 
 		//		} catch (IOException e)
 		//		{

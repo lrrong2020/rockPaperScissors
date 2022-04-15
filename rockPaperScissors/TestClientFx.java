@@ -377,7 +377,7 @@ public class TestClientFx extends Application
 			if(result.get() == ButtonType.OK) {
 				if(client != null)
 				{
-					client.stop();
+					client.clientStop();
 				}
 				if(am != null)
 				{
@@ -482,11 +482,25 @@ public class TestClientFx extends Application
 						event.consume();
 						Alert alert = new Alert(AlertType.WARNING);
 						alert.setTitle("Warning!");
-						alert.setHeaderText("Your opponent quits the game");
+						alert.setHeaderText("Exception Occurs");
 						alert.setContentText("Click OK to exit the game.");
 						Optional<ButtonType> result = alert.showAndWait();
 						if (result.get() == ButtonType.OK) {
 							window.close();
+							Platform.exit();
+							System.exit(0);
+						}
+						else if (result.get() == ButtonType.CANCEL) 
+						{
+							window.close();
+							Platform.exit();
+							System.exit(0);
+						}
+						else 
+						{
+							window.close();
+							Platform.exit();
+							System.exit(0);
 						}
 					}
 				});
