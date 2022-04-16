@@ -22,6 +22,9 @@ public class DuringTheGame{
 	
 	private Pane root;
 	public Label label=new Label();
+	public Label label1=new Label();
+	public Label label2=new Label();
+	public Label label3=new Label();
 	private int i = 10;
 
 	
@@ -50,9 +53,12 @@ public class DuringTheGame{
 		ImageView whiteboard=new ImageView(new Image("/rockPaperScissors/rockPaperScissors/media/whiteboard.png"));
 		
 		ImageView clock=new ImageView(new Image("/rockPaperScissors/rockPaperScissors/media/clock.png"));
-		label.setLayoutX(530);
-		label.setLayoutY(25);
-		label.getStyleClass().add("labelContent");
+		label3.setLayoutX(150);
+		label3.setLayoutY(60);
+		label1.setLayoutX(150);
+		label1.setLayoutY(80);
+		label2.setLayoutX(150);
+		label2.setLayoutY(100);
 		clock.setFitHeight(50);
 		clock.setFitWidth(50);
 		clock.setLayoutX(510);
@@ -60,6 +66,9 @@ public class DuringTheGame{
 		label.setLayoutX(530);
 		label.setLayoutY(25);
 		label.getStyleClass().add("labelContent");
+		label1.getStyleClass().add("labelContent");
+		label2.getStyleClass().add("labelContent");
+		label3.getStyleClass().add("labelContent");
 		whiteboard.setFitHeight(280);
 		whiteboard.setFitWidth(560);
 		whiteboard.setLayoutX(20);
@@ -76,7 +85,7 @@ public class DuringTheGame{
 		rock1.addEventHandler(MouseEvent.MOUSE_CLICKED, TestClientFx.getEvent().get(0));
 		paper1.addEventHandler(MouseEvent.MOUSE_CLICKED, TestClientFx.getEvent().get(1));
 		scissors1.addEventHandler(MouseEvent.MOUSE_CLICKED, TestClientFx.getEvent().get(2));
-		root.getChildren().addAll(rock1,paper1,scissors1,whiteboard,clock,label);
+		root.getChildren().addAll(rock1,paper1,scissors1,whiteboard,clock,label,label1,label2,label3);
 
 		
 		return root;
