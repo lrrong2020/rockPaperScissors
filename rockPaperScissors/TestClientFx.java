@@ -353,8 +353,9 @@ public class TestClientFx extends Application
 	private void setDuringGameScene(Stage window) {
 		Parent root=during.CreateGamePage();
 		labelActionPerformed(new ActionEvent(root, 0, null));
+		label3ActionPerformed(new ActionEvent(root, 1, null));
 		if(client.getModeInt()!=1) {
-			label1ActionPerformed(new ActionEvent(root, 1, null));
+			label1ActionPerformed(new ActionEvent(root, 2, null));
 		}
 		Scene duringGame=new Scene(root,600,400);
 		duringGame.getStylesheets().add(getClass().getResource("GamePageSettings.css").toExternalForm());
@@ -426,7 +427,7 @@ public class TestClientFx extends Application
 	        public long scheduledExecutionTime() {
 	        	return client.getModeInt();
 	        }
-	    }, 3000, 1000);
+	    }, 0, 1000);
 	    }
 	public void label1ActionPerformed(java.awt.event.ActionEvent evt) {
 	    Timer timer = new Timer();
@@ -437,7 +438,8 @@ public class TestClientFx extends Application
 	        	javafx.application.Platform.runLater(new Runnable() {
 	                @Override
 	                public void run() {
-	                		during.label3.setText("Round "+k+" :");
+	                		
+	                		during.label4.setText("");
 	                		during.label1.setText("Your choice is "+client.rdp.getResultList().get(k-1).getYourChoice().getChoiseName());
 	                		during.label2.setText("Your Opponent's choice is "+client.rdp.getResultList().get(k-1).getOpponentChoice().getChoiseName());
 	                		k++;
@@ -452,7 +454,31 @@ public class TestClientFx extends Application
 	        public long scheduledExecutionTime() {
 	        	return client.getModeInt();
 	        }
-	    }, 13000, 13000);
+	    }, 10000, 13000);
+	    }
+	public void label3ActionPerformed(java.awt.event.ActionEvent evt) {
+	    Timer timer = new Timer();
+	    timer.scheduleAtFixedRate(new TimerTask() {
+	    	int k=1;
+	        @Override
+	        public void run() {
+	        	javafx.application.Platform.runLater(new Runnable() {
+	                @Override
+	                public void run() {
+	                		during.label1.setText("");
+	                		during.label2.setText("");
+	                		during.label3.setText("Round "+k+" :");
+	                		during.label4.setText("Please make your choice in 10 seconds\n(The default choice:rock)");
+	                		
+	                		
+	                }
+	                
+	            });
+	        }
+	        public long scheduledExecutionTime() {
+	        	return client.getModeInt();
+	        }
+	    }, 0, 13000);
 	    }
 
 

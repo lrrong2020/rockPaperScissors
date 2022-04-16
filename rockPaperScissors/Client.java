@@ -409,13 +409,7 @@ public class Client
 		//		this.sendDataBean(new StartBean(player));
 
 		//get users some time
-		try
-		{
-			TimeUnit.SECONDS.sleep(3);
-		} catch (InterruptedException e)
-		{
-			e.printStackTrace();
-		}
+		
 		startRound();
 	}
 
@@ -465,8 +459,15 @@ public class Client
 				setCanChoose(false);
 				sendDataBean(choiceBeanToBeSent);
 				choiceBeanToBeSent = null;
+				try {
+					sleep(3000);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				return;
 			}
+			
 		};
 		countDownThread.start();
 	}
