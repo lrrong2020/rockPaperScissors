@@ -544,7 +544,7 @@ public class Client
 			
 			//debug
 			display(choiceName);
-			this.setMakeChoice(false);
+			
 		}
 		else 
 		{

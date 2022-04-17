@@ -461,7 +461,11 @@ public void ClientMakeChocieChecker(java.awt.event.ActionEvent evt) {
 			int i=1;
 			@Override
 			public void run() {
-				if(!client.getMakeChoice()) {
+				//this.setMakeChoice(false);
+				if(client.getMakeChoice()) {
+					client.setMakeChoice(false);
+				}
+				else{
 					try {
 						client.choose(Choice.GESTURES.ROCK);
 						i++;
