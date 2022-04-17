@@ -350,11 +350,11 @@ public class TestClientFx extends Application
 	private void setDuringGameScene(Stage window) {
 		Parent root=during.CreateGamePage();
 		labelActionPerformed(new ActionEvent(root, 0, null));
-		
-//		label3ActionPerformed(new ActionEvent(root, 1, null));
-//		if(client.getModeInt()!=1) {
-////			label1ActionPerformed(new ActionEvent(root, 2, null));
-//		}
+
+		//		label3ActionPerformed(new ActionEvent(root, 1, null));
+		//		if(client.getModeInt()!=1) {
+		////			label1ActionPerformed(new ActionEvent(root, 2, null));
+		//		}
 		Scene duringGame=new Scene(root,600,400);
 		duringGame.getStylesheets().add(getClass().getResource("GamePageSettings.css").toExternalForm());
 		window.setScene(duringGame);
@@ -412,7 +412,7 @@ public class TestClientFx extends Application
 						}
 						else {
 							during.label.setText(Integer.toString(i--));
-						}		
+						}	
 					}
 
 				});
@@ -422,7 +422,7 @@ public class TestClientFx extends Application
 			}
 		}, 0, 1000);
 	}
-	
+
 	private class RoundNoChecker extends AnimationTimer 
 	{
 		@Override
@@ -430,7 +430,7 @@ public class TestClientFx extends Application
 		{
 			if(client.getRoundNoInt().equals(roundNoInt)) 
 			{
-				
+
 			}
 			else if(client.getRoundNoInt().compareTo(roundNoInt) == 1)
 			{
@@ -449,33 +449,33 @@ public class TestClientFx extends Application
 		}
 	}
 
-//	public void label1ActionPerformed(java.awt.event.ActionEvent evt) {
-//		Timer timer = new Timer();
-//		timer.scheduleAtFixedRate(new TimerTask() {
-//			int k=1;
-//			@Override
-//			public void run() {
-//				javafx.application.Platform.runLater(new Runnable() {
-//					@Override
-//					public void run() {
-//
-//						during.label4.setText("");
-//						during.label1.setText("Your choice is "+client.rdp.getResultList().get(k-1).getYourChoice().getChoiseName());
-//						during.label2.setText("Your Opponent's choice is "+client.rdp.getResultList().get(k-1).getOpponentChoice().getChoiseName());
-//						k++;
-//						if(k==client.getModeInt()) {
-//							cancel();
-//						}
-//
-//					}
-//
-//				});
-//			}
-//			public long scheduledExecutionTime() {
-//				return client.getModeInt();
-//			}
-//		}, 10000, 13000);
-//	}
+	//	public void label1ActionPerformed(java.awt.event.ActionEvent evt) {
+	//		Timer timer = new Timer();
+	//		timer.scheduleAtFixedRate(new TimerTask() {
+	//			int k=1;
+	//			@Override
+	//			public void run() {
+	//				javafx.application.Platform.runLater(new Runnable() {
+	//					@Override
+	//					public void run() {
+	//
+	//						during.label4.setText("");
+	//						during.label1.setText("Your choice is "+client.rdp.getResultList().get(k-1).getYourChoice().getChoiseName());
+	//						during.label2.setText("Your Opponent's choice is "+client.rdp.getResultList().get(k-1).getOpponentChoice().getChoiseName());
+	//						k++;
+	//						if(k==client.getModeInt()) {
+	//							cancel();
+	//						}
+	//
+	//					}
+	//
+	//				});
+	//			}
+	//			public long scheduledExecutionTime() {
+	//				return client.getModeInt();
+	//			}
+	//		}, 10000, 13000);
+	//	}
 	public void label3ActionPerformed(java.awt.event.ActionEvent evt) {
 		Timer timer = new Timer();
 		timer.scheduleAtFixedRate(new TimerTask() {
