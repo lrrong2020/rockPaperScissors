@@ -349,6 +349,7 @@ public class Client
 				rdp.appendResult(resultBean.getYourChoice(), resultBean.getOpponentChoice(), winOrLose);
 				
 				this.setRoundNoInt(Integer.valueOf(resultBean.getRoundNoInt().intValue()+1));//auto boxing?
+				//System.out.println(this.getRoundNoInt()+"   hhhhhh");
 				//during the game
 				if(resultBean.getRoundNoInt().compareTo(modeInt) < 0) 
 				{
@@ -543,6 +544,7 @@ public class Client
 			
 			//debug
 			display(choiceName);
+			this.setMakeChoice(false);
 		}
 		else 
 		{

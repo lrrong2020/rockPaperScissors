@@ -351,7 +351,7 @@ public class TestClientFx extends Application
 		Parent root=during.CreateGamePage();
 		labelActionPerformed(new ActionEvent(root, 0, null));
 
-		//		label3ActionPerformed(new ActionEvent(root, 1, null));
+		label3ActionPerformed(new ActionEvent(root, 1, null));
 		//		if(client.getModeInt()!=1) {
 		////			label1ActionPerformed(new ActionEvent(root, 2, null));
 		//		}
@@ -393,6 +393,7 @@ public class TestClientFx extends Application
 	public void labelActionPerformed(java.awt.event.ActionEvent evt) {
 		Timer timer = new Timer();
 		AnimationTimer roundNoChecker = new RoundNoChecker();
+		ClientMakeChocieChecker(new ActionEvent(client, 0, null));
 		timer.scheduleAtFixedRate(new TimerTask() {
 			int k=1;
 			@Override
@@ -412,8 +413,10 @@ public class TestClientFx extends Application
 						}
 						else {
 							during.label.setText(Integer.toString(i--));
-						}	
+						}
+						
 					}
+					
 
 				});
 			}
@@ -430,7 +433,10 @@ public class TestClientFx extends Application
 		{
 			if(client.getRoundNoInt().equals(roundNoInt)) 
 			{
-
+				
+			}
+			else if(client.getRoundNoInt()>client.getModeInt()) {
+				stop();
 			}
 			else if(client.getRoundNoInt().compareTo(roundNoInt) == 1)
 			{
@@ -441,6 +447,7 @@ public class TestClientFx extends Application
 				roundNoInt = client.getRoundNoInt();
 				stop();
 			}
+			
 			else 
 			{
 				System.out.print("INCONSISTENT");
@@ -448,6 +455,33 @@ public class TestClientFx extends Application
 			}
 		}
 	}
+public void ClientMakeChocieChecker(java.awt.event.ActionEvent evt) {
+		Timer timer = new Timer();
+		timer.scheduleAtFixedRate(new TimerTask() {
+			int i=1;
+			@Override
+			public void run() {
+				if(!client.getMakeChoice()) {
+					try {
+						client.choose(Choice.GESTURES.ROCK);
+						i++;
+						
+					} catch (ClassNotFoundException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				if(i>scheduledExecutionTime()) {
+					cancel();
+				}
+				
+			}
+			public long scheduledExecutionTime() {
+				return client.getModeInt();
+			}
+		}, 10000, 11000);
+	}
+	
 
 	//	public void label1ActionPerformed(java.awt.event.ActionEvent evt) {
 	//		Timer timer = new Timer();
@@ -489,7 +523,7 @@ public class TestClientFx extends Application
 						during.label2.setText("");
 						during.label3.setText("Round "+k+" :");
 						during.label4.setText("Please make your choice in 10 seconds\n(The default choice:rock)");
-
+						k++;
 
 					}
 
@@ -498,7 +532,7 @@ public class TestClientFx extends Application
 			public long scheduledExecutionTime() {
 				return client.getModeInt();
 			}
-		}, 0, 10000);
+		}, 0, 11000);
 	}
 
 
