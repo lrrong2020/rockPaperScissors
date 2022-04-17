@@ -353,16 +353,16 @@ public class Client
 				{
 					//control the choice
 
-					//get users some time
-					try
-					{
-						TimeUnit.SECONDS.sleep(3);
-					} catch (InterruptedException e)
-					{
-						e.printStackTrace();
-					}
-
-					startRound();
+//					//get users some time
+//					try
+//					{
+//						TimeUnit.SECONDS.sleep(3);
+//					} catch (InterruptedException e)
+//					{
+//						e.printStackTrace();
+//					}
+//
+//					startRound();
 				}
 				else 
 				{
@@ -410,67 +410,76 @@ public class Client
 
 		//get users some time
 		
-		startRound();
+//		startRound();
 	}
 
-	//count down timer for round time
-	private void startRound()
-	{
-		int seconds = 10;
-		display("==========");
-		display("Round["+this.getRoundNoInt().intValue()+"] begins! Please make your choice in " + seconds + " seconds.");
-
-		this.setCanChoose(true);
-
-		countDownThread = new Thread() {
-			public void run() 
-			{	
-				setCanChoose(true);
-				for(int j = seconds;j > 0;j--) 
-				{
-					if(hasExceptionallyStopped) 
-					{
-						return;
-					}
-					//	display count down i s
-					display(j+"");
-					try 
-					{
-						sleep(1000);
-					} 
-					catch (InterruptedException e) 
-					{
-						//do nothing
-						return;
-					}
-				}
-				if(getCanChoose()) 
-				{
-					try
-					{
-//						choose(Choice.GESTURES.ROCK);
-						choiceBeanToBeSent = new ChoiceBean(Choice.GESTURES.ROCK, player, getRoundNoInt());
-					}
-					catch (ClassNotFoundException e)
-					{
-						e.printStackTrace();
-					}
-				}
-				setCanChoose(false);
-				sendDataBean(choiceBeanToBeSent);
-				choiceBeanToBeSent = null;
-				try {
-					sleep(3000);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				return;
-			}
-			
-		};
-		countDownThread.start();
-	}
+//	//count down timer for round time
+//	private void startRound()
+//	{
+//		int seconds = 10;
+//		display("==========");
+//		display("Round["+this.getRoundNoInt().intValue()+"] begins! Please make your choice in " + seconds + " seconds.");
+//		//get users some time
+//		try
+//		{
+//			TimeUnit.SECONDS.sleep(3);
+//		} catch (InterruptedException e)
+//		{
+//			e.printStackTrace();
+//		}
+//
+//		
+//		this.setCanChoose(true);
+//
+//		countDownThread = new Thread() {
+//			public void run() 
+//			{	
+//				setCanChoose(true);
+//				for(int j = seconds;j > 0;j--) 
+//				{
+//					if(hasExceptionallyStopped) 
+//					{
+//						return;
+//					}
+//					//	display count down i s
+//					display(j+"");
+//					try 
+//					{
+//						sleep(1000);
+//					} 
+//					catch (InterruptedException e) 
+//					{
+//						//do nothing
+//						return;
+//					}
+//				}
+//				if(getCanChoose()) 
+//				{
+//					try
+//					{
+////						choose(Choice.GESTURES.ROCK);
+//						choiceBeanToBeSent = new ChoiceBean(Choice.GESTURES.ROCK, player, getRoundNoInt());
+//					}
+//					catch (ClassNotFoundException e)
+//					{
+//						e.printStackTrace();
+//					}
+//				}
+//				setCanChoose(false);
+//				sendDataBean(choiceBeanToBeSent);
+//				choiceBeanToBeSent = null;
+//				try {
+//					sleep(3000);
+//				} catch (InterruptedException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//				return;
+//			}
+//			
+//		};
+//		countDownThread.start();
+//	}
 
 	//the client made his/her choice
 	public void choose(String choiceName) throws ClassNotFoundException 
