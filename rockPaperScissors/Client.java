@@ -407,6 +407,53 @@ public class Client
 		this.setModeInt(mode);
 		display("The game is on!"+"\nBO"+mode);
 		this.setRoundNoInt(Integer.valueOf(1));
+		for(int i=0;i<roundNoInt;i++) {
+			int seconds = 10;
+			display("==========");
+			display("Round["+this.getRoundNoInt().intValue()+"] begins! Please make your choice in " + seconds + " seconds.");
+			this.setCanChoose(true);
+			for(int j = seconds;j > 0;j--) 
+				{
+				if(hasExceptionallyStopped) 
+					{
+					return;
+					}
+					//	display count down i s
+					display(j+"");
+					try 
+					{
+						TimeUnit.SECONDS.sleep(1);
+					} 
+					catch (InterruptedException e) 
+					{
+						//do nothing
+						return;
+					}
+				}
+			if(getCanChoose()) 
+				{
+					try
+					{
+						choose(Choice.GESTURES.ROCK);
+						choiceBeanToBeSent = new ChoiceBean(Choice.GESTURES.ROCK, player, getRoundNoInt());
+				}
+					catch (ClassNotFoundException e)
+				{
+					e.printStackTrace();
+			}
+				setCanChoose(false);
+				sendDataBean(choiceBeanToBeSent);
+				choiceBeanToBeSent = null;
+				try {
+					TimeUnit.SECONDS.sleep(3);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			
+			}
+		}
+		//handleGameOnObject
 		//		this.sendDataBean(new StartBean(player));
 
 		//get users some time
