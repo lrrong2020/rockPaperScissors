@@ -464,6 +464,7 @@ public void ClientMakeChocieChecker(java.awt.event.ActionEvent evt) {
 				//this.setMakeChoice(false);
 				if(client.getMakeChoice()) {
 					client.setMakeChoice(false);
+					i++;
 				}
 				else{
 					try {
