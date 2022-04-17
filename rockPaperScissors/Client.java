@@ -492,7 +492,10 @@ public class Client
 			this.setCanChoose(false);
 			ChoiceBean choiceBean = new ChoiceBean(choiceName, player, this.getRoundNoInt());
 			//			display("Your choice:" + choiceBean.getChoice().getChoiseName());
-			choiceBeanToBeSent = choiceBean;
+			sendDataBean(choiceBean);
+			
+			//debug
+			display(choiceName);
 		}
 		else 
 		{

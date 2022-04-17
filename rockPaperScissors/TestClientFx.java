@@ -33,6 +33,7 @@ public class TestClientFx extends Application
 	public static Client client = null;
 	public static boolean hasStarted = false;
 	public static boolean hasStopped = false;
+	private Integer roundNoInt = Integer.valueOf(1);
 
 	//private Scene findIPPage;
 	private Scene welcomePage;
@@ -108,7 +109,7 @@ public class TestClientFx extends Application
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-			
+
 			Stage window;
 			if(client.getIsHost()) {
 				window=(Stage)enter.getScene().getWindow();
@@ -116,7 +117,7 @@ public class TestClientFx extends Application
 				window.setScene(startWelcomePage);
 
 				start.bt1.setOnAction(m->{
-					
+
 					Stage window1=(Stage)start.bt1.getScene().getWindow();
 					window1.setTitle("Game started");
 					try {
@@ -126,11 +127,11 @@ public class TestClientFx extends Application
 						e1.printStackTrace();
 					}
 					setDuringGameScene(window1);
-					
-					
+
+
 				});
 				start.bt2.setOnAction(m->{
-					
+
 					Stage window1=(Stage)start.bt2.getScene().getWindow();
 					window1.setTitle("Game started");
 					try {
@@ -140,11 +141,11 @@ public class TestClientFx extends Application
 						e1.printStackTrace();
 					}
 					setDuringGameScene(window1);
-					
-					
+
+
 				});
 				start.bt3.setOnAction(m->{
-					
+
 					Stage window1=(Stage)start.bt3.getScene().getWindow();
 					window1.setTitle("Game started");
 					try {
@@ -154,11 +155,11 @@ public class TestClientFx extends Application
 						e1.printStackTrace();
 					}
 					setDuringGameScene(window1);
-					
-					
+
+
 				});
-					
-					//window.setScene(duringGame);
+
+				//window.setScene(duringGame);
 				//});
 
 				AnimationTimer am1=new StartEndChecker(window);
@@ -172,7 +173,7 @@ public class TestClientFx extends Application
 				window=(Stage)enter.getScene().getWindow();
 				window.setScene(waitingRes);
 				window.setTitle("Game will be started in several seconds");
-				
+
 
 
 				//					try
@@ -287,10 +288,6 @@ public class TestClientFx extends Application
 		listeners.add(scissorsListener);
 
 		return listeners;
-
-
-
-
 	}
 
 
@@ -353,10 +350,11 @@ public class TestClientFx extends Application
 	private void setDuringGameScene(Stage window) {
 		Parent root=during.CreateGamePage();
 		labelActionPerformed(new ActionEvent(root, 0, null));
-		label3ActionPerformed(new ActionEvent(root, 1, null));
-		if(client.getModeInt()!=1) {
-			label1ActionPerformed(new ActionEvent(root, 2, null));
-		}
+		
+//		label3ActionPerformed(new ActionEvent(root, 1, null));
+//		if(client.getModeInt()!=1) {
+////			label1ActionPerformed(new ActionEvent(root, 2, null));
+//		}
 		Scene duringGame=new Scene(root,600,400);
 		duringGame.getStylesheets().add(getClass().getResource("GamePageSettings.css").toExternalForm());
 		window.setScene(duringGame);
@@ -393,93 +391,115 @@ public class TestClientFx extends Application
 	}
 	private int i = 10;
 	public void labelActionPerformed(java.awt.event.ActionEvent evt) {
-	    Timer timer = new Timer();
-	    timer.scheduleAtFixedRate(new TimerTask() {
-	    	int k=1;
-	        @Override
-	        public void run() {
-	        	javafx.application.Platform.runLater(new Runnable() {
-	                @Override
-	                public void run() {
-	                		if(i==0) {
-	                			during.label.setText(Integer.toString(i));
-	                			k++;
-	                			if(k>scheduledExecutionTime()) {
-		                			cancel();
-		                		}
-	                			try {
-									TimeUnit.SECONDS.sleep(3);
-								} catch (InterruptedException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								}
-	                			i=12;
-	                		}
-	                		else {
-	                			during.label.setText(Integer.toString(i--));
-	                		}
-	                		
-	                		
-	                }
-	                
-	            });
-	        }
-	        public long scheduledExecutionTime() {
-	        	return client.getModeInt();
-	        }
-	    }, 0, 1000);
-	    }
-	public void label1ActionPerformed(java.awt.event.ActionEvent evt) {
-	    Timer timer = new Timer();
-	    timer.scheduleAtFixedRate(new TimerTask() {
-	    	int k=1;
-	        @Override
-	        public void run() {
-	        	javafx.application.Platform.runLater(new Runnable() {
-	                @Override
-	                public void run() {
-	                		
-	                		during.label4.setText("");
-	                		during.label1.setText("Your choice is "+client.rdp.getResultList().get(k-1).getYourChoice().getChoiseName());
-	                		during.label2.setText("Your Opponent's choice is "+client.rdp.getResultList().get(k-1).getOpponentChoice().getChoiseName());
-	                		k++;
-	                		if(k==client.getModeInt()) {
-	                			cancel();
-	                		}
-	                		
-	                }
-	                
-	            });
-	        }
-	        public long scheduledExecutionTime() {
-	        	return client.getModeInt();
-	        }
-	    }, 10000, 13000);
-	    }
+		Timer timer = new Timer();
+		AnimationTimer roundNoChecker = new RoundNoChecker();
+		timer.scheduleAtFixedRate(new TimerTask() {
+			int k=1;
+			@Override
+			public void run() {
+				javafx.application.Platform.runLater(new Runnable() {
+					@Override
+					public void run() {
+						client.setCanChoose(true);
+						if(i==0) {
+							roundNoChecker.start();
+							during.label.setText(Integer.toString(i));
+							k++;
+							if(k>scheduledExecutionTime()) {
+								cancel();
+							}
+							i=10;
+						}
+						else {
+							during.label.setText(Integer.toString(i--));
+						}		
+					}
+
+				});
+			}
+			public long scheduledExecutionTime() {
+				return client.getModeInt();
+			}
+		}, 0, 1000);
+	}
+	
+	private class RoundNoChecker extends AnimationTimer 
+	{
+		@Override
+		public void handle(long arg0)
+		{
+			if(client.getRoundNoInt().equals(roundNoInt)) 
+			{
+				
+			}
+			else if(client.getRoundNoInt().compareTo(roundNoInt) == 1)
+			{
+				System.out.println(client.getRoundNoInt());
+				during.label4.setText("");
+				during.label1.setText("Your choice is "+client.rdp.getResultList().get(roundNoInt - 1).getYourChoice().getChoiseName());
+				during.label2.setText("Your Opponent's choice is "+client.rdp.getResultList().get(roundNoInt - 1).getOpponentChoice().getChoiseName());
+				roundNoInt = client.getRoundNoInt();
+				stop();
+			}
+			else 
+			{
+				System.out.print("INCONSISTENT");
+				stop();
+			}
+		}
+	}
+
+//	public void label1ActionPerformed(java.awt.event.ActionEvent evt) {
+//		Timer timer = new Timer();
+//		timer.scheduleAtFixedRate(new TimerTask() {
+//			int k=1;
+//			@Override
+//			public void run() {
+//				javafx.application.Platform.runLater(new Runnable() {
+//					@Override
+//					public void run() {
+//
+//						during.label4.setText("");
+//						during.label1.setText("Your choice is "+client.rdp.getResultList().get(k-1).getYourChoice().getChoiseName());
+//						during.label2.setText("Your Opponent's choice is "+client.rdp.getResultList().get(k-1).getOpponentChoice().getChoiseName());
+//						k++;
+//						if(k==client.getModeInt()) {
+//							cancel();
+//						}
+//
+//					}
+//
+//				});
+//			}
+//			public long scheduledExecutionTime() {
+//				return client.getModeInt();
+//			}
+//		}, 10000, 13000);
+//	}
 	public void label3ActionPerformed(java.awt.event.ActionEvent evt) {
-	    Timer timer = new Timer();
-	    timer.scheduleAtFixedRate(new TimerTask() {
-	    	int k=1;
-	        @Override
-	        public void run() {
-	        	javafx.application.Platform.runLater(new Runnable() {
-	                @Override
-	                public void run() {
-	                		during.label1.setText("");
-	                		during.label2.setText("");
-	                		during.label3.setText("Round "+k+" :");
-	                		during.label4.setText("Please make your choice in 10 seconds\n(The default choice:rock)");
-	                		
-	                		
-	                }
-	                
-	            });
-	        }
-	        public long scheduledExecutionTime() {
-	        	return client.getModeInt();
-	        }
-	    }, 0, 13000);
-	    }
+		Timer timer = new Timer();
+		timer.scheduleAtFixedRate(new TimerTask() {
+			int k=1;
+			@Override
+			public void run() {
+				javafx.application.Platform.runLater(new Runnable() {
+					@Override
+					public void run() {
+						during.label1.setText("");
+						during.label2.setText("");
+						during.label3.setText("Round "+k+" :");
+						during.label4.setText("Please make your choice in 10 seconds\n(The default choice:rock)");
+
+
+					}
+
+				});
+			}
+			public long scheduledExecutionTime() {
+				return client.getModeInt();
+			}
+		}, 0, 10000);
+	}
 
 
 	public static void checkStartGame() 
