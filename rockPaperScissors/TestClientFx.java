@@ -401,7 +401,7 @@ public class TestClientFx extends Application
 				javafx.application.Platform.runLater(new Runnable() {
 					@Override
 					public void run() {
-						client.setCanChoose(true);
+						
 						if(i==0) {
 							roundNoChecker.start();
 							during.label.setText(Integer.toString(i));
@@ -524,6 +524,7 @@ public void ClientMakeChocieChecker(java.awt.event.ActionEvent evt) {
 				javafx.application.Platform.runLater(new Runnable() {
 					@Override
 					public void run() {
+						client.setCanChoose(true);
 						during.label1.setText("");
 						during.label2.setText("");
 						during.label3.setText("Round "+k+" :");
