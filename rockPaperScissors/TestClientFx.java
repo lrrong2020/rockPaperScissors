@@ -137,9 +137,19 @@ public class TestClientFx extends Application
 				window=(Stage)enter.getScene().getWindow();
 				window.setTitle("Welcome to the Rock Paper Scissors Game!");
 				window.setScene(startWelcomePage);
-
+				
+				Alert onePlayer = new Alert(AlertType.WARNING);
+				onePlayer.setTitle("Warning");
+				onePlayer.setHeaderText("You cannot start now!");
+				onePlayer.setContentText("The room has only 1 player");
+				
 				start.bt1.setOnAction(m->{
-
+					if(!client.isCanStart()) 
+					{
+						onePlayer.show();
+						return;
+					}
+					
 					Stage window1=(Stage)start.bt1.getScene().getWindow();
 					window1.setTitle("Game started");
 					try {
@@ -153,7 +163,13 @@ public class TestClientFx extends Application
 
 				});
 				start.bt2.setOnAction(m->{
-
+					if(!client.isCanStart()) 
+					{
+						onePlayer.show();
+						return;
+					}
+					
+					
 					Stage window1=(Stage)start.bt2.getScene().getWindow();
 					window1.setTitle("Game started");
 					try {
@@ -167,7 +183,12 @@ public class TestClientFx extends Application
 
 				});
 				start.bt3.setOnAction(m->{
-
+					if(!client.isCanStart()) 
+					{
+						onePlayer.show();
+						return;
+					}
+					
 					Stage window1=(Stage)start.bt3.getScene().getWindow();
 					window1.setTitle("Game started");
 					try {

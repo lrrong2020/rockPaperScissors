@@ -42,6 +42,7 @@ public class Client
 	private boolean hasStopped = false;
 	private boolean hasExceptionallyStopped = false;
 
+
 	//multithreading related
 	public Semaphore initSemaphore = new Semaphore(1); //can be invoked outside to make sure initialization is done before the client is used
 	private Thread objectListener = null;//class-level thread to continuously listen to the server
@@ -417,6 +418,7 @@ public class Client
 			setCanStart(false);
 			display("Host starting game" + "\nBO"+mode);
 			sendDataBean(new StartBean(mode));
+			
 		}
 		else 
 		{
