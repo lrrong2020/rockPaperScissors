@@ -1,0 +1,74 @@
+/* JavaFX CSS - Leave this comment until you have at least create one rule which uses -fx-Property */
+.root{
+  -fx-background-image: url('/rockPaperScissors/media/background.jpg');
+  -fx-background-position: center center; 
+  -fx-background-repeat: stretch;
+  -fx-background-size: 800.0 600.0;
+}
+.bt{
+	 -fx-content-display: top;
+}
+
+.paper{
+	-fx-graphic: url(/rockPaperScissors/media/paper.png);
+	-fx-content-display:top;
+	-fx-graphic-fitHeight:50;
+}
+.scissor{
+	-fx-graphic: url(/rockPaperScissors/media/scissor.png);
+}
+.score{
+	-fx-text-fill:#FF0086;
+	-fx-font-family:'Amble CN';
+	-fx-font-weight:bold;
+	-fx-font-size:28px;
+}
+.green{
+	-fx-text-fill:#84FE00;
+	-fx-font-family:'Amble CN';
+	-fx-font-weight:bold;
+	-fx-font-size:28px;
+}
+.red{
+	-fx-text-fill:#FF1300;
+	-fx-font-family:'Amble CN';
+	-fx-font-weight:bold;
+	-fx-font-size:28px;
+}
+.tie{
+	-fx-text-fill:#A809FF;
+	-fx-font-family:'Amble CN';
+	-fx-font-weight:bold;
+	-fx-font-size:28px;
+}
+.buttonHome{
+	-fx-font-family:'Arial';
+	-fx-font-size:16px;
+	-fx-effect: dropshadow( three-pass-box, FFFC58, 0, 0, 0, 0);
+}
+.blue{
+	-fx-text-fill:#0D7FFF;
+	-fx-font-family:'Arial';
+	-fx-font-size:12px;
+}
+.roundGreen{
+	-fx-text-fill:#84FE00;
+	-fx-font-family:'Arial';
+	-fx-font-size:12px;
+}
+.roundRed{
+	-fx-text-fill:#FF1300;
+	-fx-font-family:'Arial';
+	-fx-font-size:12px;
+}
+.roundTie{
+	-fx-text-fill:#A809FF;
+	-fx-font-family:'Arial';
+	-fx-font-size:12px;
+}
+
+.labelContent{
+	-fx-font-family:"Times New Roman";
+	-fx-font-weight:bolder;
+	-fx-font-size:25.0 pt;
+}
