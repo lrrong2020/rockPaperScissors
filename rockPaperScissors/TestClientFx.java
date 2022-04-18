@@ -160,6 +160,7 @@ public class TestClientFx extends Application
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
+					setDuringGameScene(window1);
 
 
 

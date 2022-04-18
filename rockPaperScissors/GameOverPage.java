@@ -71,14 +71,7 @@ public class GameOverPage {
 		hbox.setSpacing(20);
 		vbox.getChildren().add(hbox);
 		
-		Button home = new Button("Return to Start Page");// Return to the Start Page Button
-		home.getStyleClass().add("buttonHome");
-		vbox.getChildren().add(home);
-		home.setOnAction(e->{
-			Stage window=(Stage)home.getScene().getWindow();
-			window.setTitle("Game started");
-			window.setScene(startWelcomePageAgain);
-		});
+		
 		
 
 		  VBox v0 = new VBox();
