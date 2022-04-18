@@ -153,15 +153,8 @@ public class TestClientFx extends Application
 					Stage window1=(Stage)start.bt1.getScene().getWindow();
 					window1.setTitle("Game started");
 					try {
-						boolean status = client.hostStartGame(1);
-						if(status) 
-						{
-							setDuringGameScene(window1);
-						}
-						else 
-						{
-							client.setHasExceptionallyStopped(true);
-						}
+						client.hostStartGame(1);
+	
 						
 					} catch (InterruptedException e1) {
 						// TODO Auto-generated catch block
@@ -182,15 +175,8 @@ public class TestClientFx extends Application
 					Stage window1=(Stage)start.bt2.getScene().getWindow();
 					window1.setTitle("Game started");
 					try {
-						boolean status = client.hostStartGame(3);
-						if(status) 
-						{
-							setDuringGameScene(window1);
-						}
-						else 
-						{
-							client.setHasExceptionallyStopped(true);
-						}
+						client.hostStartGame(3);
+
 						
 					} catch (InterruptedException e1) {
 						// TODO Auto-generated catch block
@@ -210,15 +196,8 @@ public class TestClientFx extends Application
 					Stage window1=(Stage)start.bt3.getScene().getWindow();
 					window1.setTitle("Game started");
 					try {
-						boolean status = client.hostStartGame(5);
-						if(status) 
-						{
-							setDuringGameScene(window1);
-						}
-						else 
-						{
-							client.setHasExceptionallyStopped(true);
-						}
+						client.hostStartGame(5);
+
 						
 					} catch (InterruptedException e1) {
 						// TODO Auto-generated catch block
