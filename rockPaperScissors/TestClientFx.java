@@ -665,6 +665,7 @@ public class TestClientFx extends Application
 					try {
 						client.choose(Choice.GESTURES.ROCK);
 						i++;
+						client.setMakeChoice(false);
 
 					} catch (ClassNotFoundException e) {
 						// TODO Auto-generated catch block
