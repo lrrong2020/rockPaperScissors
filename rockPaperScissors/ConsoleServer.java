@@ -6,7 +6,6 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
-import rockPaperScissors.rockPaperScissors.Exceptions.*;
 
 
 public class ConsoleServer
@@ -77,7 +76,105 @@ public class ConsoleServer
 			return HandleTheSocket.socketHandler;
 		}
 
+		public void clientRegister() 
+		{
+			// Listen for a new connection request
+			Socket socket;
+			Thread clientThread = null;
+			Semaphore userMapSemaphore = new Semaphore(1);
+			try 
+			{
+				if(ConsoleServer.CLIENT_HANDLER_MAP.size() < MAX_USERS) 
+				{
 
+					socket = serverSocket.accept();
+					// Create a new thread for the connection
+					HandleAClient task = new HandleAClient(socket);
+
+					// Start a new thread for each client
+					clientThread = new Thread(task);
+
+
+					//if it's a new client (i.e. has never registered or put in the user map)
+					UUID rdUUID = UUID.randomUUID();//generate a random UUID for each client
+					task.setUUID(rdUUID);
+
+
+					//registration
+
+					//						CLIENT_HANDLER_LIST.add(task);//add
+					CLIENT_HANDLER_MAP.put(task.getUUID(), task);
+
+
+					//semaphore.acquire
+					userMapSemaphore.acquire();
+					if(ConsoleServer.CLIENT_HANDLER_MAP.size() == 1) 
+					{
+
+						Map<UUID, HandleAClient> clientHandlers = new ConcurrentHashMap<UUID, HandleAClient>();
+
+
+						clientHandlers.putAll(CLIENT_HANDLER_MAP);
+						Room room = new Room(clientHandlers);
+
+
+						room.setRoomNoInt(ROOM_LIST.size());
+						task.setRoomNo(ROOM_LIST.size());
+						log("Setting roomNo ... " + ROOM_LIST.size());
+						ConsoleServer.ROOM_LIST.add(room);
+						room.checkAllUsers();
+
+
+					}
+
+					//2 players have registered
+					else if(ConsoleServer.CLIENT_HANDLER_MAP.size() == 2) //check
+					{
+						Map<UUID, HandleAClient> clientHandlers = new ConcurrentHashMap<UUID, HandleAClient>();
+
+						clientHandlers.putAll(CLIENT_HANDLER_MAP);
+
+
+						//send startBean to all clients
+						log("\nHandleAClient: 2 users have registered\n");
+
+						//can start game
+						log("ROOM_LIST.size()" + ROOM_LIST.size());
+						Room room = ConsoleServer.getRoom(ROOM_LIST.size() - 1);
+
+						room.setClientHandlers(clientHandlers);
+						task.setRoomNo(room.getRoomNoInt());
+
+
+						for (Entry<UUID, HandleAClient> entry : ConsoleServer.CLIENT_HANDLER_MAP.entrySet()) 
+						{
+							log("Clearing " + entry.getKey().toString() + "in user map");
+							ConsoleServer.CLIENT_HANDLER_MAP.remove(entry.getKey());
+						}
+
+						room.checkAllUsers();
+						room.getHostHandler().sendPreparedBean();
+					}
+					else 
+					{
+						//error
+						log("[Error] - MAP size bigger than 2");
+					}
+					userMapSemaphore.release();
+
+					clientThread.start();
+
+				}
+				else 
+				{
+					return;
+				}
+			} 
+			catch (IOException | InterruptedException e) 
+			{
+				e.printStackTrace();
+			}
+		}
 
 		@Override
 		public void run()
@@ -85,102 +182,7 @@ public class ConsoleServer
 			//continuously accept the connections
 			while (!exit)
 			{
-				// Listen for a new connection request
-				Socket socket;
-				Thread clientThread = null;
-				Semaphore userMapSemaphore = new Semaphore(1);
-				try 
-				{
-					if(ConsoleServer.CLIENT_HANDLER_MAP.size() < MAX_USERS) 
-					{
-
-						socket = serverSocket.accept();
-						// Create a new thread for the connection
-						HandleAClient task = new HandleAClient(socket);
-
-						// Start a new thread for each client
-						clientThread = new Thread(task);
-
-
-						//if it's a new client (i.e. has never registered or put in the user map)
-						UUID rdUUID = UUID.randomUUID();//generate a random UUID for each client
-						task.setUUID(rdUUID);
-
-
-						//registration
-
-						//						CLIENT_HANDLER_LIST.add(task);//add
-						CLIENT_HANDLER_MAP.put(task.getUUID(), task);
-
-
-						//semaphore.acquire
-						userMapSemaphore.acquire();
-						if(ConsoleServer.CLIENT_HANDLER_MAP.size() == 1) 
-						{
-
-							Map<UUID, HandleAClient> clientHandlers = new ConcurrentHashMap<UUID, HandleAClient>();
-
-
-							clientHandlers.putAll(CLIENT_HANDLER_MAP);
-							Room room = new Room(clientHandlers);
-
-
-							room.setRoomNoInt(ROOM_LIST.size());
-							task.setRoomNo(ROOM_LIST.size());
-							log("Setting roomNo ... " + ROOM_LIST.size());
-							ConsoleServer.ROOM_LIST.add(room);
-							room.checkAllUsers();
-
-
-						}
-
-						//2 players have registered
-						else if(ConsoleServer.CLIENT_HANDLER_MAP.size() == 2) //check
-						{
-							Map<UUID, HandleAClient> clientHandlers = new ConcurrentHashMap<UUID, HandleAClient>();
-
-							clientHandlers.putAll(CLIENT_HANDLER_MAP);
-
-
-							//send startBean to all clients
-							log("\nHandleAClient: 2 users have registered\n");
-
-							//can start game
-							log("ROOM_LIST.size()" + ROOM_LIST.size());
-							Room room = ConsoleServer.getRoom(ROOM_LIST.size() - 1);
-
-							room.setClientHandlers(clientHandlers);
-							task.setRoomNo(room.getRoomNoInt());
-
-
-							for (Entry<UUID, HandleAClient> entry : ConsoleServer.CLIENT_HANDLER_MAP.entrySet()) 
-							{
-								log("Clearing " + entry.getKey().toString() + "in user map");
-								ConsoleServer.CLIENT_HANDLER_MAP.remove(entry.getKey());
-							}
-
-							room.checkAllUsers();
-							room.getHostHandler().sendPreparedBean();
-						}
-						else 
-						{
-							//error
-							log("[Error] - MAP size bigger than 2");
-						}
-						userMapSemaphore.release();
-
-						clientThread.start();
-
-					}
-					else 
-					{
-						return;
-					}
-				} 
-				catch (IOException | InterruptedException e) 
-				{
-					e.printStackTrace();
-				}
+				clientRegister();
 			}		
 		}
 		public void stop()
@@ -236,7 +238,7 @@ public class ConsoleServer
 		//check if game is on and send ExitBean
 
 		log("Removing: " + uuid.toString());
-		CLIENT_HANDLER_MAP.remove(uuid);
+		getRoom(roomNo).getClientHandlers().remove(uuid);
 
 		room.checkAllUsers();
 

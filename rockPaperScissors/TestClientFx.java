@@ -17,6 +17,9 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
@@ -24,6 +27,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 public class TestClientFx extends Application
 {
@@ -33,6 +37,7 @@ public class TestClientFx extends Application
 	public static Client client = null;
 	public static boolean hasStarted = false;
 	public static boolean hasStopped = false;
+
 	private Integer roundNoInt = Integer.valueOf(1);
 
 	//private Scene findIPPage;
@@ -41,6 +46,19 @@ public class TestClientFx extends Application
 	public static Parent nodes=during.CreateGamePage();
 	private WelcomePage start=new WelcomePage();
 	private static ArrayList<EventHandler<MouseEvent>>listeners=null;
+
+	public static boolean exceptionallyStopped = false;
+	public static AnimationTimer am;
+	public static AnimationTimer am1;
+	public static AnimationTimer am2;
+
+	//private Scene findIPPage;
+
+	public static Scene startWelcomePage;
+
+
+
+
 	public TestClientFx() {
 
 
@@ -48,6 +66,7 @@ public class TestClientFx extends Application
 
 	//Create the Welcome Page to show
 	public void CreateWelcomePage() {
+
 
 		GridPane grid = new GridPane();
 		grid.setAlignment(Pos.CENTER);
@@ -69,6 +88,7 @@ public class TestClientFx extends Application
 		Button enter = new Button("OK");
 		grid.add(enter, 0, 3);
 		welcomePage=new Scene(grid,600,400);
+
 
 		Scene startWelcomePage=new Scene(start.getWelcomePage(),600,400);
 		startWelcomePage.getStylesheets().add(getClass().getResource("PagesSettings.css").toExternalForm());
@@ -101,6 +121,9 @@ public class TestClientFx extends Application
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
+//			WelcomePage start=new WelcomePage();
+//			Scene startWelcomePage=new Scene(start.getWelcomePage(),600,400);
+//			startWelcomePage.getStylesheets().add(getClass().getResource("PagesSettings.css").toExternalForm());
 
 			try {
 				client.initSemaphore.acquire();
@@ -109,7 +132,6 @@ public class TestClientFx extends Application
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-
 			Stage window;
 			if(client.getIsHost()) {
 				window=(Stage)enter.getScene().getWindow();
@@ -162,8 +184,13 @@ public class TestClientFx extends Application
 				//window.setScene(duringGame);
 				//});
 
-				AnimationTimer am1=new StartEndChecker(window);
+
+				TestClientFx.am1=new StartEndChecker(window);
+
 				am1.start();
+//				client.getCountDown().start();
+				TestClientFx.am2 = new ExceptionallyStopped(window);
+				am2.start();
 			}
 			else {
 
@@ -173,8 +200,8 @@ public class TestClientFx extends Application
 				window=(Stage)enter.getScene().getWindow();
 				window.setScene(waitingRes);
 				window.setTitle("Game will be started in several seconds");
-
-
+				TestClientFx.am2 = new ExceptionallyStopped(window);
+				am2.start();
 
 				//					try
 				//					{
@@ -197,18 +224,125 @@ public class TestClientFx extends Application
 				//						e1.printStackTrace();
 				//					}
 				//					if(!hasStarted) {
-				AnimationTimer am = new StartGameChecker(window);
+				TestClientFx.am = new StartGameChecker(window);
 				am.start();
+
+//				client.getCountDown().start();
 				//						client.s.release();
 
 				//						System.out.println("TestClientFx released. The available is"+client.s.availablePermits());
 				//						}
-				AnimationTimer am1=new StartEndChecker(window);
+				TestClientFx.am1=new StartEndChecker(window);
 				am1.start();
 
 			}	
 			client.initSemaphore.release();
 		});
+
+		IP.setOnKeyPressed(new EventHandler<KeyEvent>() {
+
+
+			@Override
+			public void handle(KeyEvent ke) {
+				if (ke.getCode().equals(KeyCode.ENTER)) {
+					System.out.println(IP.getText().toString().trim());
+					String ipAddr=IP.textProperty().get().trim();
+					TestClientFx.client=new Client(ipAddr);
+					appendTextArea("Client generated");
+					try 
+					{
+						client.initialize();
+						appendTextArea("Client initialized");
+
+
+					}
+					catch(IOException ioe) 
+					{
+						appendTextArea("Client initialize failed");
+
+					}
+					catch (ClassNotFoundException | NullPointerException e1) 
+					{
+						//Invalid DataBean
+						//server passed a null
+						e1.printStackTrace();
+						appendTextArea("Invalid Data from server!");
+					} catch (InterruptedException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					WelcomePage start=new WelcomePage();
+					Scene startWelcomePage=new Scene(start.getWelcomePage(),600,400);
+					startWelcomePage.getStylesheets().add(getClass().getResource("PagesSettings.css").toExternalForm());
+
+					try {
+						client.initSemaphore.acquire();
+
+					} catch (InterruptedException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					Stage window;
+					if(client.getIsHost()) {
+						window=(Stage)enter.getScene().getWindow();
+						window.setTitle("Welcome to the Rock Paper Scissors Game!");
+						window.setScene(startWelcomePage);
+						TestClientFx.am1=new StartEndChecker(window);
+						am1.start();
+//						client.getCountDown().start();
+						TestClientFx.am2 = new ExceptionallyStopped(window);
+						am2.start();
+					}
+					else {
+
+						WaitingPage waiting=new WaitingPage();
+						Scene waitingRes=new Scene(waiting.CreateWaitingPage(),600,400);
+						waitingRes.getStylesheets().add(getClass().getResource("PagesSettings.css").toExternalForm());
+						window=(Stage)enter.getScene().getWindow();
+						window.setScene(waitingRes);
+						window.setTitle("Game will be started in several seconds");
+						TestClientFx.am2 = new ExceptionallyStopped(window);
+						am2.start();
+
+						//					try
+						//					{
+						//						client.s.acquire();
+						//					} catch (InterruptedException e2)
+						//					{
+						//						// TODO Auto-generated catch block
+						//						e2.printStackTrace();
+						//					}
+
+						//					boolean b = false;
+						//					try {
+						//						System.out.println("TestClientFx acquiring ...");
+						//						client.s.acquire();
+						//						b=client.getHasStarted();
+
+
+						//					} catch (InterruptedException e1) {
+						//						// TODO Auto-generated catch block
+						//						e1.printStackTrace();
+						//					}
+						//					if(!hasStarted) {
+						TestClientFx.am = new StartGameChecker(window);
+						am.start();
+//						client.getCountDown().start();
+
+
+						//						client.s.release();
+
+						//						System.out.println("TestClientFx released. The available is"+client.s.availablePermits());
+						//						}
+						TestClientFx.am1=new StartEndChecker(window);
+						am1.start();
+
+					}
+					client.initSemaphore.release();
+				}
+			}
+		});
+
 
 	}
 
@@ -295,6 +429,7 @@ public class TestClientFx extends Application
 	@Override
 	public void start(Stage stage) throws Exception
 	{	
+
 		stage.setTitle("Welcome to the Rock Paper Scissors Game!");
 
 		CreateWelcomePage();
@@ -310,10 +445,26 @@ public class TestClientFx extends Application
 			Optional<ButtonType> result = alert.showAndWait();
 			if(result.get() == ButtonType.OK) {
 				if(client != null)
-					client.stop();
+				{
+					client.clientStop();
+				}
+				if(am != null)
+				{
+					am.stop();
+				}
+				if(am1 != null)
+				{
+					am1.stop();
+				}
+				if(am2 != null)
+				{
+					am2.stop();
+				}
 				Platform.exit();
+				System.exit(0);
 			}
 		});
+
 		stage.show();
 	}
 
@@ -359,8 +510,8 @@ public class TestClientFx extends Application
 		duringGame.getStylesheets().add(getClass().getResource("GamePageSettings.css").toExternalForm());
 		window.setScene(duringGame);
 		window.setTitle("Game started");
-		AnimationTimer amend = new StartEndChecker(window);
-		amend.start();
+		//AnimationTimer amend = new StartEndChecker(window);
+		//amend.start();
 	}
 
 	private class StartEndChecker extends AnimationTimer 
@@ -389,6 +540,8 @@ public class TestClientFx extends Application
 			}
 		}
 	}
+
+
 	private int i = 10;
 	public void labelActionPerformed(java.awt.event.ActionEvent evt) {
 		Timer timer = new Timer();
@@ -401,7 +554,7 @@ public class TestClientFx extends Application
 				javafx.application.Platform.runLater(new Runnable() {
 					@Override
 					public void run() {
-						
+
 						if(i==0) {
 							roundNoChecker.start();
 							during.label.setText(Integer.toString(i));
@@ -414,9 +567,9 @@ public class TestClientFx extends Application
 						else {
 							during.label.setText(Integer.toString(i--));
 						}
-						
+
 					}
-					
+
 
 				});
 			}
@@ -433,7 +586,7 @@ public class TestClientFx extends Application
 		{
 			if(client.getRoundNoInt().equals(roundNoInt)) 
 			{
-				
+
 			}
 			else if(client.getRoundNoInt()>client.getModeInt()) {
 				stop();
@@ -447,15 +600,57 @@ public class TestClientFx extends Application
 				roundNoInt = client.getRoundNoInt();
 				stop();
 			}
-			
+
 			else 
 			{
 				System.out.print("INCONSISTENT");
+			}
+		}
+	}
+
+
+	private class ExceptionallyStopped extends AnimationTimer{
+		Stage window;
+		public ExceptionallyStopped(Stage window) {
+			this.window = window;
+		}
+		public void handle(long arg0)
+		{
+			if(exceptionallyStopped == false) {
+				checkStop();
+			}
+			else {
+
+
+				Alert alert = new Alert(AlertType.WARNING);
+				alert.setTitle("Warning!");
+				alert.setHeaderText("Exception Occurs");
+				alert.setContentText("Click OK to exit the game.");
+				alert.show();
+				alert.setOnCloseRequest(e -> {
+					if (alert.getResult() == ButtonType.OK) {
+						window.close();
+						System.exit(0);
+					}
+					else if (alert.getResult() == ButtonType.CANCEL) 
+					{
+						window.close();
+						System.exit(0);
+					}
+					else 
+					{
+						window.close();
+						System.exit(0);
+					}
+				});
+
 				stop();
 			}
 		}
 	}
-public void ClientMakeChocieChecker(java.awt.event.ActionEvent evt) {
+
+
+	public void ClientMakeChocieChecker(java.awt.event.ActionEvent evt) {
 		Timer timer = new Timer();
 		timer.scheduleAtFixedRate(new TimerTask() {
 			int i=1;
@@ -470,7 +665,7 @@ public void ClientMakeChocieChecker(java.awt.event.ActionEvent evt) {
 					try {
 						client.choose(Choice.GESTURES.ROCK);
 						i++;
-						
+
 					} catch (ClassNotFoundException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -479,14 +674,14 @@ public void ClientMakeChocieChecker(java.awt.event.ActionEvent evt) {
 				if(i>scheduledExecutionTime()) {
 					cancel();
 				}
-				
+
 			}
 			public long scheduledExecutionTime() {
 				return client.getModeInt();
 			}
 		}, 10000, 11000);
 	}
-	
+
 
 	//	public void label1ActionPerformed(java.awt.event.ActionEvent evt) {
 	//		Timer timer = new Timer();
@@ -542,6 +737,7 @@ public void ClientMakeChocieChecker(java.awt.event.ActionEvent evt) {
 	}
 
 
+
 	public static void checkStartGame() 
 	{
 		hasStarted=client.getHasStarted();
@@ -551,5 +747,15 @@ public void ClientMakeChocieChecker(java.awt.event.ActionEvent evt) {
 	{
 		hasStopped = client.getHasStopped();
 	}
+
+	public static Scene getStartWelcomePage() {
+		return startWelcomePage;
+	}
+	public static void checkStop() 
+	{
+		exceptionallyStopped = client.isHasExceptionallyStopped();
+	}
+
+
 
 }

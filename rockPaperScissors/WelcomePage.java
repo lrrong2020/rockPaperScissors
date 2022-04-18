@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.util.Timer;
 import java.util.TimerTask;
 
+
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -48,47 +49,7 @@ public class WelcomePage {
 		root.getChildren().addAll(label1,icon1,bt1,bt2,bt3);
 		
 		//DuringTheGame during=new DuringTheGame();
-		//Scene duringGame=new Scene(during.CreateGamePage(),600,400);
 		
-		//duringGame.getStylesheets().add(getClass().getResource("GamePageSettings.css").toExternalForm());
-		/*bt1.setOnAction(e->{
-			
-			Stage window=(Stage)bt1.getScene().getWindow();
-			window.setTitle("Game started");
-			try {
-				TestClientFx.client.hostStartGame(1);
-			} catch (InterruptedException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-			window.setScene(duringGame);
-			
-			
-		});
-		bt2.setOnAction(e->{
-			Stage window=(Stage)bt2.getScene().getWindow();
-			window.setTitle("Game started");
-			try {
-				TestClientFx.client.hostStartGame(3);
-			} catch (InterruptedException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-			
-			window.setScene(duringGame);
-		});
-		bt3.setOnAction(e->{
-			Stage window=(Stage)bt3.getScene().getWindow();
-			window.setTitle("Game started");
-			try {
-				TestClientFx.client.hostStartGame(5);
-			} catch (InterruptedException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-			
-			window.setScene(duringGame);
-		});*/
 		return root;
 	
 	}
