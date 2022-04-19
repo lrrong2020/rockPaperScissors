@@ -1,7 +1,7 @@
-package rockPaperScissors.Model.DataBeans;
+package Model.DataBeans;
 
-import rockPaperScissors.Model.Choice;
-import rockPaperScissors.Model.Player;
+import Model.Choice;
+import Model.Player;
 
 //when game has been on
 public class ChoiceBean extends DataBean

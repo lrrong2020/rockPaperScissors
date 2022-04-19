@@ -1,4 +1,4 @@
-package rockPaperScissors.Model.DataBeans;
+package Model.DataBeans;
 
 import java.io.Serializable;
 import java.util.Date;

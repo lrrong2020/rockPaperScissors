@@ -1,10 +1,10 @@
-package rockPaperScissors.Client;
+package Client;
 
 import java.io.*;
 import java.net.*;
 import java.util.concurrent.Semaphore;
-import rockPaperScissors.Model.Player;
-import rockPaperScissors.Model.DataBeans.*;
+import Model.*;
+import Model.DataBeans.*;
 
 //logical client
 public class Client 
@@ -34,6 +34,7 @@ public class Client
 	private boolean hasInitialized = false;//determine whether the client has initialized or not
 	private boolean hasStopped = false;
 	private boolean hasExceptionallyStopped = false;
+	private boolean clientExited = false;
 
 	//multiple threads related
 	public Semaphore initSemaphore = new Semaphore(1); //can be invoked outside to make sure initialization is done before the client is used
@@ -153,6 +154,16 @@ public class Client
 	}
 
 
+	public boolean isClientExited()
+	{
+		return clientExited;
+	}
+
+	public void setClientExited(boolean clientExited)
+	{
+		this.clientExited = clientExited;
+	}
+
 	//initialize the client
 	public void initialize() throws ClassNotFoundException, NullPointerException, IOException, InterruptedException
 	{
@@ -171,7 +182,7 @@ public class Client
 				Object objFromServer = null;
 				while(!exit)
 				{
-					if(hasExceptionallyStopped) 
+					if(hasExceptionallyStopped || clientExited) 
 					{
 						return;
 					}
@@ -185,9 +196,9 @@ public class Client
 							InitBean receivedIBean = (InitBean)objFromServer;//cast to subclass
 
 							//display initial information
-							display("Status: " + receivedIBean.getClass());
-							display("Your UUID: " + receivedIBean.getUUID().toString());
-							display("You are" + (receivedIBean.getIsHost()?" the ":" not the ") + "host.");
+//							//display("Status: " + receivedIBean.getClass());
+//							//display("Your UUID: " + receivedIBean.getUUID().toString());
+//							//display("You are" + (receivedIBean.getIsHost()?" the ":" not the ") + "host.");
 
 							//set UUID and isHost to the Player instance
 							player.setUUID(receivedIBean.getUUID());
@@ -206,17 +217,19 @@ public class Client
 						{	
 							if(objFromServer instanceof ExceptionExitBean) 
 							{
-								System.out.println("Exception from server: "+ ((ExitBean) objFromServer).getException().getMessage());
-								display("Exception Occurs");
-
+//								System.out.println("Exception from server: "+ ((ExitBean) objFromServer).getException().getMessage());
+//								//display("Exception Occurs");
+								setHasExceptionallyStopped(true);
 							}
 							else
 							{
+								setClientExited(true);
+
 								//other exit beans send by the server
 								//may be end bean to determine the results
 							}
-							display("Exit");
-							setHasExceptionallyStopped(true);
+//							//display("Exit");
+
 							exit=true;
 							objectListener.interrupt();//terminates the listener
 
@@ -224,13 +237,13 @@ public class Client
 						else 
 						{
 							//gameOn objects
-							display("Successfully get an object!");
+//							//display("Successfully get an object!");
 							handleGameOnObject(objFromServer);
 						}
 					}
 					catch(ClassNotFoundException e) 
 					{
-						display("[Error]-ClassNotFound Please restart.");
+//						//display("[Error]-ClassNotFound Please restart.");
 						e.printStackTrace();
 						setHasExceptionallyStopped(true);
 						exit=true;
@@ -239,15 +252,15 @@ public class Client
 					catch (NullPointerException e) 
 					{
 						e.printStackTrace();
-						display("[Error]-Null Please restart.");
-						display(e.toString());
+						//display("[Error]-Null Please restart.");
+						//display(e.toString());
 						setHasExceptionallyStopped(true);
 						exit=true;
 						return;
 					}
 					catch (IOException e) 
 					{
-						display("[Warning]-IO Disconnect");
+						//display("[Warning]-IO Disconnect");
 						setHasExceptionallyStopped(true);
 						exit=true;
 						return;
@@ -320,7 +333,7 @@ public class Client
 			{
 				//when the game starts
 
-				display("Received Bean is instanceof StartBean");
+				//display("Received Bean is instanceof StartBean");
 
 				this.setHasStarted(true);
 				startGame(((StartBean) receivedBean).getMode());
@@ -329,27 +342,27 @@ public class Client
 			{
 				ResultBean resultBean = (ResultBean)receivedBean;
 
-				display("Your choice: " + resultBean.getYourChoice().getChoiseName());
-				display("Your opponent's choice: " + resultBean.getOpponentChoice().getChoiseName());
+				//display("Your choice: " + resultBean.getYourChoice().getChoiseName());
+				//display("Your opponent's choice: " + resultBean.getOpponentChoice().getChoiseName());
 
 				Integer winOrLose = Integer.valueOf(resultBean.getYourChoice().wins(resultBean.getOpponentChoice()));
 				//display results calculated in client
 				switch(winOrLose) 
 				{
 				case 0:
-					display("You Lose");
+					//display("You Lose");
 
 					break;
 				case 1:
-					display("Tie");
+					//display("Tie");
 
 					break;
 				case 2:
-					display("You Win!");
+					//display("You Win!");
 
 					break;
 				}
-				display("==========");
+				//display("==========");
 
 				//append result for display
 				rdp.appendResult(resultBean.getYourChoice(), resultBean.getOpponentChoice(), winOrLose);
@@ -363,7 +376,7 @@ public class Client
 				}
 				else 
 				{
-					display("Game over.");
+					//display("Game over.");
 					this.setHasStopped(true);
 
 					//cut off connection to the server
@@ -385,13 +398,13 @@ public class Client
 		if(isCanStart() && getIsHost()) 
 		{
 			setCanStart(false);
-			display("Host starting game" + "\nBO"+mode);
+			//display("Host starting game" + "\nBO"+mode);
 			sendDataBean(new StartBean(mode));
 
 		}
 		else 
 		{
-			display("2 people to start");
+			//display("2 people to start");
 			return;
 		}
 
@@ -401,7 +414,7 @@ public class Client
 	private void startGame(int mode) 
 	{	
 		this.setModeInt(mode);
-		display("The game is on!"+"\nBO"+mode);
+		//display("The game is on!"+"\nBO"+mode);
 		this.setRoundNoInt(Integer.valueOf(1));
 	}
 
@@ -416,23 +429,23 @@ public class Client
 			sendDataBean(choiceBean);
 
 			//debug
-			display(choiceName);
+			//display(choiceName);
 
 		}
 		else 
 		{
-			display("You can't choose now!");
+			//display("You can't choose now!");
 		}
 
 	}
 
-	//abstract and encapsulate display function
-	private static void display(String string)
-	{
-		System.out.println(string);
-
-		//need to invoke display function of View layer
-	}
+//	//abstract and encapsulate display function
+//	private static void display(String string)
+//	{
+//		System.out.println(string);
+//
+//		//need to invoke display function of View layer
+//	}
 
 
 	//terminate the client
@@ -462,6 +475,6 @@ public class Client
 		System.exit(0);
 
 		exit=true;
-		display("The client stoped");
+		//display("The client stoped");
 	}
 }

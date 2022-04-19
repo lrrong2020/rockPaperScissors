@@ -1,4 +1,4 @@
-package rockPaperScissors.Exceptions;
+package Exceptions;
 
 public class OpponentExitException extends Exception
 {

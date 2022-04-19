@@ -1,4 +1,4 @@
-package rockPaperScissors.Pages;
+package Pages;
 
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
@@ -7,14 +7,14 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import rockPaperScissors.Model.Choice.GESTURES;
-import rockPaperScissors.Client.*;
+import Model.Choice.GESTURES;
+import Client.*;
 
 public class GameOverPage {
 	public static Client client = ClientMain.client;;
-	Image rock=new Image("/rockPaperScissors/media/rock.png", 22, 22, false, false);
-	Image paper=new Image("/rockPaperScissors/media/paper.png", 22, 22, false, false);
-	Image scissors=new Image("/rockPaperScissors/media/scissor.png", 22, 22, false, false);
+	Image rock=new Image("/media/rock.png", 22, 22, false, false);
+	Image paper=new Image("/media/paper.png", 22, 22, false, false);
+	Image scissors=new Image("/media/scissor.png", 22, 22, false, false);
 	private VBox vbox;
 	private String result1 = null;
 	private int youWinInt = 0;

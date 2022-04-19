@@ -1,4 +1,4 @@
-package rockPaperScissors.Model;
+package Model;
 
 import java.io.*;
 import java.util.UUID;

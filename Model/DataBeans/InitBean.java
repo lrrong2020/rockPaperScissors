@@ -1,4 +1,4 @@
-package rockPaperScissors.Model.DataBeans;
+package Model.DataBeans;
 
 import java.util.Date;
 import java.util.UUID;

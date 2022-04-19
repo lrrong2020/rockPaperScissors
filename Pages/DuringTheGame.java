@@ -1,4 +1,4 @@
-package rockPaperScissors.Pages;
+package Pages;
 import javafx.scene.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -7,7 +7,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 
-import rockPaperScissors.Client.*;
+import Client.*;
 
 public class DuringTheGame{
 
@@ -21,17 +21,17 @@ public class DuringTheGame{
 
 	public Parent CreateGamePage() {
 		root=new Pane();
-		ImageView rock=new ImageView(new Image("/rockPaperScissors/media/rock.png"));
+		ImageView rock=new ImageView(new Image("/media/rock.png"));
 		rock.setFitHeight(50);
 		rock.setFitWidth(50);
 
 		HBox displayBoard=new HBox();
 
-		ImageView paper=new ImageView(new Image("/rockPaperScissors/media/paper.png"));
+		ImageView paper=new ImageView(new Image("/media/paper.png"));
 		paper.setFitHeight(50);
 		paper.setFitWidth(50);
 
-		ImageView scissors=new ImageView(new Image("/rockPaperScissors/media/scissor.png"));
+		ImageView scissors=new ImageView(new Image("/media/scissor.png"));
 		scissors.setFitHeight(50);
 		scissors.setFitWidth(50);
 
@@ -39,9 +39,9 @@ public class DuringTheGame{
 		Button paper1= new Button("Paper",paper);//create new button instance
 		Button scissors1 = new Button("Scissors",scissors);
 
-		ImageView whiteboard=new ImageView(new Image("/rockPaperScissors/media/whiteboard.png"));
+		ImageView whiteboard=new ImageView(new Image("/media/whiteboard.png"));
 
-		ImageView clock=new ImageView(new Image("/rockPaperScissors/media/clock.png"));
+		ImageView clock=new ImageView(new Image("/media/clock.png"));
 
 		label3.setLayoutX(80);
 		label3.setLayoutY(60);

@@ -1,4 +1,4 @@
-package rockPaperScissors.Pages;
+package Pages;
 import javafx.scene.*;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;

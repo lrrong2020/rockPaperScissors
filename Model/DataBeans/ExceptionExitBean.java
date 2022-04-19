@@ -1,4 +1,4 @@
-package rockPaperScissors.Model.DataBeans;
+package Model.DataBeans;
 
 public class ExceptionExitBean extends ExitBean
 {

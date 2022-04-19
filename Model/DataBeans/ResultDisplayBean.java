@@ -1,8 +1,8 @@
-package rockPaperScissors.Model.DataBeans;
+package Model.DataBeans;
 
 import java.util.*;
 
-import rockPaperScissors.Model.Choice;
+import Model.Choice;
 
 public class ResultDisplayBean
 {

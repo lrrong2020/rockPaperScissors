@@ -1,6 +1,6 @@
-package rockPaperScissors.Model.DataBeans;
+package Model.DataBeans;
 
-import rockPaperScissors.Model.Choice;
+import Model.Choice;
 
 public class ResultBean extends DataBean
 {

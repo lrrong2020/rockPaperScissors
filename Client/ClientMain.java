@@ -1,4 +1,4 @@
-package rockPaperScissors.Client;
+package Client;
 
 import java.awt.event.ActionEvent;
 import java.io.IOException;
@@ -19,8 +19,8 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import rockPaperScissors.Pages.*;
-import rockPaperScissors.Model.*;
+import Pages.*;
+import Model.*;
 
 public class ClientMain extends Application
 {
@@ -41,9 +41,11 @@ public class ClientMain extends Application
 	private static ArrayList<EventHandler<MouseEvent>>listeners=null;
 
 	public static boolean exceptionallyStopped = false;
+	public static boolean clientExited = false;
 	public static AnimationTimer am;
 	public static AnimationTimer am1;
 	public static AnimationTimer am2;
+	public static AnimationTimer am3;
 
 	//private Scene findIPPage;
 
@@ -82,18 +84,24 @@ public class ClientMain extends Application
 
 
 		enter.setOnAction(e->{
-			System.out.println(IP.getText().toString().trim());
+			//System.out.println(IP.getText().toString().trim());
 			String ipAddr=IP.textProperty().get().trim();
 			ClientMain.client=new Client(ipAddr);
-			appendTextArea("Client generated");
+			//appendTextArea("Client generated");
 			try 
 			{
 				client.initialize();
-				appendTextArea("Client initialized");
+				//appendTextArea("Client initialized");
 			}
 			catch(IOException ioe) 
 			{
-				appendTextArea("Client initialize failed");
+				//appendTextArea("Client initialize failed");
+				Alert alert = new Alert(AlertType.WARNING);
+				alert.setTitle("Warning!");
+				alert.setHeaderText("Connection Failed");
+				alert.setContentText("Please restart the game.");
+				alert.showAndWait();
+				System.exit(1);
 
 			}
 			catch (ClassNotFoundException | NullPointerException e1) 
@@ -101,7 +109,7 @@ public class ClientMain extends Application
 				//Invalid DataBean
 				//server passed a null
 				e1.printStackTrace();
-				appendTextArea("Invalid Data from server!");
+				//appendTextArea("Invalid Data from server!");
 			} catch (InterruptedException e1) {
 				e1.printStackTrace();
 			}
@@ -192,6 +200,9 @@ public class ClientMain extends Application
 				am1.start();
 				ClientMain.am2 = new ExceptionallyStopped(window);
 				am2.start();
+				
+				ClientMain.am3=new ClientExitChecker(window);
+				am3.start();
 			}
 			else {
 
@@ -208,6 +219,9 @@ public class ClientMain extends Application
 
 				ClientMain.am1=new StartEndChecker(window);
 				am1.start();
+				
+				ClientMain.am3=new ClientExitChecker(window);
+				am3.start();
 
 			}	
 			client.initSemaphore.release();
@@ -215,16 +229,16 @@ public class ClientMain extends Application
 	}
 
 	//similar syntax for rewriting append method of jTextArea of java.swing
-	//use it the same way as System.out.println(String string) !
-	public static void appendTextArea(String string) 
-	{
-		ta.setText(ta.getText() + "\n" +string);
-		System.out.println("\n" + string);//debug
-	}
+	//use it the same way as //System.out.println(String string) !
+//	public static void appendTextArea(String string) 
+//	{
+//		ta.setText(ta.getText() + "\n" +string);
+//		//System.out.println("\n" + string);//debug
+//	}
 
 	public static void log(String string) 
 	{
-		System.out.println(string);
+		//System.out.println(string);
 	}
 
 
@@ -327,6 +341,10 @@ public class ClientMain extends Application
 				if(am2 != null)
 				{
 					am2.stop();
+				}
+				if(am3 != null) 
+				{
+					am3.stop();
 				}
 				Platform.exit();
 				System.exit(0);
@@ -454,7 +472,7 @@ public class ClientMain extends Application
 			}
 			else if(client.getRoundNoInt().compareTo(roundNoInt) == 1)
 			{
-				System.out.println(client.getRoundNoInt());
+				//System.out.println(client.getRoundNoInt());
 				during.label4.setText("");
 				during.label1.setText("Your choice is "+client.rdp.getResultList().get(roundNoInt - 1).getYourChoice().getChoiseName());
 				during.label2.setText("Your Opponent's choice is "+client.rdp.getResultList().get(roundNoInt - 1).getOpponentChoice().getChoiseName());
@@ -464,7 +482,7 @@ public class ClientMain extends Application
 
 			else 
 			{
-				System.out.print("INCONSISTENT");
+				//System.out.print("INCONSISTENT");
 			}
 		}
 	}
@@ -486,7 +504,7 @@ public class ClientMain extends Application
 				Alert alert = new Alert(AlertType.WARNING);
 				alert.setTitle("Warning!");
 				alert.setHeaderText("Exception Occurs");
-				alert.setContentText("Click OK to exit the game.");
+				alert.setContentText("Please restart the game.");
 				alert.show();
 				alert.setOnCloseRequest(e -> {
 					if (alert.getResult() == ButtonType.OK) {
@@ -510,6 +528,46 @@ public class ClientMain extends Application
 		}
 	}
 
+	
+	private class ClientExitChecker extends AnimationTimer{
+		Stage window;
+		public ClientExitChecker(Stage window) {
+			this.window = window;
+		}
+		public void handle(long arg0)
+		{
+			if(ClientMain.clientExited == false) {
+				ClientMain.checkClientExit();
+			}
+			else {
+
+				Alert alert = new Alert(AlertType.WARNING);
+				alert.setTitle("Warning!");
+				alert.setHeaderText("Your opponent has quit.");
+				alert.setContentText("Please restart the game.");
+				alert.show();
+				alert.setOnCloseRequest(e -> {
+					if (alert.getResult() == ButtonType.OK) {
+						window.close();
+						System.exit(0);
+					}
+					else if (alert.getResult() == ButtonType.CANCEL) 
+					{
+						window.close();
+						System.exit(0);
+					}
+					else 
+					{
+						window.close();
+						System.exit(0);
+					}
+				});
+
+				stop();
+			}
+		}
+	}
+	
 
 	public void ClientMakeChocieChecker(java.awt.event.ActionEvent evt) {
 		Timer timer = new Timer();
@@ -583,5 +641,9 @@ public class ClientMain extends Application
 	public static void checkStop() 
 	{
 		exceptionallyStopped = client.isHasExceptionallyStopped();
+	}
+	public static void checkClientExit() 
+	{
+		ClientMain.clientExited = client.isClientExited();
 	}
 }

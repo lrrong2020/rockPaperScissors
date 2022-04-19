@@ -1,4 +1,4 @@
-package rockPaperScissors.Pages;
+package Pages;
 
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -15,7 +15,7 @@ public class WelcomePage {
 	public Parent getWelcomePage() {
 		root=new Pane();
 		
-		Image icon=new Image("/rockPaperScissors/media/icon.gif");
+		Image icon=new Image("/media/icon.gif");
 		ImageView icon1=new ImageView(icon);
 		icon1.setFitHeight(150);
 		icon1.setFitWidth(200);
