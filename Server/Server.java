@@ -21,8 +21,6 @@ public class Server
 
 	public static final Map<UUID, HandleAClient> CLIENT_HANDLER_MAP = new ConcurrentHashMap<UUID, HandleAClient>();
 
-	public static final List<HandleAClient> CLIENT_HANDLER_LIST_RM = new ArrayList<HandleAClient>();
-
 	public static final List<Room> ROOM_LIST = new ArrayList<Room>();
 
 	protected static int roundNo = 1;
