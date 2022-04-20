@@ -135,7 +135,7 @@ class HandleAClient implements Runnable
 		this.outputToClient.flush();
 	}
 
-	public void sendResultBean(Choice c1, Choice c2) throws IOException 
+	public void sendResultBean(Choice yourChoice, Choice opponentChoice) throws IOException 
 	{
 		Server.log("Sending result Bean");
 		DataBean idb = new ResultBean(c1, c2, Server.getRoom(roomNo).getRoundNoInt());//default constructor to indicates server-sent startBean
