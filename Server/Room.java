@@ -1,4 +1,4 @@
-package rockPaperScissors.Server;
+package Server;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -8,8 +8,8 @@ import java.util.UUID;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
-import rockPaperScissors.Model.DataBeans.*;
-import rockPaperScissors.Exceptions.*;
+import Model.DataBeans.*;
+import Exceptions.*;
 
 //to hold players and match-related classes
 public class Room

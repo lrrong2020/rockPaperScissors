@@ -1,4 +1,4 @@
-package rockPaperScissors.Server;
+package Server;
 
 import java.io.*;
 import java.net.*;
@@ -6,9 +6,9 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.Semaphore;
 
-import rockPaperScissors.Model.DataBeans.*;
-import rockPaperScissors.Model.*;
-import rockPaperScissors.Exceptions.*;
+import Model.DataBeans.*;
+import Model.*;
+import Exceptions.*;
 
 //Define the thread class for handling new connection
 class HandleAClient implements Runnable 
@@ -138,7 +138,7 @@ class HandleAClient implements Runnable
 	public void sendResultBean(Choice yourChoice, Choice opponentChoice) throws IOException 
 	{
 		Server.log("Sending result Bean");
-		DataBean idb = new ResultBean(c1, c2, Server.getRoom(roomNo).getRoundNoInt());//default constructor to indicates server-sent startBean
+		DataBean idb = new ResultBean(yourChoice, opponentChoice, Server.getRoom(roomNo).getRoundNoInt());//default constructor to indicates server-sent startBean
 
 		//send the start DataBean to the client
 		this.outputToClient.writeObject(idb);
