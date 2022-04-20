@@ -328,7 +328,7 @@ public class ClientMain extends Application
 			if(result.get() == ButtonType.OK) {
 				if(client != null)
 				{
-					client.clientStop();
+					client.terminate();
 				}
 				if(am != null)
 				{
