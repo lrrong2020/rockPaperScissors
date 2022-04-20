@@ -449,7 +449,7 @@ public class Client
 
 
 	//terminate the client
-	public void clientStop() 
+	public void terminate() 
 	{
 		if(this.socket != null)
 		{
