@@ -79,10 +79,9 @@ public class Room
 				return entry.getValue();
 			}
 		}
-		Server.log("returning null in getHostHandler()");
+
 		return null;
 	}
-
 
 	//game on methods
 	public void startGame(int m) throws IOException 
@@ -105,30 +104,12 @@ public class Room
 			throw new ChoiceMoreThanOnceException("Write 2 times");
 		}
 
-
-		//		HandleAClient player0Handler = getClientHandler(clientHandlers, player0Socket);
 		HandleAClient player0Handler = clientHandlers.get(player0ChoiceBean.getPlayer().getUUID());
 		HandleAClient player1Handler = clientHandlers.get(player1ChoiceBean.getPlayer().getUUID());
-
-		Server.log(player0ChoiceBean.getChoice().toString());
-		Server.log(player1ChoiceBean.getChoice().toString());
 
 		player0Handler.sendResultBean(player0ChoiceBean.getChoice(), player1ChoiceBean.getChoice());
 		player1Handler.sendResultBean(player1ChoiceBean.getChoice(), player0ChoiceBean.getChoice());
 
 		setRoundNoInt(Integer.valueOf(getRoundNoInt().intValue() + 1));
-	}
-
-	public void checkAllUsers() 
-	{
-		Server.log("=========All users of Room [" + getRoomNoInt() + "]=========");
-		for (Entry<UUID, HandleAClient> entry :  clientHandlers.entrySet()) 
-		{
-			Server.log( "<"+entry.getKey() + ">");//display UUIDs
-		}
-		if(clientHandlers.entrySet().size() == 0) {
-			Server.log("No User");
-		}
-		Server.log("==================");
 	}
 }

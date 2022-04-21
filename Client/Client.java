@@ -195,11 +195,6 @@ public class Client
 						{
 							InitBean receivedIBean = (InitBean)objFromServer;//cast to subclass
 
-							//display initial information
-//							//display("Status: " + receivedIBean.getClass());
-//							//display("Your UUID: " + receivedIBean.getUUID().toString());
-//							//display("You are" + (receivedIBean.getIsHost()?" the ":" not the ") + "host.");
-
 							//set UUID and isHost to the Player instance
 							player.setUUID(receivedIBean.getUUID());
 							player.setIsHost(receivedIBean.getIsHost());
@@ -217,8 +212,6 @@ public class Client
 						{	
 							if(objFromServer instanceof ExceptionExitBean) 
 							{
-//								System.out.println("Exception from server: "+ ((ExitBean) objFromServer).getException().getMessage());
-//								//display("Exception Occurs");
 								setHasExceptionallyStopped(true);
 							}
 							else
@@ -228,39 +221,31 @@ public class Client
 								//other exit beans send by the server
 								//may be end bean to determine the results
 							}
-//							//display("Exit");
 
 							exit=true;
 							objectListener.interrupt();//terminates the listener
-
 						}
 						else 
 						{
 							//gameOn objects
-//							//display("Successfully get an object!");
 							handleGameOnObject(objFromServer);
 						}
 					}
 					catch(ClassNotFoundException e) 
 					{
-//						//display("[Error]-ClassNotFound Please restart.");
-						e.printStackTrace();
+
 						setHasExceptionallyStopped(true);
 						exit=true;
 						return;
 					}
 					catch (NullPointerException e) 
 					{
-						e.printStackTrace();
-						//display("[Error]-Null Please restart.");
-						//display(e.toString());
 						setHasExceptionallyStopped(true);
 						exit=true;
 						return;
 					}
 					catch (IOException e) 
 					{
-						//display("[Warning]-IO Disconnect");
 						setHasExceptionallyStopped(true);
 						exit=true;
 						return;
@@ -269,7 +254,6 @@ public class Client
 						e.printStackTrace();
 					}
 				}
-
 			}
 		};
 

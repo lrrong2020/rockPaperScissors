@@ -9,9 +9,9 @@ import javafx.scene.layout.Pane;
 
 public class WelcomePage {
 	private Pane root; 
-	public Button bt1=new Button("One round");
-	public Button bt2=new Button("Best two out of three");
-	public Button bt3=new Button("Best three out of five");
+	public Button bt1=new Button("One Round");
+	public Button bt2=new Button("Three Rounds");
+	public Button bt3=new Button("Five Rounds");
 	public Parent getWelcomePage() {
 		root=new Pane();
 		

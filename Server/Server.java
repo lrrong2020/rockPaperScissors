@@ -10,26 +10,22 @@ import java.util.concurrent.Semaphore;
 
 public class Server
 {
-	protected static final int PORT = 8000;//for socket connection
+	private static final int PORT = 8000;//for socket connection
 	private static final int MAX_USERS = 10;
 
 	//to store users and identify them with randomly generated universally unique identifier (UUID)
 
 
 	//class-level client lists to synchronize and store data
-	//	public static final List<HandleAClient> CLIENT_HANDLER_LIST = new ArrayList<HandleAClient>();//list of 
 
 	public static final Map<UUID, HandleAClient> CLIENT_HANDLER_MAP = new ConcurrentHashMap<UUID, HandleAClient>();
 
 	public static final List<Room> ROOM_LIST = new ArrayList<Room>();
 
-	protected static int roundNo = 1;
-
-	private Thread socketThread = null;
+	private static Thread socketThread = new Thread(HandleTheSocket.getInstance());
 
 	public static Semaphore startAfterInitializeSemaphore = new Semaphore(1);
 
-	private static HandleTheSocket socketHandler = HandleTheSocket.getInstance();
 
 	public static Semaphore exitSemaphore = new Semaphore(1);
 
@@ -37,11 +33,7 @@ public class Server
 	public Server()
 	{
 		super();
-		log("Initializing server");
-
-		socketThread = new Thread(socketHandler);
 		socketThread.start();
-		log("Server initialized");
 	}
 
 	//Inner Class
@@ -52,7 +44,6 @@ public class Server
 		ServerSocket serverSocket = null;
 		private static HandleTheSocket socketHandler = new HandleTheSocket();
 
-
 		private HandleTheSocket()
 		{			
 			super();
@@ -60,7 +51,7 @@ public class Server
 			try 
 			{
 				this.serverSocket = new ServerSocket(Server.PORT);//should close socket for performance
-				log("MultiThreadServer started at " + new Date() + '\n');
+
 			}
 			catch(Exception e) 
 			{
@@ -99,9 +90,7 @@ public class Server
 
 					//registration
 
-					//						CLIENT_HANDLER_LIST.add(task);//add
 					CLIENT_HANDLER_MAP.put(task.getUUID(), task);
-
 
 					//semaphore.acquire
 					userMapSemaphore.acquire();
@@ -117,11 +106,7 @@ public class Server
 
 						room.setRoomNoInt(ROOM_LIST.size());
 						task.setRoomNo(ROOM_LIST.size());
-						log("Setting roomNo ... " + ROOM_LIST.size());
 						Server.ROOM_LIST.add(room);
-						room.checkAllUsers();
-
-
 					}
 
 					//2 players have registered
@@ -133,10 +118,10 @@ public class Server
 
 
 						//send startBean to all clients
-						log("\nHandleAClient: 2 users have registered\n");
+
 
 						//can start game
-						log("ROOM_LIST.size()" + ROOM_LIST.size());
+
 						Room room = Server.getRoom(ROOM_LIST.size() - 1);
 
 						room.setClientHandlers(clientHandlers);
@@ -145,17 +130,16 @@ public class Server
 
 						for (Entry<UUID, HandleAClient> entry : Server.CLIENT_HANDLER_MAP.entrySet()) 
 						{
-							log("Clearing " + entry.getKey().toString() + "in user map");
+
 							Server.CLIENT_HANDLER_MAP.remove(entry.getKey());
 						}
 
-						room.checkAllUsers();
 						room.getHostHandler().sendPreparedBean();
 					}
 					else 
 					{
 						//error
-						log("[Error] - MAP size bigger than 2");
+
 					}
 					userMapSemaphore.release();
 
@@ -182,6 +166,7 @@ public class Server
 				clientRegister();
 			}		
 		}
+
 		public void stop()
 		{
 			exit = true;
@@ -192,12 +177,7 @@ public class Server
 	//class level start game
 	public static void startGame(int m, Room room) throws IOException 
 	{
-		log("Starting game for all clients");
-
-
 		room.startGame(m);
-
-
 	}
 
 	public static Room getRoom(Integer roomNoInt) 
@@ -209,31 +189,13 @@ public class Server
 				return room;
 			}
 		}
-		log("Returning null in getRoom");
+
 		return null;
 	}
 
 	public static void clientExit(int roomNo, UUID uuid)
 	{
-
-		Room room = getRoom(roomNo);
-		//check if game is on and send ExitBean
-
-		log("Removing: " + uuid.toString());
 		getRoom(roomNo).getClientHandlers().remove(uuid);
-
-		room.checkAllUsers();
-	}
-
-	public static void endGame() 
-	{
-		//send end bean
-	}
-
-
-	public static void log(String string) 
-	{
-		System.out.println(string);
 	}
 
 	public static void main(String args[]) 

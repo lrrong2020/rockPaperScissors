@@ -25,8 +25,6 @@ import Model.*;
 public class ClientMain extends Application
 {
 	// Text area to display contents
-	private static TextArea ta = new TextArea();
-
 	public static Client client = null;
 	public static boolean hasStarted = false;
 	public static boolean hasStopped = false;
@@ -46,9 +44,6 @@ public class ClientMain extends Application
 	public static AnimationTimer am1;
 	public static AnimationTimer am2;
 	public static AnimationTimer am3;
-
-	//private Scene findIPPage;
-
 	public static Scene startWelcomePage;
 
 	public ClientMain(){
@@ -66,32 +61,26 @@ public class ClientMain extends Application
 		enterTxt.setFont(Font.font("Tahoma", FontWeight.LIGHT, 25));
 		grid.add(enterTxt, 0, 0);
 
-
 		TextField IP = new TextField();
 
 		IP.setPromptText("IP address");
 		grid.add(IP, 0, 2);
 
-
 		Button enter = new Button("OK");
 		grid.add(enter, 0, 3);
 		welcomePage=new Scene(grid,600,400);
-
 
 		Scene startWelcomePage=new Scene(start.getWelcomePage(),600,400);
 
 		startWelcomePage.getStylesheets().add(getClass().getResource("../CSS/PagesSettings.css").toExternalForm());
 
-
 		enter.setOnAction(e->{
-			//System.out.println(IP.getText().toString().trim());
 			String ipAddr=IP.textProperty().get().trim();
+
 			ClientMain.client=new Client(ipAddr);
-			//appendTextArea("Client generated");
 			try 
 			{
 				client.initialize();
-				//appendTextArea("Client initialized");
 			}
 			catch(IOException ioe) 
 			{
@@ -108,17 +97,14 @@ public class ClientMain extends Application
 			{
 				//Invalid DataBean
 				//server passed a null
-				e1.printStackTrace();
-				//appendTextArea("Invalid Data from server!");
 			} catch (InterruptedException e1) {
-				e1.printStackTrace();
 			}
 
 			try {
 				client.initSemaphore.acquire();
 
-			} catch (InterruptedException e1) {
-				e1.printStackTrace();
+			} catch (InterruptedException e1) 
+			{
 			}
 			Stage window;
 			if(client.getIsHost()) {
@@ -142,16 +128,10 @@ public class ClientMain extends Application
 					window1.setTitle("Game started");
 					try {
 						client.hostStartGame(1);
-
-
-					} catch (InterruptedException e1) {
-
-						e1.printStackTrace();
+					} catch (InterruptedException e1) 
+					{
 					}
 					setDuringGameScene(window1);
-
-
-
 				});
 				start.bt2.setOnAction(m->{
 					if(!client.isCanStart()) 
@@ -160,18 +140,15 @@ public class ClientMain extends Application
 						return;
 					}
 
-
 					Stage window1=(Stage)start.bt2.getScene().getWindow();
 					window1.setTitle("Game started");
-					try {
+					try 
+					{
 						client.hostStartGame(3);
-
-
-					} catch (InterruptedException e1) {
-						e1.printStackTrace();
+					} catch (InterruptedException e1) 
+					{
 					}
 					setDuringGameScene(window1);
-
 
 				});
 				start.bt3.setOnAction(m->{
@@ -183,15 +160,13 @@ public class ClientMain extends Application
 
 					Stage window1=(Stage)start.bt3.getScene().getWindow();
 					window1.setTitle("Game started");
-					try {
+					try 
+					{
 						client.hostStartGame(5);
-
-
-					} catch (InterruptedException e1) {
-						e1.printStackTrace();
+					} catch (InterruptedException e1) 
+					{
 					}
 					setDuringGameScene(window1);
-
 
 				});
 
@@ -200,7 +175,7 @@ public class ClientMain extends Application
 				am1.start();
 				ClientMain.am2 = new ExceptionallyStopped(window);
 				am2.start();
-				
+
 				ClientMain.am3=new ClientExitChecker(window);
 				am3.start();
 			}
@@ -219,7 +194,7 @@ public class ClientMain extends Application
 
 				ClientMain.am1=new StartEndChecker(window);
 				am1.start();
-				
+
 				ClientMain.am3=new ClientExitChecker(window);
 				am3.start();
 
@@ -227,23 +202,6 @@ public class ClientMain extends Application
 			client.initSemaphore.release();
 		});
 	}
-
-	//similar syntax for rewriting append method of jTextArea of java.swing
-	//use it the same way as //System.out.println(String string) !
-//	public static void appendTextArea(String string) 
-//	{
-//		ta.setText(ta.getText() + "\n" +string);
-//		//System.out.println("\n" + string);//debug
-//	}
-
-	public static void log(String string) 
-	{
-		//System.out.println(string);
-	}
-
-
-	//get JavaFX Group
-
 
 	public static ArrayList<EventHandler<MouseEvent>> getEvent()
 	{
@@ -261,7 +219,6 @@ public class ClientMain extends Application
 				}
 				catch (ClassNotFoundException e1) 
 				{
-					e1.printStackTrace();
 				}
 			}
 		};
@@ -278,7 +235,6 @@ public class ClientMain extends Application
 				} 
 				catch (ClassNotFoundException e1) 
 				{
-					e1.printStackTrace();
 				}
 			}
 		};
@@ -295,7 +251,6 @@ public class ClientMain extends Application
 				} 
 				catch (ClassNotFoundException e1) 
 				{
-					e1.printStackTrace();
 				}
 			}
 		};
@@ -305,7 +260,6 @@ public class ClientMain extends Application
 
 		return listeners;
 	}
-
 
 	//start JavaFX application
 	@Override
@@ -389,7 +343,7 @@ public class ClientMain extends Application
 		labelActionPerformed(new ActionEvent(root, 0, null));
 
 		label3ActionPerformed(new ActionEvent(root, 1, null));
-		
+
 		Scene duringGame=new Scene(root,600,400);
 		duringGame.getStylesheets().add(getClass().getResource("../CSS/GamePageSettings.css").toExternalForm());
 		window.setScene(duringGame);
@@ -482,7 +436,6 @@ public class ClientMain extends Application
 
 			else 
 			{
-				//System.out.print("INCONSISTENT");
 			}
 		}
 	}
@@ -499,8 +452,6 @@ public class ClientMain extends Application
 				checkStop();
 			}
 			else {
-
-
 				Alert alert = new Alert(AlertType.WARNING);
 				alert.setTitle("Warning!");
 				alert.setHeaderText("Exception Occurs");
@@ -528,7 +479,7 @@ public class ClientMain extends Application
 		}
 	}
 
-	
+
 	private class ClientExitChecker extends AnimationTimer{
 		Stage window;
 		public ClientExitChecker(Stage window) {
@@ -540,7 +491,6 @@ public class ClientMain extends Application
 				ClientMain.checkClientExit();
 			}
 			else {
-
 				Alert alert = new Alert(AlertType.WARNING);
 				alert.setTitle("Warning!");
 				alert.setHeaderText("Your opponent has quit.");
@@ -567,7 +517,7 @@ public class ClientMain extends Application
 			}
 		}
 	}
-	
+
 
 	public void ClientMakeChocieChecker(java.awt.event.ActionEvent evt) {
 		Timer timer = new Timer();
@@ -586,8 +536,6 @@ public class ClientMain extends Application
 						client.setMakeChoice(false);
 
 					} catch (ClassNotFoundException e) {
-
-						e.printStackTrace();
 					}
 				}
 				if(i>scheduledExecutionTime()) {

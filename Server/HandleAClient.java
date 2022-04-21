@@ -24,7 +24,6 @@ class HandleAClient implements Runnable
 	private int roomNo;
 	private boolean isHost = false;
 	private boolean hasStarted = false;
-	Semaphore initializationSemaphore = new Semaphore(1);
 	private static Semaphore resultSemaphore = new Semaphore(1);
 
 	//construct a thread
@@ -32,19 +31,6 @@ class HandleAClient implements Runnable
 	{
 		/** Initialization **/
 		this.socket = socket;
-
-		/** To be implemented
-			check if the socket has already been put in the user map **/
-
-		/* Display connection results */
-		// Display the time
-		Server.log("\n============Starting a thread for client at " + new Date() + "============\n");
-
-		// Find the client's host name, and IP address
-		InetAddress inetAddress = socket.getInetAddress();
-		Server.log("Client [" + Server.CLIENT_HANDLER_MAP.size() + "] 's host name is " + inetAddress.getHostName() + "\n"
-				+ "IP Address is " + inetAddress.getHostAddress() + "\n");
-
 	}
 
 	//setter and getters
@@ -93,12 +79,12 @@ class HandleAClient implements Runnable
 	//send initial data to the client
 	public void sendInitBean() throws InterruptedException, IOException 
 	{	
-		Server.log("RoomNo: " + getRoomNo());
+
 		Room room = Server.getRoom(getRoomNo());
 
 		room.hostSemaphore.acquire();
 		boolean isHost = room.getClientHandlers().size() == 1 ? true:false;
-		Server.log("room.getClientHandlers().size() : " + room.getClientHandlers().size());
+
 		room.hostSemaphore.release();
 
 		this.setHost(isHost);
@@ -118,7 +104,7 @@ class HandleAClient implements Runnable
 
 	public void sendStartBean(int m) throws IOException 
 	{
-		Server.log("Sending start Bean");
+
 		DataBean idb = new StartBean(m);//default constructor to indicates server-sent startBean
 
 		//send the start DataBean to the client
@@ -137,7 +123,7 @@ class HandleAClient implements Runnable
 
 	public void sendResultBean(Choice yourChoice, Choice opponentChoice) throws IOException 
 	{
-		Server.log("Sending result Bean");
+
 		DataBean idb = new ResultBean(yourChoice, opponentChoice, Server.getRoom(roomNo).getRoundNoInt());//default constructor to indicates server-sent startBean
 
 		//send the start DataBean to the client
@@ -147,7 +133,7 @@ class HandleAClient implements Runnable
 
 	public void sendExitBean() throws IOException
 	{
-		Server.log("Sending exception exit bean");
+
 		DataBean idb = new ExitBean();
 
 		//send the start DataBean to the client
@@ -157,7 +143,7 @@ class HandleAClient implements Runnable
 
 	public void sendExceptionExitBean(Exception exception) throws IOException
 	{
-		Server.log("Sending exception exit bean");
+
 		DataBean idb = new ExceptionExitBean(exception);
 
 		//send the start DataBean to the client
@@ -176,8 +162,7 @@ class HandleAClient implements Runnable
 			StartBean receivedSBean = (StartBean)receivedBean;//cast to StartBean
 			
 			//send StartBean to all users indicates that the game is on
-			//			this.outputToClient.writeObject(new StartBean());//incomplete constructor
-			Server.log("Starting game (HandleAClient)");
+
 			Server.startGame(receivedSBean.getMode(), Server.getRoom(getRoomNo()));
 		}
 
@@ -185,7 +170,6 @@ class HandleAClient implements Runnable
 		//atomic!!!
 		else if(receivedBean instanceof ChoiceBean)
 		{
-			Server.log("Received Bean: " + receivedBean.toString() + "\n");
 
 			if(((ChoiceBean) receivedBean).getRoundNoInt().equals(Integer.valueOf(0))) 
 			{
@@ -220,45 +204,43 @@ class HandleAClient implements Runnable
 						} 
 						catch (ClassNotFoundException e) 
 						{
-							Server.log("[Error]-ClassNotFound");
+
 							e.printStackTrace();
 						} 
 						catch (IOException e) 
 						{
-							Server.log("[Error]-IO");
+
 							e.printStackTrace();
 						} 
 						catch (ChoiceMoreThanOnceException e) 
 						{
 							try 
 							{
-								Server.log("[Error Choice more than once]");
 								sendExceptionExitBean(e);
 							} catch (Exception ex) 
 							{
-								ex.printStackTrace();
+								
 							}
-							e.printStackTrace();
+							
 						}
 					}
 					else 
 					{
 						try {
-							Server.log("[Error Synchronization]");
+	
 							sendExceptionExitBean(new DataInconsistentException("Inconsistent"));
-						} catch (Exception e) {
-							e.printStackTrace();
+						} catch (Exception e) 
+						{
 						}
 					}
 				}
 			}
 			catch (InterruptedException e1)
 			{
-				e1.printStackTrace();
 			}
 			finally 
 			{
-				Server.log("releasing lock...");
+
 				resultSemaphore.release();
 			}
 		}
@@ -272,7 +254,6 @@ class HandleAClient implements Runnable
 
 		else 
 		{
-			Server.log("WHat bean?");
 		} 
 	}
 
@@ -293,7 +274,6 @@ class HandleAClient implements Runnable
 			sendInitBean();
 		} catch (IOException | InterruptedException e) 
 		{
-			e.printStackTrace();
 		}
 
 		// Continuously serve the client
@@ -305,13 +285,8 @@ class HandleAClient implements Runnable
 			}
 			catch(IOException | ClassNotFoundException ex) 
 			{
-				//				ex.printStackTrace();//debug
-				Server.log("============\n============\n");
-				Server.log("Client UUID:" + this.getUUID() + " quit\n============\n============");
-
 				try
 				{
-					//					Server.log("acquiring");
 					Server.exitSemaphore.acquire();
 					Server.clientExit(getRoomNo() ,this.uuid);
 					if(Server.getRoom(getRoomNo()).getClientHandlers().size() == 1) 
@@ -322,14 +297,10 @@ class HandleAClient implements Runnable
 						}
 					}
 					Server.exitSemaphore.release();
-					//					Server.log("releasing");
 				} catch (InterruptedException e)
 				{
-					e.printStackTrace();
 				} catch (IOException e)
 				{
-
-					e.printStackTrace();
 				}
 
 				//send ExceptionExitBean to clients
